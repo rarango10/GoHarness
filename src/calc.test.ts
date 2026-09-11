@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { add, subtract } from './calc'
+import { add, multiply, subtract } from './calc'
 
 test('suma dos enteros bien formados', () => {
   expect(add('2', '3')).toBe(5)
@@ -51,4 +51,16 @@ test('la resta puede dar un resultado negativo', () => {
 
 test('un operando inválido en la resta vale 0', () => {
   expect(subtract('abc', '5')).toBe(-5)
+})
+
+test('multiplica dos enteros bien formados', () => {
+  expect(multiply('4', '3')).toBe(12)
+})
+
+test('un operando vacío en la multiplicación vale 0', () => {
+  expect(multiply('', '5')).toBe(0)
+})
+
+test('la multiplicación no muestra ruido de punto flotante', () => {
+  expect(multiply('0.1', '3')).toBe(0.3)
 })

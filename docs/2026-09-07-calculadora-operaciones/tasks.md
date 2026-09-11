@@ -9,7 +9,7 @@
 | # | Tarea | Cubre | Estado |
 |---|-------|-------|--------|
 | T1 | Función pura subtract en calc.ts, con las reglas de operando ya vigentes | — | hecho |
-| T2 | Función pura multiply en calc.ts, con las mismas reglas de operando | — | pendiente |
+| T2 | Función pura multiply en calc.ts, con las mismas reglas de operando | — | hecho |
 | T3 | Función pura divide en calc.ts, que devuelve null cuando el divisor interpretado es 0 | R5.2, R5.3, R5.4 | pendiente |
 | T4 | Botón "Restar" en la UI, que muestra la diferencia en la casilla de resultado | R2.1 | pendiente |
 | T5 | Botón "Multiplicar" en la UI, que muestra el producto en la casilla de resultado | R3.1 | pendiente |
@@ -49,7 +49,15 @@ esta tarea deba cerrar por sí sola.
 **Por qué no cubre criterios:** Habilita R3.1, que se cierra en la tarea que agrega el botón 'Multiplicar' cableado (T5 de este plan). Aporta además los casos de multiply a R5.2 y R5.4, que se cierran en la tarea de divide, donde las reglas compartidas quedan completas para las tres operaciones nuevas.
 **Primer test (rojo):** En calc.test.ts: multiply('4', '3') devuelve 12 — rojo porque multiply todavía no existe. En el mismo ciclo se agregan multiply('', '5') → 0 y multiply('0.1', '3') → 0.3.
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-10
+
+Confirmado en rojo: `TypeError: (0 , multiply) is not a function` en los tres tests nuevos.
+Implementación mínima en `calc.ts`: `multiply(a, b) = parseOperand(a) * parseOperand(b)`,
+redondeado con `Number(product.toFixed(10))` — mismo mecanismo que `add`/`subtract`. `npm run
+check` en verde (22 tests). Sin desvíos respecto del design.
+
+**Verificación:** `dod-checker` devolvió `cumple`. `Cubre: —` es correcto: T2 habilita R3.1 (se
+cierra en T5) y aporta casos a R5.2/R5.4 (se cierran en T3).
 
 ### T3 — Función pura divide en calc.ts, que devuelve null cuando el divisor interpretado es 0
 
