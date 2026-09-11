@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { add, multiply, subtract } from './calc'
+import { add, divide, multiply, subtract } from './calc'
 
 test('suma dos enteros bien formados', () => {
   expect(add('2', '3')).toBe(5)
@@ -63,4 +63,24 @@ test('un operando vacío en la multiplicación vale 0', () => {
 
 test('la multiplicación no muestra ruido de punto flotante', () => {
   expect(multiply('0.1', '3')).toBe(0.3)
+})
+
+test('divide dos enteros bien formados', () => {
+  expect(divide('10', '2')).toBe(5)
+})
+
+test('la división preserva el signo', () => {
+  expect(divide('-9', '3')).toBe(-3)
+})
+
+test('dividir por un divisor literal 0 devuelve null', () => {
+  expect(divide('5', '0')).toBeNull()
+})
+
+test('un divisor vacío se trata como 0 y devuelve null', () => {
+  expect(divide('5', '')).toBeNull()
+})
+
+test('un divisor no numérico se trata como 0 y devuelve null', () => {
+  expect(divide('5', 'abc')).toBeNull()
 })

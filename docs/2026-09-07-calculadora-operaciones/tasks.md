@@ -10,7 +10,7 @@
 |---|-------|-------|--------|
 | T1 | Función pura subtract en calc.ts, con las reglas de operando ya vigentes | — | hecho |
 | T2 | Función pura multiply en calc.ts, con las mismas reglas de operando | — | hecho |
-| T3 | Función pura divide en calc.ts, que devuelve null cuando el divisor interpretado es 0 | R5.2, R5.3, R5.4 | pendiente |
+| T3 | Función pura divide en calc.ts, que devuelve null cuando el divisor interpretado es 0 | R5.2, R5.3, R5.4 | hecho |
 | T4 | Botón "Restar" en la UI, que muestra la diferencia en la casilla de resultado | R2.1 | pendiente |
 | T5 | Botón "Multiplicar" en la UI, que muestra el producto en la casilla de resultado | R3.1 | pendiente |
 | T6 | Botón "Dividir" en la UI, que muestra el cociente cuando el divisor no es 0 | R4.1 | pendiente |
@@ -65,7 +65,18 @@ cierra en T5) y aporta casos a R5.2/R5.4 (se cierran en T3).
 **Cubre:** R5.2, R5.3, R5.4
 **Primer test (rojo):** En calc.test.ts: divide('10', '2') devuelve 5 — rojo porque divide todavía no existe. En el mismo ciclo se agregan divide('-9', '3') → -3, divide('5', '0') → null, divide('5', '') → null y divide('5', 'abc') → null.
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-10
+
+Confirmado en rojo: `TypeError: (0 , divide) is not a function` en los cinco tests nuevos.
+Implementación en `calc.ts`: `divide(a, b)` evalúa primero `parseOperand(b)`; si es 0 devuelve
+`null` sin dividir, si no calcula `parseOperand(a) / divisor` redondeado con
+`Number(quotient.toFixed(10))` — mismo mecanismo que las otras tres operaciones. `npm run check`
+en verde (27 tests). Sin desvíos respecto del design.
+
+**Verificación:** `dod-checker` devolvió `cumple`. R5.2, R5.3 y R5.4 cerrados: la cobertura queda
+repartida entre subtract/multiply/divide tal como lo planeó `design.md` (cada regla compartida
+tiene su evidencia en al menos una de las tres operaciones nuevas, no necesariamente en las
+tres).
 
 ### T4 — Botón "Restar" en la UI, que muestra la diferencia en la casilla de resultado
 

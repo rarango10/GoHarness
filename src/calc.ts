@@ -19,3 +19,10 @@ export function multiply(a: string, b: string): number {
   const product = parseOperand(a) * parseOperand(b)
   return Number(product.toFixed(10))
 }
+
+export function divide(a: string, b: string): number | null {
+  const divisor = parseOperand(b)
+  if (divisor === 0) return null
+  const quotient = parseOperand(a) / divisor
+  return Number(quotient.toFixed(10))
+}
