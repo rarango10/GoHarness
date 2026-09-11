@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { add } from './calc'
+import { add, subtract } from './calc'
 
 test('suma dos enteros bien formados', () => {
   expect(add('2', '3')).toBe(5)
@@ -39,4 +39,16 @@ test('el resultado no muestra el ruido de representación binaria', () => {
 
 test('los decimales legítimos no se truncan al redondear', () => {
   expect(add('1.234', '2.111')).toBe(3.345)
+})
+
+test('resta dos enteros bien formados', () => {
+  expect(subtract('5', '3')).toBe(2)
+})
+
+test('la resta puede dar un resultado negativo', () => {
+  expect(subtract('3', '5')).toBe(-2)
+})
+
+test('un operando inválido en la resta vale 0', () => {
+  expect(subtract('abc', '5')).toBe(-5)
 })
