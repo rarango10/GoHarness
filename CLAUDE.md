@@ -1,17 +1,7 @@
 # my-harness-demo
 
-Aplicación web con una calculadora básica. La primera versión tiene tres casillas —dos para
-escribir los números a sumar y una tercera con el resultado—, un botón para ejecutar la
-operación y otro para limpiar los valores.
-
-## Estado del proyecto
-
-**El proyecto todavía no está scaffoldeado.** No existe `package.json` ni ninguna dependencia
-instalada. Los comandos de verificación de más abajo son el contrato al que tiene que llegar el
-repo, no algo que funcione hoy: la primera tarea de implementación es dejarlos corriendo en
-verde sobre un esqueleto vacío. Hasta que eso pase, cualquier subagente que intente verificar va
-a encontrar el repo sin scaffolding — eso es un resultado válido que hay que reportar, no un
-fallo que haya que rodear inventando otros comandos.
+Aplicación web con una calculadora básica: dos casillas de entrada, una de resultado de solo
+lectura, botones de operación y uno para limpiar.
 
 ## Stack
 
@@ -25,8 +15,8 @@ fallo que haya que rodear inventando otros comandos.
 | Gestor de paquetes | npm (hay npm 10.9.4 y Node 22.22.0; **no** hay pnpm ni yarn instalados) |
 
 No agregues dependencias fuera de esta lista sin acordarlo antes. En particular: sin librería de
-componentes, sin framework de estilos y sin manejador de estado global — para tres casillas y
-dos botones alcanza con CSS plano y `useState`.
+componentes, sin framework de estilos y sin manejador de estado global — alcanza con CSS plano y
+`useState`.
 
 ## Comandos de verificación
 
@@ -62,8 +52,8 @@ De acá sacan qué correr `spec-scout`, `dod-checker`, `task-reviewer` y `e2e-tr
 
 - Los specs de Playwright viven en `end2end/` — es la convención que espera el harness, y los
   escribe únicamente el subagente `e2e-test-writer`.
-- Los navegadores de Playwright no están instalados. Antes del primer `npm run e2e` hace falta
-  `npx playwright install chromium`.
+- Si los navegadores de Playwright no están instalados en el entorno, `npx playwright install
+  chromium` los instala antes del primer `npm run e2e`.
 - La config de Playwright levanta el server por su cuenta (`webServer`), así que no hay que
   tener `npm run dev` corriendo aparte para los e2e.
 
@@ -86,13 +76,45 @@ De acá sacan qué correr `spec-scout`, `dod-checker`, `task-reviewer` y `e2e-tr
    veredicto `cumple` de `dod-checker` asentado en el `Registro`. El `npm run verify` completo va
    antes del commit.
 
+## Reglas del harness
+
+Memoria del método, no decisiones de este proyecto — vienen de la plantilla del harness y no se
+reabren en cada init. Viven acá porque este archivo es lo único que cualquier skill o subagente
+tiene siempre cargado, incluso cuando no hay ningún workflow corriendo.
+
+- Una feature a la vez. No abrir frentes en paralelo.
+- TDD: test que falla → implementar → test que pasa.
+- No agregar dependencias sin necesidad.
+- **El plan lo escribe solo el workflow `tasks-fanout`**, nunca a mano ni con otro subagente: qué
+  tareas existen, sus ids, su orden, su título y su `Cubre`. El workflow revisa en paralelo con
+  agentes de solo lectura y materializa con un único escritor; planificar por afuera reintroduce
+  el segundo escritor que eso elimina.
+- **El avance lo escribe quien implementa**, y solo en las regiones de la tarea que está
+  haciendo: su celda de `Estado` y su bloque de `Registro` — más el encabezado de aprobación de
+  `tasks.md`, una vez, cuando la persona confirma el plan. Son regiones distintas con dueños
+  distintos. Lo único prohibido es implementar mientras hay una corrida de `tasks-fanout` en
+  vuelo: entre que el scout lee y el escritor guarda, tu `hecho` se pierde.
+- **`hecho` significa verificado.** Una tarea pasa a `hecho` solo cuando `dod-checker` devolvió
+  `cumple` y su `Registro` deja asentado ese veredicto; cualquier resultado menor la deja en
+  `en curso`. Ese es el DoD del proyecto. La columna `Estado` es el registro durable de qué está
+  terminado de verdad.
+- **La unidad del paso 5 es la tarea, no la fase.** Cada tarea es su propio ciclo de TDD y su
+  propia verificación. La compuerta entre tareas se renuncia solo con el vocabulario de
+  `implement-task` (`--modo corrido`), nunca por inferencia; que cada tarea se verifique y que un
+  veredicto menor corte la corrida no se renuncian en ningún modo.
+- **Un commit por tarea, con su id en el mensaje.**
+- **Un veredicto se toma sobre un estado.** El `cumple` de `dod-checker` vale para el repo tal
+  como estaba al tomarlo, y puede volverse falso sin que la tarea cambie una línea. Por eso el
+  paso 8 corre la higiene sobre el estado final, y un rojo ahí reabre la tarea afectada.
+- **El ciclo e2e no repara código.** `e2e-triager` diagnostica y rutea; si la causa es el código,
+  la tarea baja a `en curso` y se arregla con el TDD de siempre.
+
 ## Ciclo de trabajo
 
-Este repo usa el ciclo del plugin `harness-spike`: brainstorming → `requirements.md` →
-`design.md` → `tasks.md` → implementación con TDD → verificación por tarea (`dod-checker`) →
-verificación end to end (`verify-e2e`). Cada paso se detiene y espera aprobación humana.
+Este repo usa el ciclo del plugin `harness-spike`. Cada paso se detiene y espera aprobación
+humana.
 
 El ruteo de qué skill produce cada documento lo define el propio plugin — invocá el skill
-`harness-spike` para verlo. Este archivo no lo duplica: solo declara el stack y los comandos.
+`harness-spike` para verlo. Este archivo no duplica la tabla de ruteo.
 
 Todo el papeleo de una feature vive en `docs/AAAA-MM-DD-<feature>/`.
