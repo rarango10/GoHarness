@@ -14,7 +14,7 @@
 | T4 | Botón "Restar" en la UI, que muestra la diferencia en la casilla de resultado | R2.1 | hecho |
 | T5 | Botón "Multiplicar" en la UI, que muestra el producto en la casilla de resultado | R3.1 | hecho |
 | T6 | Botón "Dividir" en la UI, que muestra el cociente cuando el divisor no es 0 | R4.1 | hecho |
-| T7 | "Dividir" muestra el texto "Error" cuando el divisor interpretado es 0 | R4.2, R4.3 | en curso |
+| T7 | "Dividir" muestra el texto "Error" cuando el divisor interpretado es 0 | R4.2, R4.3 | hecho |
 | T8 | Reemplazar "Calcular" por el botón "Sumar", completando los cuatro botones de operación | R1.1, R1.2, R1.3, R5.1 | pendiente |
 | T9 | Actualizar los specs e2e de la feature de suma para engancharse a "Sumar" | — | pendiente |
 
@@ -145,6 +145,17 @@ quedó `sin-evidencia`: ningún test ejercita a nivel de UI que esos casos tambi
 "Error", y la cláusula de "solo espacios" no tenía test ni siquiera a nivel de `divide` en
 `calc.ts`. La implementación es correcta por lectura de código (mismo `parseOperand` de siempre),
 pero sin test que la proteja.
+
+**Registro** — 2026-09-11 (segunda ronda)
+
+Cerrado el hueco: se agregaron a `App.test.tsx` los tres tests de UI para R4.3 (divisor vacío,
+solo espacios, texto no numérico → "Error"), y a `calc.test.ts` el caso de `divide` con divisor
+de solo espacios que faltaba a nivel de función pura. Ningún cambio de código en `App.tsx` ni
+`calc.ts`: el comportamiento ya era correcto, solo faltaba el test que lo protegiera. `npm run
+check` en verde (35 tests).
+
+**Verificación:** `dod-checker` devolvió `cumple`. R4.2 y R4.3 cubiertos de punta a punta, las
+tres cláusulas de R4.3 con test propio en UI y en `calc.ts`.
 
 ### T8 — Reemplazar "Calcular" por el botón "Sumar", completando los cuatro botones de operación
 

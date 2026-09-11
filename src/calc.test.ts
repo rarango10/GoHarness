@@ -81,6 +81,10 @@ test('un divisor vacío se trata como 0 y devuelve null', () => {
   expect(divide('5', '')).toBeNull()
 })
 
+test('un divisor de solo espacios se trata como 0 y devuelve null', () => {
+  expect(divide('5', '   ')).toBeNull()
+})
+
 test('un divisor no numérico se trata como 0 y devuelve null', () => {
   expect(divide('5', 'abc')).toBeNull()
 })
