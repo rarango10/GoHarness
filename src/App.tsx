@@ -21,8 +21,12 @@ export function App() {
       <label htmlFor="result">Resultado</label>
       <input id="result" value={result} readOnly />
 
-      <button type="button" onClick={() => setResult(String(add(opA, opB)))}>
-        Calcular
+      <button
+        type="button"
+        aria-label="Sumar"
+        onClick={() => setResult(String(add(opA, opB)))}
+      >
+        +
       </button>
       <button
         type="button"

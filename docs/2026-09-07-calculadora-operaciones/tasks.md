@@ -15,7 +15,7 @@
 | T5 | Botón "Multiplicar" en la UI, que muestra el producto en la casilla de resultado | R3.1 | hecho |
 | T6 | Botón "Dividir" en la UI, que muestra el cociente cuando el divisor no es 0 | R4.1 | hecho |
 | T7 | "Dividir" muestra el texto "Error" cuando el divisor interpretado es 0 | R4.2, R4.3 | hecho |
-| T8 | Reemplazar "Calcular" por el botón "Sumar", completando los cuatro botones de operación | R1.1, R1.2, R1.3, R5.1 | pendiente |
+| T8 | Reemplazar "Calcular" por el botón "Sumar", completando los cuatro botones de operación | R1.1, R1.2, R1.3, R5.1 | hecho |
 | T9 | Actualizar los specs e2e de la feature de suma para engancharse a "Sumar" | — | pendiente |
 
 **Criterios sin tarea asignada:** ninguno
@@ -163,7 +163,19 @@ tres cláusulas de R4.3 con test propio en UI y en `calc.ts`.
 **Cubre:** R1.1, R1.2, R1.3, R5.1
 **Primer test (rojo):** En App.test.tsx: en el render inicial, queryByRole('button', { name: 'Calcular' }) es null y existen los cuatro botones por nombre accesible 'Sumar', 'Restar', 'Multiplicar' y 'Dividir' — rojo porque hoy el botón 'Calcular' existe y 'Sumar' no. En el mismo ciclo, el caso de R5.1: con '2' y '3', click en 'Sumar' muestra '5' y después click en 'Restar' cambia el resultado a '-1' (también rojo, porque 'Sumar' no existe).
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-11
+
+Confirmado en rojo: 5 tests fallando (no existía "Sumar", "Calcular" seguía presente).
+Implementación en `App.tsx`: el botón "Calcular" se reemplaza por
+`<button aria-label="Sumar">+</button>`, mismo `onClick` que antes (`add`). Se actualizan a
+"Sumar" los tres tests existentes que se enganchaban a "Calcular" (suma básica, reemplazo tras
+cambiar una entrada, y el setup de "Limpiar"). Se agregan dos tests nuevos: uno confirma que no
+hay ningún control "Calcular" y que los cuatro botones de operación existen por nombre accesible;
+otro confirma R5.1 cruzando operaciones (Sumar → Restar reemplaza el resultado, no lo acumula).
+`npm run check` en verde (37 tests). "Limpiar" no se tocó.
+
+**Verificación:** `dod-checker` devolvió `cumple`. R1.1, R1.2, R1.3 y R5.1 cubiertos por
+completo.
 
 ### T9 — Actualizar los specs e2e de la feature de suma para engancharse a "Sumar"
 

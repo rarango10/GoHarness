@@ -22,13 +22,23 @@ test('las tres casillas se renderizan vacías', () => {
   )
 })
 
-test('el botón Calcular muestra la suma de las dos casillas', async () => {
+test('no existe ningún control con nombre accesible "Calcular", y los cuatro botones de operación sí', () => {
+  render(<App />)
+
+  expect(screen.queryByRole('button', { name: 'Calcular' })).toBeNull()
+  expect(screen.getByRole('button', { name: 'Sumar' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Restar' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Multiplicar' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Dividir' })).toBeInTheDocument()
+})
+
+test('el botón Sumar muestra la suma de las dos casillas', async () => {
   const user = userEvent.setup()
   render(<App />)
 
   await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '2')
   await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '3')
-  await user.click(screen.getByRole('button', { name: 'Calcular' }))
+  await user.click(screen.getByRole('button', { name: 'Sumar' }))
 
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('5')
 })
@@ -39,17 +49,30 @@ test('un segundo cálculo tras cambiar una entrada reemplaza el resultado anteri
 
   const opA = screen.getByRole('textbox', { name: 'Primer número' })
   const opB = screen.getByRole('textbox', { name: 'Segundo número' })
-  const calcular = screen.getByRole('button', { name: 'Calcular' })
+  const sumar = screen.getByRole('button', { name: 'Sumar' })
 
   await user.type(opA, '2')
   await user.type(opB, '3')
-  await user.click(calcular)
+  await user.click(sumar)
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('5')
 
   await user.clear(opA)
   await user.type(opA, '10')
-  await user.click(calcular)
+  await user.click(sumar)
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('13')
+})
+
+test('presionar otra operación reemplaza el resultado, no lo acumula', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '2')
+  await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '3')
+  await user.click(screen.getByRole('button', { name: 'Sumar' }))
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('5')
+
+  await user.click(screen.getByRole('button', { name: 'Restar' }))
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('-1')
 })
 
 test('el botón Restar muestra la diferencia de las dos casillas', async () => {
@@ -134,7 +157,7 @@ test('el botón Limpiar vacía las tres casillas', async () => {
 
   await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '2')
   await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '3')
-  await user.click(screen.getByRole('button', { name: 'Calcular' }))
+  await user.click(screen.getByRole('button', { name: 'Sumar' }))
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('5')
 
   await user.click(screen.getByRole('button', { name: 'Limpiar' }))
