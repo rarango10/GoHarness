@@ -52,6 +52,17 @@ test('un segundo cálculo tras cambiar una entrada reemplaza el resultado anteri
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('13')
 })
 
+test('el botón Restar muestra la diferencia de las dos casillas', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '2')
+  await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '3')
+  await user.click(screen.getByRole('button', { name: 'Restar' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('-1')
+})
+
 test('el botón Limpiar vacía las tres casillas', async () => {
   const user = userEvent.setup()
   render(<App />)

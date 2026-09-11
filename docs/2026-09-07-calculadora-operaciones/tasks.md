@@ -11,7 +11,7 @@
 | T1 | Función pura subtract en calc.ts, con las reglas de operando ya vigentes | — | hecho |
 | T2 | Función pura multiply en calc.ts, con las mismas reglas de operando | — | hecho |
 | T3 | Función pura divide en calc.ts, que devuelve null cuando el divisor interpretado es 0 | R5.2, R5.3, R5.4 | hecho |
-| T4 | Botón "Restar" en la UI, que muestra la diferencia en la casilla de resultado | R2.1 | pendiente |
+| T4 | Botón "Restar" en la UI, que muestra la diferencia en la casilla de resultado | R2.1 | hecho |
 | T5 | Botón "Multiplicar" en la UI, que muestra el producto en la casilla de resultado | R3.1 | pendiente |
 | T6 | Botón "Dividir" en la UI, que muestra el cociente cuando el divisor no es 0 | R4.1 | pendiente |
 | T7 | "Dividir" muestra el texto "Error" cuando el divisor interpretado es 0 | R4.2, R4.3 | pendiente |
@@ -84,7 +84,14 @@ tres).
 **Cubre:** R2.1
 **Primer test (rojo):** En App.test.tsx: escribir '2' en la primera casilla y '3' en la segunda, hacer click en getByRole('button', { name: 'Restar' }) y esperar que la casilla de resultado muestre '-1' — rojo porque el botón 'Restar' todavía no existe.
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-10
+
+Confirmado en rojo: `getByRole('button', { name: 'Restar' })` no encontraba ningún elemento.
+Implementación en `App.tsx`: nuevo `<button aria-label="Restar">−</button>` junto a "Calcular",
+cuyo `onClick` llama `setResult(String(subtract(opA, opB)))`. "Calcular" y "Limpiar" quedan sin
+cambios. `npm run check` en verde (28 tests).
+
+**Verificación:** `dod-checker` devolvió `cumple`. R2.1 cubierto por completo.
 
 ### T5 — Botón "Multiplicar" en la UI, que muestra el producto en la casilla de resultado
 
