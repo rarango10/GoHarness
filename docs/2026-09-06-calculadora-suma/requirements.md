@@ -102,3 +102,11 @@ poder identificarlos sin depender de su posición visual o de clases CSS.
 
 Ninguna. El separador decimal (solo punto) y el manejo del error de punto flotante en R2.5 se
 acordaron con el usuario antes de escribir este documento.
+
+## Vigencia
+
+La cláusula "botón Calcular" de **R1.2** y el nombre accesible "Calcular" de **R4.2** quedaron
+superados por `docs/2026-09-07-calculadora-operaciones/requirements.md` (R1), que reemplaza ese
+botón único por cuatro botones de operación. El resto de este documento (R2, R3, R4.1) sigue
+vigente: describe la lógica de suma y las reglas de interpretación de operandos, que la feature
+nueva hereda sin cambios.
