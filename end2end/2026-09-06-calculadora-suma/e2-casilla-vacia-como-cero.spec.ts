@@ -15,8 +15,8 @@ test('E2 (R2.2): una casilla vacía se trata como 0 al calcular', async ({
   await primerNumero.fill('7')
   await expect(segundoNumero).toHaveValue('')
 
-  // Paso 3: hacer click en "Calcular".
-  await page.getByRole('button', { name: 'Calcular' }).click()
+  // Paso 3: hacer click en "Sumar".
+  await page.getByRole('button', { name: 'Sumar' }).click()
 
   // Resultado esperado: "Resultado" muestra "7" — la casilla vacía se sumó como 0,
   // sin mensaje de error visible y sin bloquear el cálculo.

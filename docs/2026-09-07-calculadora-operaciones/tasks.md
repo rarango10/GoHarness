@@ -16,7 +16,7 @@
 | T6 | Botón "Dividir" en la UI, que muestra el cociente cuando el divisor no es 0 | R4.1 | hecho |
 | T7 | "Dividir" muestra el texto "Error" cuando el divisor interpretado es 0 | R4.2, R4.3 | hecho |
 | T8 | Reemplazar "Calcular" por el botón "Sumar", completando los cuatro botones de operación | R1.1, R1.2, R1.3, R5.1 | hecho |
-| T9 | Actualizar los specs e2e de la feature de suma para engancharse a "Sumar" | — | pendiente |
+| T9 | Actualizar los specs e2e de la feature de suma para engancharse a "Sumar" | — | hecho |
 
 **Criterios sin tarea asignada:** ninguno
 
@@ -184,7 +184,30 @@ completo.
 **Por qué no cubre criterios:** Tarea de integración: no cubre un criterio nuevo, repara la consecuencia de R1.3. Los tres specs de end2end/2026-09-06-calculadora-suma/ buscan el botón 'Calcular', que la tarea anterior elimina, así que npm run e2e queda en rojo hasta que se los actualice. Sin esta tarea el plan termina con una suite rota que ninguna otra tarea reclama. Los specs los reescribe el subagente e2e-test-writer, que es el único dueño de end2end/ según CLAUDE.md; acá no se cambia ningún comportamiento ni se agregan escenarios nuevos.
 **Primer test (rojo):** Correr npm run e2e y ver los 3 specs de end2end/2026-09-06-calculadora-suma/ fallando por no encontrar el botón con nombre accesible 'Calcular' — ese es el rojo de partida; el verde es la misma corrida pasando contra 'Sumar'.
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-11
+
+Se invocó al subagente `e2e-test-writer` (único dueño de `end2end/` según `CLAUDE.md`) para
+actualizar los tres specs de `end2end/2026-09-06-calculadora-suma/`: reemplazó
+`getByRole('button', { name: 'Calcular' })` por `'Sumar'` en los tres archivos (incluida la
+variable local `calcular` → `sumar` en E1), sin tocar ningún assert ni escenario. Dejó a
+propósito sin cambiar el nombre del archivo `e1-calcular-recalcular-limpiar.spec.ts` y el título
+del test E1 (mapean el caso del `e2e-tests-plan.md` original, "calcular" ahí es el verbo del
+escenario, no el nombre del botón). `npm run e2e`: 3/3 specs en verde.
+
+**Verificación previa (superada):** `dod-checker` devolvió `cumple-parcial`. El núcleo (specs
+enganchados a "Sumar", `npm run e2e` en verde) estaba cumplido, pero el propio Objetivo de T9
+exige literalmente que `npm run verify` quede en verde, y fallaba en `lint`: Biome marcaba
+formato sin corregir en `src/App.test.tsx`, una deuda arrastrada sin registrar desde el commit de
+T8 (confirmado con `git stash` que ya estaba ahí antes de tocar nada de T9).
+
+**Registro — segunda ronda**
+
+Se corrió `npm run format`, que reformateó `src/App.test.tsx` (solo reflow de línea en llamados
+`expect(...)` largos, sin cambio de comportamiento). `npm run verify` completo (check → lint →
+build) queda en verde.
+
+**Verificación:** `dod-checker` devolvió `cumple`. `npm run check`, `npm run e2e` (3/3) y
+`npm run verify` completo, todos en verde.
 
 ## Pendientes
 

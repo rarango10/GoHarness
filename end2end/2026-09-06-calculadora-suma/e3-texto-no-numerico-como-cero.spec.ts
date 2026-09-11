@@ -15,8 +15,8 @@ test('E3 (R2.3): texto no numérico se trata como 0 al calcular', async ({
   await primerNumero.fill('abc')
   await segundoNumero.fill('4')
 
-  // Paso 3: hacer click en "Calcular".
-  await page.getByRole('button', { name: 'Calcular' }).click()
+  // Paso 3: hacer click en "Sumar".
+  await page.getByRole('button', { name: 'Sumar' }).click()
 
   // Resultado esperado: "Resultado" muestra "4" — el texto no numérico se sumó como 0,
   // sin mensaje de error visible y sin bloquear el cálculo.

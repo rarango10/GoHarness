@@ -28,7 +28,9 @@ test('no existe ningún control con nombre accesible "Calcular", y los cuatro bo
   expect(screen.queryByRole('button', { name: 'Calcular' })).toBeNull()
   expect(screen.getByRole('button', { name: 'Sumar' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Restar' })).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'Multiplicar' })).toBeInTheDocument()
+  expect(
+    screen.getByRole('button', { name: 'Multiplicar' }),
+  ).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Dividir' })).toBeInTheDocument()
 })
 
@@ -116,7 +118,9 @@ test('el botón Dividir muestra "Error" cuando el divisor es 0', async () => {
   await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '0')
   await user.click(screen.getByRole('button', { name: 'Dividir' }))
 
-  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('Error')
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
+    'Error',
+  )
 })
 
 test('el botón Dividir muestra "Error" cuando el divisor está vacío', async () => {
@@ -126,7 +130,9 @@ test('el botón Dividir muestra "Error" cuando el divisor está vacío', async (
   await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '10')
   await user.click(screen.getByRole('button', { name: 'Dividir' }))
 
-  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('Error')
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
+    'Error',
+  )
 })
 
 test('el botón Dividir muestra "Error" cuando el divisor tiene solo espacios', async () => {
@@ -134,10 +140,15 @@ test('el botón Dividir muestra "Error" cuando el divisor tiene solo espacios', 
   render(<App />)
 
   await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '10')
-  await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '   ')
+  await user.type(
+    screen.getByRole('textbox', { name: 'Segundo número' }),
+    '   ',
+  )
   await user.click(screen.getByRole('button', { name: 'Dividir' }))
 
-  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('Error')
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
+    'Error',
+  )
 })
 
 test('el botón Dividir muestra "Error" cuando el divisor no es numérico', async () => {
@@ -145,10 +156,15 @@ test('el botón Dividir muestra "Error" cuando el divisor no es numérico', asyn
   render(<App />)
 
   await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '10')
-  await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), 'abc')
+  await user.type(
+    screen.getByRole('textbox', { name: 'Segundo número' }),
+    'abc',
+  )
   await user.click(screen.getByRole('button', { name: 'Dividir' }))
 
-  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('Error')
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
+    'Error',
+  )
 })
 
 test('el botón Limpiar vacía las tres casillas', async () => {

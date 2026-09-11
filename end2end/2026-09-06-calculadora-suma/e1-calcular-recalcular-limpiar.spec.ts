@@ -10,7 +10,7 @@ test('E1 (R1.1, R1.2, R1.3, R2.1, R2.6, R3.1, R4.1, R4.2): calcular, recalcular 
   const primerNumero = page.getByRole('textbox', { name: 'Primer número' })
   const segundoNumero = page.getByRole('textbox', { name: 'Segundo número' })
   const resultado = page.getByRole('textbox', { name: 'Resultado' })
-  const calcular = page.getByRole('button', { name: 'Calcular' })
+  const sumar = page.getByRole('button', { name: 'Sumar' })
   const limpiar = page.getByRole('button', { name: 'Limpiar' })
 
   await expect(primerNumero).toHaveValue('')
@@ -21,8 +21,8 @@ test('E1 (R1.1, R1.2, R1.3, R2.1, R2.6, R3.1, R4.1, R4.2): calcular, recalcular 
   await primerNumero.fill('2')
   await segundoNumero.fill('3')
 
-  // Paso 3: hacer click en "Calcular".
-  await calcular.click()
+  // Paso 3: hacer click en "Sumar".
+  await sumar.click()
 
   // Resultado esperado tras el paso 3: "Resultado" muestra "5".
   await expect(resultado).toHaveValue('5')
@@ -30,8 +30,8 @@ test('E1 (R1.1, R1.2, R1.3, R2.1, R2.6, R3.1, R4.1, R4.2): calcular, recalcular 
   // Paso 4: cambiar "Primer número" a "10".
   await primerNumero.fill('10')
 
-  // Paso 5: hacer click en "Calcular" de nuevo.
-  await calcular.click()
+  // Paso 5: hacer click en "Sumar" de nuevo.
+  await sumar.click()
 
   // Resultado esperado tras el paso 5: "Resultado" muestra "13" (reemplaza al "5", no acumula).
   await expect(resultado).toHaveValue('13')
