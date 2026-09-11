@@ -14,7 +14,7 @@
 | T4 | Botón "Restar" en la UI, que muestra la diferencia en la casilla de resultado | R2.1 | hecho |
 | T5 | Botón "Multiplicar" en la UI, que muestra el producto en la casilla de resultado | R3.1 | hecho |
 | T6 | Botón "Dividir" en la UI, que muestra el cociente cuando el divisor no es 0 | R4.1 | hecho |
-| T7 | "Dividir" muestra el texto "Error" cuando el divisor interpretado es 0 | R4.2, R4.3 | pendiente |
+| T7 | "Dividir" muestra el texto "Error" cuando el divisor interpretado es 0 | R4.2, R4.3 | en curso |
 | T8 | Reemplazar "Calcular" por el botón "Sumar", completando los cuatro botones de operación | R1.1, R1.2, R1.3, R5.1 | pendiente |
 | T9 | Actualizar los specs e2e de la feature de suma para engancharse a "Sumar" | — | pendiente |
 
@@ -132,7 +132,19 @@ distinto de 0, que es el alcance de esta tarea.
 **Cubre:** R4.2, R4.3
 **Primer test (rojo):** En App.test.tsx: escribir '10' y '0', hacer click en 'Dividir' y esperar que la casilla de resultado muestre 'Error' — rojo porque hoy el null se convertiría a la cadena 'null'.
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-10
+
+Confirmado en rojo: con divisor "0", la casilla mostraba la cadena literal `"null"` en vez de
+`"Error"`. Implementación en `App.tsx`: helper `showResult(value: number | null)` que decide
+`setResult(value === null ? 'Error' : String(value))`; el botón "Dividir" pasa a usarlo. La
+palabra "Error" vive solo en `App.tsx`, nunca en `calc.ts`. `npm run check` en verde (31 tests).
+
+**Verificación previa (superada):** `dod-checker` devolvió `cumple-parcial`. R4.2 (divisor
+literal "0") cubierto de punta a punta. R4.3 (divisor vacío, solo espacios, o texto no numérico)
+quedó `sin-evidencia`: ningún test ejercita a nivel de UI que esos casos también muestren
+"Error", y la cláusula de "solo espacios" no tenía test ni siquiera a nivel de `divide` en
+`calc.ts`. La implementación es correcta por lectura de código (mismo `parseOperand` de siempre),
+pero sin test que la proteja.
 
 ### T8 — Reemplazar "Calcular" por el botón "Sumar", completando los cuatro botones de operación
 

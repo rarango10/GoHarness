@@ -6,6 +6,10 @@ export function App() {
   const [opB, setOpB] = useState('')
   const [result, setResult] = useState('')
 
+  function showResult(value: number | null) {
+    setResult(value === null ? 'Error' : String(value))
+  }
+
   return (
     <div>
       <label htmlFor="opA">Primer número</label>
@@ -37,7 +41,7 @@ export function App() {
       <button
         type="button"
         aria-label="Dividir"
-        onClick={() => setResult(String(divide(opA, opB)))}
+        onClick={() => showResult(divide(opA, opB))}
       >
         ÷
       </button>

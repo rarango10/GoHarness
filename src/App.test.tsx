@@ -85,6 +85,17 @@ test('el botón Dividir muestra el cociente cuando el divisor no es 0', async ()
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('5')
 })
 
+test('el botón Dividir muestra "Error" cuando el divisor es 0', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '10')
+  await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '0')
+  await user.click(screen.getByRole('button', { name: 'Dividir' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('Error')
+})
+
 test('el botón Limpiar vacía las tres casillas', async () => {
   const user = userEvent.setup()
   render(<App />)
