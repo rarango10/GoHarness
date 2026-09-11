@@ -74,6 +74,17 @@ test('el botón Multiplicar muestra el producto de las dos casillas', async () =
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('12')
 })
 
+test('el botón Dividir muestra el cociente cuando el divisor no es 0', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '10')
+  await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '2')
+  await user.click(screen.getByRole('button', { name: 'Dividir' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('5')
+})
+
 test('el botón Limpiar vacía las tres casillas', async () => {
   const user = userEvent.setup()
   render(<App />)

@@ -13,7 +13,7 @@
 | T3 | Función pura divide en calc.ts, que devuelve null cuando el divisor interpretado es 0 | R5.2, R5.3, R5.4 | hecho |
 | T4 | Botón "Restar" en la UI, que muestra la diferencia en la casilla de resultado | R2.1 | hecho |
 | T5 | Botón "Multiplicar" en la UI, que muestra el producto en la casilla de resultado | R3.1 | hecho |
-| T6 | Botón "Dividir" en la UI, que muestra el cociente cuando el divisor no es 0 | R4.1 | pendiente |
+| T6 | Botón "Dividir" en la UI, que muestra el cociente cuando el divisor no es 0 | R4.1 | hecho |
 | T7 | "Dividir" muestra el texto "Error" cuando el divisor interpretado es 0 | R4.2, R4.3 | pendiente |
 | T8 | Reemplazar "Calcular" por el botón "Sumar", completando los cuatro botones de operación | R1.1, R1.2, R1.3, R5.1 | pendiente |
 | T9 | Actualizar los specs e2e de la feature de suma para engancharse a "Sumar" | — | pendiente |
@@ -115,7 +115,16 @@ feature de suma — correcto, son de sesiones anteriores y no pertenecen a T5.
 **Cubre:** R4.1
 **Primer test (rojo):** En App.test.tsx: escribir '10' y '2', hacer click en getByRole('button', { name: 'Dividir' }) y esperar que la casilla de resultado muestre '5' — rojo porque el botón todavía no existe.
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-10
+
+Confirmado en rojo: `getByRole('button', { name: 'Dividir' })` no encontraba ningún elemento.
+Implementación en `App.tsx`: nuevo `<button aria-label="Dividir">÷</button>` cuyo `onClick`
+llama `setResult(String(divide(opA, opB)))`. Para divisor 0 esto hoy mostraría la cadena
+literal "null" — a propósito, sin tratamiento propio todavía; T7 lo reemplaza por "Error".
+`npm run check` en verde (30 tests).
+
+**Verificación:** `dod-checker` devolvió `cumple`. R4.1 cubierto para el caso de divisor
+distinto de 0, que es el alcance de esta tarea.
 
 ### T7 — "Dividir" muestra el texto "Error" cuando el divisor interpretado es 0
 
