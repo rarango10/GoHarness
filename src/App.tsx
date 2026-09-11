@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { add, subtract } from './calc'
+import { add, multiply, subtract } from './calc'
 
 export function App() {
   const [opA, setOpA] = useState('')
@@ -26,6 +26,13 @@ export function App() {
         onClick={() => setResult(String(subtract(opA, opB)))}
       >
         −
+      </button>
+      <button
+        type="button"
+        aria-label="Multiplicar"
+        onClick={() => setResult(String(multiply(opA, opB)))}
+      >
+        ×
       </button>
       <button
         type="button"

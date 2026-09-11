@@ -63,6 +63,17 @@ test('el botón Restar muestra la diferencia de las dos casillas', async () => {
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('-1')
 })
 
+test('el botón Multiplicar muestra el producto de las dos casillas', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '4')
+  await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '3')
+  await user.click(screen.getByRole('button', { name: 'Multiplicar' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('12')
+})
+
 test('el botón Limpiar vacía las tres casillas', async () => {
   const user = userEvent.setup()
   render(<App />)
