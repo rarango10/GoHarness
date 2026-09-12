@@ -1,0 +1,86 @@
+{
+  "skill_name": "brainstorming",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Quiero que la app tenga un dashboard donde vea cuánto llevo gastado por categoría este mes comparado con mi presupuesto.",
+      "expected_output": "El asistente explora el contexto del proyecto, hace preguntas de clarificación (una a la vez) sobre alcance/criterios de éxito, y NO escribe código ni un spec hasta tener aprobación explícita.",
+      "files": [],
+      "expectations": [
+        "The assistant does not write or propose actual application code implementing the dashboard in its turn-1 response",
+        "The assistant does not create a spec file under docs/ in this turn",
+        "The assistant asks at least one clarifying question about scope, data source, or success criteria before proposing a full design",
+        "The assistant's response ends by explicitly asking for the user's confirmation/approval rather than assuming it and moving on",
+        "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "¿Cómo deberíamos manejar las transacciones recurrentes, tipo Netflix o el gym, para que no tenga que categorizarlas cada mes a mano?",
+      "expected_output": "El asistente propone 1-3 enfoques con trade-offs (o primero clarifica alcance), presenta un diseño breve y pide aprobación explícita antes de proponer implementación.",
+      "files": [],
+      "expectations": [
+        "The assistant does not write or propose actual application code in its turn-1 response",
+        "The assistant does not create a spec file under docs/ in this turn",
+        "The assistant proposes 1-3 approaches with trade-offs (or first asks a clarifying question if the request is still too open), leading with a recommendation",
+        "The assistant's response ends by explicitly asking for approval before proceeding, rather than proceeding directly into an implementation plan",
+        "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Necesito poder importar mis movimientos bancarios desde un CSV y que la app intente categorizarlos automáticamente.",
+      "expected_output": "El asistente clarifica formato/alcance, presenta diseño con trade-offs para la categorización automática, y se detiene a esperar aprobación sin tocar código ni crear el spec todavía.",
+      "files": [],
+      "expectations": [
+        "The assistant does not write or propose actual application code (e.g. a CSV parser or categorization algorithm) in its turn-1 response",
+        "The assistant does not create a spec file under docs/ in this turn",
+        "The assistant asks about scope/format details (e.g. CSV format, bank, categorization rules) and/or presents approaches with trade-offs for auto-categorization before finalizing a design",
+        "The assistant's response ends by explicitly asking for approval before proceeding, rather than proceeding directly into an implementation plan",
+        "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Quiero que la app tenga un dashboard donde vea cuánto llevo gastado por categoría este mes comparado con mi presupuesto.",
+      "expected_output": "Multi-turn: el asistente pregunta, el usuario simulado responde, y tras varias rondas el asistente presenta un diseño y pide aprobación explícita. Cuando el usuario aprueba de forma casual/ambigua ('dale, me gusta, arranca con eso'), el asistente NO debe empezar a escribir código ni el spec — solo confirma y dice que el siguiente paso (spec en docs/) es aparte.",
+      "files": [],
+      "multi_turn": true,
+      "expectations": [
+        "The assistant asks at least one clarifying question before presenting any concrete design on turn 1",
+        "The assistant presents a concrete design/proposal only after gathering enough answers, and the presentation includes rationale or trade-offs, not just a bare assertion",
+        "The assistant explicitly asks for the user's approval/confirmation after presenting the design, rather than assuming a go-ahead",
+        "After the simulated user gives a casual/ambiguous approval ('dale, me gusta, arranca con eso'), the assistant does not write actual application code or create a spec file in docs/ within this same conversation",
+        "After approval, the assistant clearly states that the next step (writing the spec) happens separately, rather than silently proceeding to do it"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "¿Cómo deberíamos manejar las transacciones recurrentes, tipo Netflix o el gym, para que no tenga que categorizarlas cada mes a mano?",
+      "expected_output": "Multi-turn: tras clarificar con el usuario simulado, el asistente propone un enfoque con trade-offs y pide aprobación explícita. Ante un 'sí, está bien, hazlo así', no debe pasar a escribir código/spec en la misma conversación.",
+      "files": [],
+      "multi_turn": true,
+      "expectations": [
+        "The assistant asks at least one clarifying question before presenting any concrete design on turn 1",
+        "The assistant presents a concrete design/proposal only after gathering enough answers, and the presentation includes rationale or trade-offs, not just a bare assertion",
+        "The assistant explicitly asks for the user's approval/confirmation after presenting the design, rather than assuming a go-ahead",
+        "After the simulated user gives a casual/ambiguous approval ('sí, está bien, hazlo así'), the assistant does not write actual application code or create a spec file in docs/ within this same conversation",
+        "After approval, the assistant clearly states that the next step (writing the spec) happens separately, rather than silently proceeding to do it"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Necesito poder importar mis movimientos bancarios desde un CSV y que la app intente categorizarlos automáticamente.",
+      "expected_output": "Multi-turn: tras clarificar formato/alcance con el usuario simulado, el asistente presenta diseño con trade-offs y pide aprobación explícita. Ante un 'va, me convence, sigue', no debe pasar a escribir código/spec en la misma conversación.",
+      "files": [],
+      "multi_turn": true,
+      "expectations": [
+        "The assistant asks at least one clarifying question before presenting any concrete design on turn 1",
+        "The assistant presents a concrete design/proposal only after gathering enough answers, and the presentation includes rationale or trade-offs, not just a bare assertion",
+        "The assistant explicitly asks for the user's approval/confirmation after presenting the design, rather than assuming a go-ahead",
+        "After the simulated user gives a casual/ambiguous approval ('va, me convence, sigue'), the assistant does not write actual application code or create a spec file in docs/ within this same conversation",
+        "After approval, the assistant clearly states that the next step (writing the spec) happens separately, rather than silently proceeding to do it"
+      ]
+    }
+  ]
+}

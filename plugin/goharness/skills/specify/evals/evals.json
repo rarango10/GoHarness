@@ -1,0 +1,49 @@
+{
+  "skill_name": "specify",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Ya quedó aprobado del brainstorm el diseño para importar movimientos del banco: parser de CSV de formato fijo (fecha, descripción, monto) de un solo banco, motor de reglas por palabra clave sobre la descripción con las categorías Comida, Transporte, Servicios, Ocio, Salud y Otros, los movimientos que no matchean quedan como \"Sin categoría\", detección de duplicados por fecha+descripción+monto, y todo se corre como comando de CLI. Escribamos el spec.",
+      "expected_output": "Crea docs/2026-09-04-<feature>/requirements.md con requisitos numerados y criterios EARS, se detiene a pedir aprobación, y recién después escribe design.md con las secciones requeridas y trazabilidad a los ids de requisito. No escribe código.",
+      "files": [],
+      "multi_turn": true,
+      "expectations": [
+        "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+        "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+        "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+        "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) — those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+        "The assistant stops after requirements.md and explicitly asks for approval before writing design.md — it does not produce both documents in one turn",
+        "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping",
+        "No application code, test files, or task list is written at any point"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Del brainstorm quedó aprobado esto para el dashboard: un comando de CLI que para un mes dado muestra por categoría gastado, presupuestado, % usado y una alerta si pasa el 100%; las categorías que tienen gasto pero no presupuesto (o al revés) se muestran igual marcadas como \"sin definir\"; el cálculo va en una función pura testeable, separada de la impresión. Pasemos a la spec.",
+      "expected_output": "Mismo flujo de dos fases con compuertas, con requisitos que cubren los casos borde acordados (categorías sin presupuesto, alerta al 100%) y un design que separa cálculo de presentación.",
+      "files": [],
+      "multi_turn": true,
+      "expectations": [
+        "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+        "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+        "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+        "Requirements cover the agreed edge cases: categories with spending but no budget (or vice versa) shown as 'sin definir', and the alert when usage exceeds 100%",
+        "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) — those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+        "The assistant stops after requirements.md and explicitly asks for approval before writing design.md — it does not produce both documents in one turn",
+        "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "che, hagamos el spec de las alertas de presupuesto",
+      "expected_output": "No inventa requisitos: reconoce que no hay un diseño acordado todavía y propone pasar primero por el brainstorming (o clarificar el alcance) antes de escribir ningún documento.",
+      "files": [],
+      "multi_turn": true,
+      "expectations": [
+        "The assistant does not write a requirements.md or design.md full of invented requirements on the first turn",
+        "The assistant recognizes there is no agreed design yet and either proposes going through brainstorming first or asks to clarify scope before writing anything",
+        "No application code is written"
+      ]
+    }
+  ]
+}
