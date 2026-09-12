@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './App.css'
 import { add, divide, multiply, subtract } from './calc'
 
 export function App() {
@@ -11,54 +12,106 @@ export function App() {
   }
 
   return (
-    <div>
-      <label htmlFor="opA">Primer número</label>
-      <input id="opA" value={opA} onChange={(e) => setOpA(e.target.value)} />
+    <div className="app-shell">
+      <div className="calculator">
+        <div className="header-bar">
+          <span className="header-deco header-deco--star" aria-hidden="true">
+            ★
+          </span>
+          <span className="brand">CALC-3000</span>
+          <span className="header-deco header-deco--diamond" aria-hidden="true">
+            ◈
+          </span>
+        </div>
 
-      <label htmlFor="opB">Segundo número</label>
-      <input id="opB" value={opB} onChange={(e) => setOpB(e.target.value)} />
+        <div className="display-screen">
+          <label htmlFor="result" className="visually-hidden">
+            Resultado
+          </label>
+          <input
+            id="result"
+            className="display-value"
+            value={result}
+            readOnly
+          />
+        </div>
 
-      <label htmlFor="result">Resultado</label>
-      <input id="result" value={result} readOnly />
+        <div className="controls">
+          <div className="input-row">
+            <label htmlFor="opA" className="input-caption">
+              Primer número
+            </label>
+            <div className="input-box">
+              <input
+                id="opA"
+                value={opA}
+                onChange={(e) => setOpA(e.target.value)}
+              />
+            </div>
+          </div>
 
-      <button
-        type="button"
-        aria-label="Sumar"
-        onClick={() => setResult(String(add(opA, opB)))}
-      >
-        +
-      </button>
-      <button
-        type="button"
-        aria-label="Restar"
-        onClick={() => setResult(String(subtract(opA, opB)))}
-      >
-        −
-      </button>
-      <button
-        type="button"
-        aria-label="Multiplicar"
-        onClick={() => setResult(String(multiply(opA, opB)))}
-      >
-        ×
-      </button>
-      <button
-        type="button"
-        aria-label="Dividir"
-        onClick={() => showResult(divide(opA, opB))}
-      >
-        ÷
-      </button>
-      <button
-        type="button"
-        onClick={() => {
-          setOpA('')
-          setOpB('')
-          setResult('')
-        }}
-      >
-        Limpiar
-      </button>
+          <div className="input-row">
+            <label htmlFor="opB" className="input-caption">
+              Segundo número
+            </label>
+            <div className="input-box">
+              <input
+                id="opB"
+                value={opB}
+                onChange={(e) => setOpB(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="operators-row">
+            <button
+              type="button"
+              aria-label="Sumar"
+              className="op-btn op-add"
+              onClick={() => setResult(String(add(opA, opB)))}
+            >
+              +
+            </button>
+            <button
+              type="button"
+              aria-label="Restar"
+              className="op-btn op-sub"
+              onClick={() => setResult(String(subtract(opA, opB)))}
+            >
+              −
+            </button>
+            <button
+              type="button"
+              aria-label="Multiplicar"
+              className="op-btn op-mul"
+              onClick={() => setResult(String(multiply(opA, opB)))}
+            >
+              ×
+            </button>
+            <button
+              type="button"
+              aria-label="Dividir"
+              className="op-btn op-div"
+              onClick={() => showResult(divide(opA, opB))}
+            >
+              ÷
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="clear-btn"
+            onClick={() => {
+              setOpA('')
+              setOpB('')
+              setResult('')
+            }}
+          >
+            <span aria-hidden="true">✕</span>
+            Limpiar
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
