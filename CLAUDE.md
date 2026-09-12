@@ -111,10 +111,10 @@ tiene siempre cargado, incluso cuando no hay ningún workflow corriendo.
 
 ## Ciclo de trabajo
 
-Este repo usa el ciclo del plugin `harness-spike`. Cada paso se detiene y espera aprobación
+Este repo usa el ciclo del plugin `goharness`. Cada paso se detiene y espera aprobación
 humana.
 
 El ruteo de qué skill produce cada documento lo define el propio plugin — invocá el skill
-`harness-spike` para verlo. Este archivo no duplica la tabla de ruteo.
+`goharness` para verlo. Este archivo no duplica la tabla de ruteo.
 
 Todo el papeleo de una feature vive en `docs/AAAA-MM-DD-<feature>/`.
