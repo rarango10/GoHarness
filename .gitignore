@@ -5,3 +5,4 @@ dist-ssr
 test-results
 playwright-report
 .DS_Store
+.mcp.json
