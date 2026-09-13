@@ -1,4 +1,8 @@
-# my-harness-demo
+# La calculadora de ejemplo
+
+> **¿Venís a editar el harness y no la calculadora?** Empezá por
+> [`EMPEZAR-ACA.md`](EMPEZAR-ACA.md); el contrato del mantenedor está en
+> [`HARNESS.md`](HARNESS.md). Lo que sigue es el contrato de **este proyecto de ejemplo**.
 
 Aplicación web con una calculadora básica: dos casillas de entrada, una de resultado de solo
 lectura, botones de operación y uno para limpiar.

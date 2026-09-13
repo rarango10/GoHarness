@@ -10,7 +10,8 @@ vista.
    algo, y el lugar donde se puede leer cómo quedó cada documento del ciclo.
 
 Si venís a usarlo en tu proyecto, son dos comandos. Si venís a evaluar el método, andá derecho a
-[Cuatro momentos donde el ciclo hizo su trabajo](#cuatro-momentos-donde-el-ciclo-hizo-su-trabajo).
+[Cuatro momentos donde el ciclo hizo su trabajo](#cuatro-momentos-donde-el-ciclo-hizo-su-trabajo). Y
+si venís a **editar el harness**, la puerta es [`EMPEZAR-ACA.md`](EMPEZAR-ACA.md).
 
 ---
 
