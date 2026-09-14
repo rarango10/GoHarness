@@ -194,6 +194,12 @@ body {
   box-shadow: 0 0 10px 0 #b967ff66;
 }
 
+.op-square {
+  border: 2px solid #ffd166;
+  color: #ffd166;
+  box-shadow: 0 0 10px 0 #ffd16666;
+}
+
 .clear-btn {
   height: 54px;
   display: flex;

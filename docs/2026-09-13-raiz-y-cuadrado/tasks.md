@@ -12,7 +12,7 @@
 | T2 | squareRoot devuelve null cuando el operando interpretado es negativo | — | hecho |
 | T3 | Agrega square en calc.ts | — | hecho |
 | T4 | Engancha el botón "Raíz cuadrada" en la UI | R2.1, R2.2, R2.3 | hecho |
-| T5 | Engancha el botón "Elevar al cuadrado" y cierra la fila de operaciones unarias | R1.1, R1.2, R3.1, R3.2 | pendiente |
+| T5 | Engancha el botón "Elevar al cuadrado" y cierra la fila de operaciones unarias | R1.1, R1.2, R3.1, R3.2 | hecho |
 | T6 | Los dos botones unarios ignoran la segunda casilla | R4.1 | pendiente |
 | T7 | El resultado de una operación unaria reemplaza al cálculo anterior | R4.2 | pendiente |
 | T8 | El resultado mostrado no tiene dígitos de error de punto flotante | R4.3 | pendiente |
@@ -81,7 +81,12 @@
 **Cubre:** R1.1, R1.2, R3.1, R3.2
 **Primer test (rojo):** En `src/App.test.tsx`: escribir "4" en "Primer número", click en `getByRole('button', { name: 'Elevar al cuadrado' })` y esperar "16" en "Resultado" (falla porque el botón no existe). En el mismo ciclo: "-4" → "16", vacío → "0", y un test de ubicación que verifica que los dos botones nuevos están después de "Dividir" y antes de "Limpiar" en el orden del DOM.
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-13
+
+- **Rojo:** `TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Elevar al cuadrado"` — todavía no existía en `App.tsx`; el test de orden también fallaba (`expected -1 to be greater than 3`) por la misma ausencia.
+- Agregado el botón x² con `aria-label="Elevar al cuadrado"`, clase `op-btn op-square`, junto al de raíz cuadrada en `.unary-operators-row`. `onClick` llama a `setResult(String(square(opA)))`.
+- Agregada `.op-square` en `App.css`, mismo patrón que las demás variantes de color sobre `.op-btn`.
+- **Verificación:** `dod-checker` → **cumple**. R1.1, R1.2, R3.1, R3.2 todos `cumple`. `npm run check` en verde (55 tests). Sin desvíos de diseño ni huecos de spec.
 
 ### T6 — Los dos botones unarios ignoran la segunda casilla
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { add, divide, multiply, squareRoot, subtract } from './calc'
+import { add, divide, multiply, square, squareRoot, subtract } from './calc'
 
 export function App() {
   const [opA, setOpA] = useState('')
@@ -106,6 +106,14 @@ export function App() {
               onClick={() => showResult(squareRoot(opA))}
             >
               √
+            </button>
+            <button
+              type="button"
+              aria-label="Elevar al cuadrado"
+              className="op-btn op-square"
+              onClick={() => setResult(String(square(opA)))}
+            >
+              x²
             </button>
           </div>
 

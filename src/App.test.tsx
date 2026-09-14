@@ -201,6 +201,54 @@ test('el botón Raíz cuadrada trata la primera casilla vacía como 0', async ()
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('0')
 })
 
+test('el botón Elevar al cuadrado muestra el cuadrado de la primera casilla', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '4')
+  await user.click(screen.getByRole('button', { name: 'Elevar al cuadrado' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('16')
+})
+
+test('el botón Elevar al cuadrado de un negativo da un resultado positivo', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(
+    screen.getByRole('textbox', { name: 'Primer número' }),
+    '-4',
+  )
+  await user.click(screen.getByRole('button', { name: 'Elevar al cuadrado' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('16')
+})
+
+test('el botón Elevar al cuadrado trata la primera casilla vacía como 0', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.click(screen.getByRole('button', { name: 'Elevar al cuadrado' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('0')
+})
+
+test('los botones Raíz cuadrada y Elevar al cuadrado aparecen después de Dividir y antes de Limpiar', () => {
+  render(<App />)
+
+  const buttons = screen.getAllByRole('button').map((b) => b.textContent)
+  const dividirIdx = buttons.indexOf('÷')
+  const sqrtIdx = buttons.findIndex((t) => t?.includes('√'))
+  const squareIdx = buttons.findIndex((t) => t?.includes('x²'))
+  const limpiarIdx = buttons.findIndex((t) => t?.includes('Limpiar'))
+
+  expect(dividirIdx).toBeGreaterThanOrEqual(0)
+  expect(sqrtIdx).toBeGreaterThan(dividirIdx)
+  expect(squareIdx).toBeGreaterThan(dividirIdx)
+  expect(limpiarIdx).toBeGreaterThan(sqrtIdx)
+  expect(limpiarIdx).toBeGreaterThan(squareIdx)
+})
+
 test('el botón Limpiar vacía las tres casillas', async () => {
   const user = userEvent.setup()
   render(<App />)
