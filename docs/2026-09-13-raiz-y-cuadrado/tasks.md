@@ -10,7 +10,7 @@
 |---|-------|-------|--------|
 | T1 | Agrega squareRoot en calc.ts para operandos no negativos | — | hecho |
 | T2 | squareRoot devuelve null cuando el operando interpretado es negativo | — | hecho |
-| T3 | Agrega square en calc.ts | — | pendiente |
+| T3 | Agrega square en calc.ts | — | hecho |
 | T4 | Engancha el botón "Raíz cuadrada" en la UI | R2.1, R2.2, R2.3 | pendiente |
 | T5 | Engancha el botón "Elevar al cuadrado" y cierra la fila de operaciones unarias | R1.1, R1.2, R3.1, R3.2 | pendiente |
 | T6 | Los dos botones unarios ignoran la segunda casilla | R4.1 | pendiente |
@@ -56,7 +56,11 @@
 **Por qué no cubre criterios:** Función pura sin interfaz: R3.1, R3.2 y R4.3 hablan del valor mostrado en la casilla de resultado. Habilita R3.1 y R3.2 (cierran en la tarea del botón "Elevar al cuadrado") y R4.3 (cierra en la última tarea).
 **Primer test (rojo):** En `src/calc.test.ts`: `square('4')` devuelve 16 (falla porque `square` no existe). En el mismo ciclo se agregan `square('-4')` → 16, `square('0.1')` → 0.01, `square('')` → 0 y `square('abc')` → 0.
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-13
+
+- **Rojo:** `TypeError: (0 , square) is not a function` al correr `square('4')` — la función todavía no existía en `calc.ts`.
+- Implementado `square(a: string): number` en `src/calc.ts`, reutilizando `parseOperand` y el mismo redondeo `Number(x.toFixed(10))` que las demás operaciones.
+- **Verificación:** `dod-checker` → **cumple**. `npm run check` en verde (48 tests, incluidos los 5 nuevos de `square`). Sin desvíos de diseño ni huecos de spec. `Cubre: —` (habilita R3.1, R3.2, R4.3, que cierran en T5/T8).
 
 ### T4 — Engancha el botón "Raíz cuadrada" en la UI
 

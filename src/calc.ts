@@ -32,3 +32,8 @@ export function squareRoot(a: string): number | null {
   if (value < 0) return null
   return Number(Math.sqrt(value).toFixed(10))
 }
+
+export function square(a: string): number {
+  const value = parseOperand(a)
+  return Number((value * value).toFixed(10))
+}
