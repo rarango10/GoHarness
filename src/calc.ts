@@ -26,3 +26,8 @@ export function divide(a: string, b: string): number | null {
   const quotient = parseOperand(a) / divisor
   return Number(quotient.toFixed(10))
 }
+
+export function squareRoot(a: string): number {
+  const value = parseOperand(a)
+  return Number(Math.sqrt(value).toFixed(10))
+}

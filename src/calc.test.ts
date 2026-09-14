@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { add, divide, multiply, subtract } from './calc'
+import { add, divide, multiply, squareRoot, subtract } from './calc'
 
 test('suma dos enteros bien formados', () => {
   expect(add('2', '3')).toBe(5)
@@ -87,4 +87,24 @@ test('un divisor de solo espacios se trata como 0 y devuelve null', () => {
 
 test('un divisor no numérico se trata como 0 y devuelve null', () => {
   expect(divide('5', 'abc')).toBeNull()
+})
+
+test('la raíz cuadrada de un cuadrado perfecto da un entero', () => {
+  expect(squareRoot('9')).toBe(3)
+})
+
+test('la raíz cuadrada de 0 es 0', () => {
+  expect(squareRoot('0')).toBe(0)
+})
+
+test('la raíz cuadrada no muestra ruido de punto flotante', () => {
+  expect(squareRoot('2')).toBe(1.4142135624)
+})
+
+test('un operando vacío en la raíz cuadrada vale 0', () => {
+  expect(squareRoot('')).toBe(0)
+})
+
+test('un operando no numérico en la raíz cuadrada vale 0', () => {
+  expect(squareRoot('abc')).toBe(0)
 })
