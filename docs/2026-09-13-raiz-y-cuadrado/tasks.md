@@ -11,7 +11,7 @@
 | T1 | Agrega squareRoot en calc.ts para operandos no negativos | — | hecho |
 | T2 | squareRoot devuelve null cuando el operando interpretado es negativo | — | hecho |
 | T3 | Agrega square en calc.ts | — | hecho |
-| T4 | Engancha el botón "Raíz cuadrada" en la UI | R2.1, R2.2, R2.3 | pendiente |
+| T4 | Engancha el botón "Raíz cuadrada" en la UI | R2.1, R2.2, R2.3 | hecho |
 | T5 | Engancha el botón "Elevar al cuadrado" y cierra la fila de operaciones unarias | R1.1, R1.2, R3.1, R3.2 | pendiente |
 | T6 | Los dos botones unarios ignoran la segunda casilla | R4.1 | pendiente |
 | T7 | El resultado de una operación unaria reemplaza al cálculo anterior | R4.2 | pendiente |
@@ -68,7 +68,12 @@
 **Cubre:** R2.1, R2.2, R2.3
 **Primer test (rojo):** En `src/App.test.tsx`: escribir "9" en "Primer número", hacer click en `getByRole('button', { name: 'Raíz cuadrada' })` y esperar que la casilla "Resultado" muestre "3" (falla porque el botón no existe). En el mismo ciclo: "-4" → "Error" y primera casilla vacía → "0".
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-13
+
+- **Rojo:** `TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Raíz cuadrada"` al hacer click en el botón — todavía no existía en `App.tsx`.
+- Agregada una fila nueva `.unary-operators-row` en `App.tsx` con el botón √, `aria-label="Raíz cuadrada"`, clase `op-btn op-sqrt`, debajo de `.operators-row` y arriba de "Limpiar". `onClick` llama a `showResult(squareRoot(opA))`, reutilizando el `showResult` ya existente (que traduce `null` a "Error").
+- Agregadas `.unary-operators-row` y `.op-sqrt` en `App.css`, siguiendo el mismo patrón que `.operators-row`/`.op-add` etc. (color y sombra propios sobre la base `.op-btn`).
+- **Verificación:** `dod-checker` → **cumple**. R2.1, R2.2, R2.3 todos `cumple`. `npm run check` en verde (51 tests). Sin desvíos de diseño ni huecos de spec.
 
 ### T5 — Engancha el botón "Elevar al cuadrado" y cierra la fila de operaciones unarias
 

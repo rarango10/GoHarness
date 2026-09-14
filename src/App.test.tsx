@@ -167,6 +167,40 @@ test('el botón Dividir muestra "Error" cuando el divisor no es numérico', asyn
   )
 })
 
+test('el botón Raíz cuadrada muestra la raíz de la primera casilla', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '9')
+  await user.click(screen.getByRole('button', { name: 'Raíz cuadrada' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('3')
+})
+
+test('el botón Raíz cuadrada muestra "Error" cuando la primera casilla es negativa', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(
+    screen.getByRole('textbox', { name: 'Primer número' }),
+    '-4',
+  )
+  await user.click(screen.getByRole('button', { name: 'Raíz cuadrada' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
+    'Error',
+  )
+})
+
+test('el botón Raíz cuadrada trata la primera casilla vacía como 0', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.click(screen.getByRole('button', { name: 'Raíz cuadrada' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('0')
+})
+
 test('el botón Limpiar vacía las tres casillas', async () => {
   const user = userEvent.setup()
   render(<App />)

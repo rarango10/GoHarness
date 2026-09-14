@@ -183,6 +183,17 @@ body {
   box-shadow: 0 0 10px 0 #ff6b9d66;
 }
 
+.unary-operators-row {
+  display: flex;
+  gap: 8px;
+}
+
+.op-sqrt {
+  border: 2px solid #b967ff;
+  color: #b967ff;
+  box-shadow: 0 0 10px 0 #b967ff66;
+}
+
 .clear-btn {
   height: 54px;
   display: flex;

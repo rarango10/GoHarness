@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { add, divide, multiply, subtract } from './calc'
+import { add, divide, multiply, squareRoot, subtract } from './calc'
 
 export function App() {
   const [opA, setOpA] = useState('')
@@ -95,6 +95,17 @@ export function App() {
               onClick={() => showResult(divide(opA, opB))}
             >
               ÷
+            </button>
+          </div>
+
+          <div className="unary-operators-row">
+            <button
+              type="button"
+              aria-label="Raíz cuadrada"
+              className="op-btn op-sqrt"
+              onClick={() => showResult(squareRoot(opA))}
+            >
+              √
             </button>
           </div>
 
