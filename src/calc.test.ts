@@ -98,6 +98,7 @@ test('la raíz cuadrada de 0 es 0', () => {
 })
 
 test('la raíz cuadrada no muestra ruido de punto flotante', () => {
+  // biome-ignore lint/suspicious/noApproximativeNumericConstant: se verifica el redondeo a 10 decimales, no Math.SQRT2 (que difiere de este valor redondeado)
   expect(squareRoot('2')).toBe(1.4142135624)
 })
 

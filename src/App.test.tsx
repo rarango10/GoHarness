@@ -181,10 +181,7 @@ test('el botón Raíz cuadrada muestra "Error" cuando la primera casilla es nega
   const user = userEvent.setup()
   render(<App />)
 
-  await user.type(
-    screen.getByRole('textbox', { name: 'Primer número' }),
-    '-4',
-  )
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '-4')
   await user.click(screen.getByRole('button', { name: 'Raíz cuadrada' }))
 
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
@@ -215,10 +212,7 @@ test('el botón Elevar al cuadrado de un negativo da un resultado positivo', asy
   const user = userEvent.setup()
   render(<App />)
 
-  await user.type(
-    screen.getByRole('textbox', { name: 'Primer número' }),
-    '-4',
-  )
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '-4')
   await user.click(screen.getByRole('button', { name: 'Elevar al cuadrado' }))
 
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('16')
@@ -303,15 +297,10 @@ test('el botón Elevar al cuadrado no muestra ruido de punto flotante', async ()
   const user = userEvent.setup()
   render(<App />)
 
-  await user.type(
-    screen.getByRole('textbox', { name: 'Primer número' }),
-    '0.1',
-  )
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '0.1')
   await user.click(screen.getByRole('button', { name: 'Elevar al cuadrado' }))
 
-  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
-    '0.01',
-  )
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('0.01')
 })
 
 test('el botón Raíz cuadrada no muestra ruido de punto flotante', async () => {
