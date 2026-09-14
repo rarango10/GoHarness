@@ -13,7 +13,7 @@
 | T3 | Agrega square en calc.ts | — | hecho |
 | T4 | Engancha el botón "Raíz cuadrada" en la UI | R2.1, R2.2, R2.3 | hecho |
 | T5 | Engancha el botón "Elevar al cuadrado" y cierra la fila de operaciones unarias | R1.1, R1.2, R3.1, R3.2 | hecho |
-| T6 | Los dos botones unarios ignoran la segunda casilla | R4.1 | pendiente |
+| T6 | Los dos botones unarios ignoran la segunda casilla | R4.1 | hecho |
 | T7 | El resultado de una operación unaria reemplaza al cálculo anterior | R4.2 | pendiente |
 | T8 | El resultado mostrado no tiene dígitos de error de punto flotante | R4.3 | pendiente |
 
@@ -94,7 +94,10 @@
 **Cubre:** R4.1
 **Primer test (rojo):** En `src/App.test.tsx`: escribir "5" en "Primer número" y "999" en "Segundo número", click en "Raíz cuadrada" y esperar el mismo valor que da la raíz de 5 sola ("2.2360679775"); análogo para "Elevar al cuadrado" con resultado "25".
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-13
+
+- Sin fase roja: los handlers de T4/T5 ya llaman a `squareRoot(opA)`/`square(opA)` sin leer `opB`, así que los tests de esta tarea pasaron en verde desde el primer intento — confirman un comportamiento ya correcto en vez de forzar uno nuevo, como anticipaba el propio `Objetivo` de la tarea ("si el test descubre que algún handler lee opB, se corrige").
+- **Verificación:** `dod-checker` → **cumple**. R4.1 `cumple` para ambos botones. `npm run check` en verde (57 tests). Sin desvíos de diseño ni huecos de spec.
 
 ### T7 — El resultado de una operación unaria reemplaza al cálculo anterior
 

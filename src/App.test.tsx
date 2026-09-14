@@ -233,6 +233,36 @@ test('el botón Elevar al cuadrado trata la primera casilla vacía como 0', asyn
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('0')
 })
 
+test('el botón Raíz cuadrada ignora el contenido de la segunda casilla', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '5')
+  await user.type(
+    screen.getByRole('textbox', { name: 'Segundo número' }),
+    '999',
+  )
+  await user.click(screen.getByRole('button', { name: 'Raíz cuadrada' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
+    '2.2360679775',
+  )
+})
+
+test('el botón Elevar al cuadrado ignora el contenido de la segunda casilla', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '5')
+  await user.type(
+    screen.getByRole('textbox', { name: 'Segundo número' }),
+    '999',
+  )
+  await user.click(screen.getByRole('button', { name: 'Elevar al cuadrado' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('25')
+})
+
 test('los botones Raíz cuadrada y Elevar al cuadrado aparecen después de Dividir y antes de Limpiar', () => {
   render(<App />)
 
