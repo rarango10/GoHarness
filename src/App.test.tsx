@@ -299,6 +299,33 @@ test('presionar Elevar al cuadrado tras otra operación reemplaza el resultado a
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('16')
 })
 
+test('el botón Elevar al cuadrado no muestra ruido de punto flotante', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(
+    screen.getByRole('textbox', { name: 'Primer número' }),
+    '0.1',
+  )
+  await user.click(screen.getByRole('button', { name: 'Elevar al cuadrado' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
+    '0.01',
+  )
+})
+
+test('el botón Raíz cuadrada no muestra ruido de punto flotante', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.type(screen.getByRole('textbox', { name: 'Primer número' }), '2')
+  await user.click(screen.getByRole('button', { name: 'Raíz cuadrada' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue(
+    '1.4142135624',
+  )
+})
+
 test('los botones Raíz cuadrada y Elevar al cuadrado aparecen después de Dividir y antes de Limpiar', () => {
   render(<App />)
 

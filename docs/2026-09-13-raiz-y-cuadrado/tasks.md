@@ -15,7 +15,7 @@
 | T5 | Engancha el botón "Elevar al cuadrado" y cierra la fila de operaciones unarias | R1.1, R1.2, R3.1, R3.2 | hecho |
 | T6 | Los dos botones unarios ignoran la segunda casilla | R4.1 | hecho |
 | T7 | El resultado de una operación unaria reemplaza al cálculo anterior | R4.2 | hecho |
-| T8 | El resultado mostrado no tiene dígitos de error de punto flotante | R4.3 | pendiente |
+| T8 | El resultado mostrado no tiene dígitos de error de punto flotante | R4.3 | hecho |
 
 **Criterios sin tarea asignada:** ninguno
 
@@ -117,7 +117,12 @@
 **Cubre:** R4.3
 **Primer test (rojo):** En `src/App.test.tsx`: escribir "0.1" en "Primer número", click en "Elevar al cuadrado" y esperar "0.01" (no "0.010000000000000002"); en el mismo ciclo, "2" + "Raíz cuadrada" muestra "1.4142135624".
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-13
+
+- Sin fase roja: el redondeo `Number(x.toFixed(10))` ya existía en `calc.ts` desde T1/T3, así que estos tests de UI pasaron en verde desde el primer intento — cierran R4.3 de punta a punta sobre lógica ya implementada, mismo patrón sin rojo que T6/T7.
+- **Verificación:** `dod-checker` → **cumple**. R4.3 `cumple` para ambos botones. `npm run check` en verde (61 tests). Sin desvíos de diseño ni huecos de spec.
+
+Con esta tarea, las 8 tareas de `docs/2026-09-13-raiz-y-cuadrado/tasks.md` quedan en `hecho`.
 
 ## Pendientes
 
