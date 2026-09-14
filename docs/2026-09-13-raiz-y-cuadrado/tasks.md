@@ -9,7 +9,7 @@
 | # | Tarea | Cubre | Estado |
 |---|-------|-------|--------|
 | T1 | Agrega squareRoot en calc.ts para operandos no negativos | — | hecho |
-| T2 | squareRoot devuelve null cuando el operando interpretado es negativo | — | pendiente |
+| T2 | squareRoot devuelve null cuando el operando interpretado es negativo | — | hecho |
 | T3 | Agrega square en calc.ts | — | pendiente |
 | T4 | Engancha el botón "Raíz cuadrada" en la UI | R2.1, R2.2, R2.3 | pendiente |
 | T5 | Engancha el botón "Elevar al cuadrado" y cierra la fila de operaciones unarias | R1.1, R1.2, R3.1, R3.2 | pendiente |
@@ -42,7 +42,12 @@
 **Por qué no cubre criterios:** Implementa la mitad lógica de R2.2, pero el criterio pide mostrar "Error" en la casilla de resultado: calc.test.ts solo puede ver el null. R2.2 cierra en la tarea que engancha el botón "Raíz cuadrada" con showResult.
 **Primer test (rojo):** En `src/calc.test.ts`: `squareRoot('-4')` devuelve `null` (falla porque hoy devolvería NaN).
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-13
+
+- **Rojo:** `AssertionError: expected NaN to be null` al correr `squareRoot('-4')` — `Math.sqrt` de un negativo daba `NaN`, no `null`.
+- Agregado el chequeo `if (value < 0) return null` antes de calcular la raíz, cambiando la firma a `number | null`.
+- Caso borde verificado: `-0 < 0` es `false` en JS, así que un cero negativo sigue el camino normal (raíz de 0), consistente con lo anotado en `design.md`.
+- **Verificación:** `dod-checker` → **cumple**. `npm run check` en verde (43 tests). Sin desvíos de diseño ni huecos de spec. `Cubre: —` (habilita R2.2, que cierra en T4).
 
 ### T3 — Agrega square en calc.ts
 

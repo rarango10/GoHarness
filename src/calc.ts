@@ -27,7 +27,8 @@ export function divide(a: string, b: string): number | null {
   return Number(quotient.toFixed(10))
 }
 
-export function squareRoot(a: string): number {
+export function squareRoot(a: string): number | null {
   const value = parseOperand(a)
+  if (value < 0) return null
   return Number(Math.sqrt(value).toFixed(10))
 }

@@ -108,3 +108,7 @@ test('un operando vacío en la raíz cuadrada vale 0', () => {
 test('un operando no numérico en la raíz cuadrada vale 0', () => {
   expect(squareRoot('abc')).toBe(0)
 })
+
+test('la raíz cuadrada de un número negativo devuelve null', () => {
+  expect(squareRoot('-4')).toBeNull()
+})
