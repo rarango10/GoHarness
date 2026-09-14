@@ -14,7 +14,7 @@
 | T4 | Engancha el botón "Raíz cuadrada" en la UI | R2.1, R2.2, R2.3 | hecho |
 | T5 | Engancha el botón "Elevar al cuadrado" y cierra la fila de operaciones unarias | R1.1, R1.2, R3.1, R3.2 | hecho |
 | T6 | Los dos botones unarios ignoran la segunda casilla | R4.1 | hecho |
-| T7 | El resultado de una operación unaria reemplaza al cálculo anterior | R4.2 | pendiente |
+| T7 | El resultado de una operación unaria reemplaza al cálculo anterior | R4.2 | hecho |
 | T8 | El resultado mostrado no tiene dígitos de error de punto flotante | R4.3 | pendiente |
 
 **Criterios sin tarea asignada:** ninguno
@@ -105,7 +105,11 @@
 **Cubre:** R4.2
 **Primer test (rojo):** En `src/App.test.tsx`: escribir "7" y "5", click en "Sumar" (resultado "12"), después cambiar la primera casilla a "9" y hacer click en "Raíz cuadrada"; el resultado debe ser exactamente "3".
 
-**Registro** — <completar al implementar; fecha>
+**Registro** — 2026-09-13
+
+- Sin fase roja: `setResult`/`showResult` ya sobrescriben el estado completo del resultado (vía `useState`), así que ambos tests pasaron en verde desde el primer intento — confirman un comportamiento ya correcto, igual que T6.
+- **Desvío de diseño detectado (no de esta tarea, sino de T5):** el botón "Elevar al cuadrado" usa `setResult(String(square(opA)))` directo en vez de `showResult(square(opA))`, que es lo que decía la redacción original de `design.md`. Es funcionalmente equivalente porque `square` nunca devuelve `null` — no hay caso de error que traducir — y no afecta a R4.2 (`setResult` también reemplaza el estado por completo). `design.md` se actualizó para reflejar este comportamiento real en su sección "Flujo de datos".
+- **Verificación:** `dod-checker` → **cumple**. R4.2 `cumple` para ambos botones. `npm run check` en verde (59 tests).
 
 ### T8 — El resultado mostrado no tiene dígitos de error de punto flotante
 

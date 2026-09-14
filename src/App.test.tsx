@@ -263,6 +263,42 @@ test('el botón Elevar al cuadrado ignora el contenido de la segunda casilla', a
   expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('25')
 })
 
+test('presionar Raíz cuadrada tras otra operación reemplaza el resultado anterior', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  const opA = screen.getByRole('textbox', { name: 'Primer número' })
+
+  await user.type(opA, '7')
+  await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '5')
+  await user.click(screen.getByRole('button', { name: 'Sumar' }))
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('12')
+
+  await user.clear(opA)
+  await user.type(opA, '9')
+  await user.click(screen.getByRole('button', { name: 'Raíz cuadrada' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('3')
+})
+
+test('presionar Elevar al cuadrado tras otra operación reemplaza el resultado anterior', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  const opA = screen.getByRole('textbox', { name: 'Primer número' })
+
+  await user.type(opA, '7')
+  await user.type(screen.getByRole('textbox', { name: 'Segundo número' }), '5')
+  await user.click(screen.getByRole('button', { name: 'Sumar' }))
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('12')
+
+  await user.clear(opA)
+  await user.type(opA, '4')
+  await user.click(screen.getByRole('button', { name: 'Elevar al cuadrado' }))
+
+  expect(screen.getByRole('textbox', { name: 'Resultado' })).toHaveValue('16')
+})
+
 test('los botones Raíz cuadrada y Elevar al cuadrado aparecen después de Dividir y antes de Limpiar', () => {
   render(<App />)
 

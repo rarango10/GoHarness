@@ -37,9 +37,13 @@ botones existentes, y suman un modificador de color propio siguiendo el patrón 
      usan `add`/`subtract`/`multiply`, y siempre devuelve un `number`.
    - `squareRoot` primero evalúa si `x` es negativo. Si lo es, devuelve `null` sin calcular nada.
      Si no, calcula `Math.sqrt(x)` y lo redondea con el mismo mecanismo.
-4. `App` pasa el resultado a `showResult` (ya existente, agregado en la feature de operaciones):
-   si es `number`, lo convierte a string y lo guarda como resultado; si es `null`, guarda
-   `'Error'`.
+4. Para "Raíz cuadrada", `App` pasa el resultado a `showResult` (ya existente, agregado en la
+   feature de operaciones): si es `number`, lo convierte a string y lo guarda como resultado; si
+   es `null`, guarda `'Error'`. Para "Elevar al cuadrado", `App` llama directamente a
+   `setResult(String(square(opA)))` sin pasar por `showResult`, porque `square` siempre devuelve
+   `number` — no hay ningún caso de `null` que traducir (desvío respecto de la redacción original
+   de este documento, detectado y registrado al verificar T7; ver bitácora de T5/T7 en
+   `tasks.md`).
 5. El nuevo valor reemplaza lo que hubiera en la casilla de resultado, sin importar cuál fue el
    último botón presionado antes.
 
