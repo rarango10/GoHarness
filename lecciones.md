@@ -69,12 +69,14 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L42 | Una regla vive en `CLAUDE.md` y en la plantilla, sin verificación | `en observación` | se vuelve urgente al aplicar L40 |
 | L43 | Un skill extendió un principio escrito más allá de la lista | `resuelto` | evidencia positiva, sin acción |
 | L44 | Dos plugins con el mismo nombre no conviven: uno se apaga en silencio | `resuelto` | documentado en el README, al forkear |
+| L45 | Las advertencias del `Registro` no tienen lector ni destinatario | **`listo para aplicar`** | el arreglo está escrito en la entrada |
 
 ### Lo que queda
 
 **Listo para aplicar — el insumo del próximo ciclo:** [[L36]] (nombrar `/workflows` al lanzar),
 [[L39]] (el modo revisión de `harness-init` tiene que buscar afirmaciones falsas —las del archivo y
-las que propone—, no solo sus cuatro puntos) y [[L40]] (la segunda ronda de una tarea espera el sí). Los tres tienen el arreglo escrito.
+las que propone—, no solo sus cuatro puntos), [[L40]] (la segunda ronda de una tarea espera el sí) y
+[[L45]] (dar lector y destinatario a lo que anota quien implementa). Los cuatro tienen el arreglo escrito.
 
 **Abiertos, en el orden en que conviene tomarlos:**
 
@@ -1672,6 +1674,66 @@ el nombre es el mismo, así que no conviven, y la que pierde no hace ruido.
 **Qué se hizo.** Documentarlo donde muerde: el README pide **renombrar el plugin al forkear** —con la
 razón— y advierte que la copia de desarrollo y una instalación con el mismo nombre no cargan juntas.
 Es comportamiento de Claude Code, no del harness; no hay nada que arreglar en el código.
+
+---
+
+## L45 · Las advertencias del `Registro` no tienen lector ni destinatario · `listo para aplicar`
+
+**Qué pasó.** Durante una corrida de 27 tareas (OoklaWeb, feature *motor de medición*), quien
+implementa escribió en los `Registro` de T1 a T9 unas ocho advertencias dirigidas al futuro: deuda
+asumida a propósito, riesgos que recién se materializan en el paso 7, y requisitos que le tocaban a
+una tarea posterior. Ninguna tenía destinatario formal, y **nada en el harness las vuelve a leer**.
+
+Una ya se perdió. El `Registro` de T2 decía:
+
+> una referencia `data:` … inflaría el conteo de R1.5 sin sumar tiempo real. **Conviene decidirlo
+> antes de T9**, que es donde se descarga y se cuenta.
+
+T9 se abrió, se implementó, se verificó con `cumple` y se commiteó. La decisión nunca se tomó: el
+plazo venció en silencio, y se descubrió recién porque la persona preguntó, dos tareas después, dónde
+guardar estas cosas. Peor: al investigarla apareció que la advertencia **subestimaba el problema** —
+una referencia `data:` hace que `node:http` lance `ERR_INVALID_PROTOCOL`, y con el `Promise.all` de
+T9 eso tumba la medición entera, no infla un conteo.
+
+**Por qué importa.** El harness sí tiene dónde escribir: el `Registro` por tarea y la sección
+`## Pendientes` de `tasks.md`, que la plantilla define como *«cosas que salieron mientras se
+trabajaba… para no perderlas»*. Lo que no tiene es **quién lea**. `close-feature` (paso 8) mira
+`Pendientes` y nunca los `Registro`; y nadie abre una tarea preguntándose qué le dejaron anotado.
+Una advertencia con destinatario implícito —«antes de T9»— depende de que alguien recuerde, que es
+exactamente lo que la bitácora vino a reemplazar.
+
+Hay además una contradicción dentro de `implement-task`, encontrada en uso: el skill dice que un
+hallazgo fuera de alcance entra *«como una línea en `Pendientes`»*, pero su sección «Lo que escribís,
+y lo que no» enumera como regiones propias solo `Estado`, `Registro` y el encabezado de aprobación.
+La sesión se frenó a pedir permiso para escribir en `Pendientes`, porque las dos frases no cierran.
+
+Y un riesgo latente que nadie disparó todavía: el prompt del `task-writer` regenera `Pendientes`
+desde los `specGaps` de los revisores y **se le pide preservar los `Registro`, pero no `Pendientes`**.
+Una re-planificación con `tasks-fanout` borraría en silencio lo que escribió quien implementa. Es la
+misma familia que [[L10]]: una región con dos escritores y sin regla de preservación.
+
+**Qué habría que hacer.** Agregar lectores, no más lugares donde escribir. Cuatro cambios:
+
+1. **`implement-task`, paso 1 «Abrí la tarea».** Además de `Objetivo`, `Cubre` y `Primer test`, leer
+   `## Pendientes` y **nombrar los ítems dirigidos a esa tarea**. Es el cambio que cierra el
+   circuito: abrir T9 habría mostrado «[T9] decidir qué se hace con `data:`».
+2. **`implement-task`, «Lo que escribís, y lo que no».** Agregar `Pendientes` a la lista de regiones
+   escribibles, resolviendo la contradicción de arriba. Sigue sin ser la tabla de Plan, que es del
+   workflow.
+3. **`implement-task`.** Exigir **destinatario** en cada línea de `Pendientes`: `[T11]`, `[paso 7]`,
+   `[paso 8]`, `[decidir ya]`. Una advertencia sin destinatario es una entrada de diario. El caso
+   más caro de la corrida fue un ítem que **agregaba un requisito a T11 que el `Objetivo` y el
+   `Primer test` de T11 no mencionan** — quien la implemente leyendo solo su entrada no se entera.
+4. **`task-writer` / `tasks-fanout`.** Preservar el `Pendientes` existente igual que ya preserva el
+   `Registro`, fusionando en vez de reemplazar.
+
+**Lo que se descarta, a propósito.** Hacer que `close-feature` lea los 27 bloques `Registro`: es caro
+y redundante si el ruteo funciona. Mejor un solo lugar que leer, y el esfuerzo puesto en que las
+cosas lleguen ahí. El `Registro` se queda con el relato —por qué se decidió así, pegado a su tarea—,
+que es para lo que sirve.
+
+**No se aplicó todavía** porque la corrida que lo reveló sigue en curso (faltaban T10 a T27), y este
+archivo pide no tocar un skill a mitad de una prueba: después no se puede distinguir qué causó qué.
 
 ---
 
