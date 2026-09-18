@@ -70,13 +70,15 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L43 | Un skill extendió un principio escrito más allá de la lista | `resuelto` | evidencia positiva, sin acción |
 | L44 | Dos plugins con el mismo nombre no conviven: uno se apaga en silencio | `resuelto` | documentado en el README, al forkear |
 | L45 | Las advertencias del `Registro` no tienen lector ni destinatario | **`listo para aplicar`** | el arreglo está escrito en la entrada |
+| L46 | El ciclo asume que toda feature tiene interfaz | **`listo para aplicar`** | el arreglo está escrito en la entrada |
 
 ### Lo que queda
 
 **Listo para aplicar — el insumo del próximo ciclo:** [[L36]] (nombrar `/workflows` al lanzar),
 [[L39]] (el modo revisión de `harness-init` tiene que buscar afirmaciones falsas —las del archivo y
-las que propone—, no solo sus cuatro puntos), [[L40]] (la segunda ronda de una tarea espera el sí) y
-[[L45]] (dar lector y destinatario a lo que anota quien implementa). Los cuatro tienen el arreglo escrito.
+las que propone—, no solo sus cuatro puntos), [[L40]] (la segunda ronda de una tarea espera el sí),
+[[L45]] (dar lector y destinatario a lo que anota quien implementa) y [[L46]] (bifurcar el ciclo
+según si la feature tiene superficie navegable). Los cinco tienen el arreglo escrito.
 
 **Abiertos, en el orden en que conviene tomarlos:**
 
@@ -1734,6 +1736,79 @@ que es para lo que sirve.
 
 **No se aplicó todavía** porque la corrida que lo reveló sigue en curso (faltaban T10 a T27), y este
 archivo pide no tocar un skill a mitad de una prueba: después no se puede distinguir qué causó qué.
+
+---
+
+## L46 · El ciclo asume que toda feature tiene interfaz · `listo para aplicar`
+
+**Qué pasó.** La feature *motor de medición* de OoklaWeb (2026-09-18) se cerró sin pasar por el paso
+7. Es un motor de medición con CLI: no tiene superficie navegable y Playwright no tiene URL que
+abrir. El ciclo no se rompió —`verify-e2e` paró en su fase 1 sin escribir ningún archivo, y
+`close-feature` clasificó el `exit 127` de `npm run e2e` como andamiaje ausente en vez de contarlo
+como hallazgo— pero lo manejó **como excepción, no como camino**.
+
+El costo se pagó en cuatro lugares distintos, todos evitables:
+
+- `harness-init` comprometió el proyecto a `npm run e2e` en el comando de higiene **antes de saber
+  si algo iba a ser navegable**. Esa pata queda permanentemente en 127, y `close-feature` tiene que
+  excusarla en cada cierre.
+- Se sembró `playwright.config.ts` en un proyecto que todavía no sabe si va a necesitarlo.
+- La persona invocó el paso 7, el skill leyó tres documentos del spec, y recién ahí paró.
+- Un `Pendiente` estuvo toda la corrida dirigido a `[paso 7 · e2e]` —un paso que nunca iba a
+  ocurrir—, y al cerrar hubo que re-dirigir tres ítems a la feature que traiga la interfaz.
+
+**Por qué importa.** El conocimiento de que una feature puede no tener superficie **ya existe en el
+harness**, pero vive disperso y siempre aguas abajo:
+
+| Dónde | Cómo aparece |
+|---|---|
+| `implement-task/SKILL.md:189` | Una sola frase al final: si no hay superficie, lo que sigue es el paso 8 |
+| `verify-e2e/SKILL.md:43` | Precondición 3, redactada como **fallo** que detiene el ciclo |
+| `close-feature/SKILL.md:62` | Excepción para la pata de higiene que «no aplica hoy» |
+| `assets/stacks/typescript-node/playwright.config.ts:7` | Un comentario que anticipa el caso |
+
+Y está ausente justo donde se decidiría a tiempo. La tabla del ciclo lista el paso 7 **sin
+condición**, en el router (`SKILL.md:20`) y en el contrato (`CLAUDE.template.md:48`) — y eso es lo
+que hace que saltearlo se lea como incumplimiento en vez de como una rama. `harness-init` no
+pregunta nada sobre la interfaz: cero coincidencias de `interfaz|navegable|frontend|UI` en el skill.
+
+Lo más filoso: **`design-template.md` no tiene ninguna ranura para declarar la superficie** —su
+sección `## Interfaces` son firmas de funciones—, y sin embargo `verify-e2e` afirma que de
+`design.md` «sale cuál es la superficie de la app». **Lee algo que a ese documento nunca se le pidió
+escribir.** Es la misma familia que [[L42]]: una regla que vive en un lado y se verifica desde otro,
+sin nada que los ate.
+
+**La distinción que hace no trivial el arreglo.** La bifurcación es **por feature, no por
+proyecto**. OoklaWeb va a tener las tres clases: el motor (sin UI), la base de datos del histórico
+(sin UI) y la interfaz web (con UI). Un flag de proyecto daría la respuesta equivocada en dos de
+tres. Pero el **comando de higiene sí es del proyecto**, porque vive en `CLAUDE.md`. De ahí la
+asimetría que el arreglo tiene que respetar: la pata `e2e` de la higiene entra cuando el proyecto
+tiene *alguna* superficie navegable; la compuerta del paso 7 se decide feature por feature.
+
+**Qué habría que hacer.** Cuatro cambios, y el primero es el que sostiene a los otros tres:
+
+1. **`design-template.md` (skill `specify`)** — ranura nueva donde la feature declara su superficie:
+   navegable (con la URL y cómo se levanta) o no navegable (CLI, librería, base de datos, job). Es
+   el lugar correcto porque es por feature, está aprobado antes del paso 4, y es donde `verify-e2e`
+   ya dice que mira.
+2. **`SKILL.md` del router y `CLAUDE.template.md`** — el paso 7 pasa a figurar como condicional en
+   la tabla del ciclo. Mientras la tabla lo liste sin condición, saltearlo va a seguir sintiéndose
+   como una falla.
+3. **`harness-init`** — preguntar si el proyecto va a tener superficie navegable, y sembrar
+   `playwright.config.ts` y la pata `e2e` de la higiene **solo entonces**.
+4. **`verify-e2e`** — reformular la precondición 3: leer primero la superficie declarada en
+   `design.md`; si dice no navegable, **este paso no aplica** y rutea al 8. Es una bifurcación, no un
+   fallo. El sondeo actual —buscar `index.html`, scripts `dev`/`start`— queda como respaldo para
+   specs escritos antes de que la ranura existiera.
+
+Con el cambio 3, la excepción de `close-feature` deja de ejercitarse en proyectos sin UI: no hay
+pata que excusar. La excepción se queda igual, para el caso de un proyecto que sí tiene interfaz y
+todavía no bajó el browser.
+
+**Lo que este caso no es.** No es un fallo del ciclo: las tres piezas que existían hicieron lo
+correcto, y el comentario de `playwright.config.ts` predijo el escenario con precisión. Es que
+**hicieron lo correcto tarde**, cada una por su cuenta, sin que ninguna pudiera evitarle el trabajo a
+la siguiente.
 
 ---
 
