@@ -71,14 +71,20 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L44 | Dos plugins con el mismo nombre no conviven: uno se apaga en silencio | `resuelto` | documentado en el README, al forkear |
 | L45 | Las advertencias del `Registro` no tienen lector ni destinatario | **`listo para aplicar`** | el arreglo está escrito en la entrada |
 | L46 | El ciclo asume que toda feature tiene interfaz | **`listo para aplicar`** | el arreglo está escrito en la entrada |
+| L47 | Se siembra el config de Playwright y la dependencia no tiene dueño | **`listo para aplicar`** | el arreglo está escrito en la entrada; aplicar junto con L46 |
 
 ### Lo que queda
+
+> **Plan de aplicación de las diez pendientes** —orden, dependencias y contradicciones resueltas—:
+> [`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md). Ejecutar cuando
+> no haya ninguna corrida del ciclo en vuelo.
 
 **Listo para aplicar — el insumo del próximo ciclo:** [[L36]] (nombrar `/workflows` al lanzar),
 [[L39]] (el modo revisión de `harness-init` tiene que buscar afirmaciones falsas —las del archivo y
 las que propone—, no solo sus cuatro puntos), [[L40]] (la segunda ronda de una tarea espera el sí),
-[[L45]] (dar lector y destinatario a lo que anota quien implementa) y [[L46]] (bifurcar el ciclo
-según si la feature tiene superficie navegable). Los cinco tienen el arreglo escrito.
+[[L45]] (dar lector y destinatario a lo que anota quien implementa), [[L46]] (bifurcar el ciclo
+según si la feature tiene superficie navegable) y [[L47]] (config y dependencia de Playwright se
+siembran juntos en `harness-init`; se aplica con [[L46]]). Los seis tienen el arreglo escrito.
 
 **Abiertos, en el orden en que conviene tomarlos:**
 
@@ -1809,6 +1815,65 @@ todavía no bajó el browser.
 correcto, y el comentario de `playwright.config.ts` predijo el escenario con precisión. Es que
 **hicieron lo correcto tarde**, cada una por su cuenta, sin que ninguna pudiera evitarle el trabajo a
 la siguiente.
+
+---
+
+## L47 · Se siembra el config de Playwright y la dependencia no tiene dueño · `listo para aplicar`
+
+**Qué pasó.** En el proyecto del dashboard HTML (2026-09-19), la fase 1 de `verify-e2e` se frenó en
+la precondición 4. Las otras tres estaban en verde: spec aprobado, 31 tareas en `hecho`, y una
+superficie navegable real —`dashboard/index.html`, generado por `npm run dashboard` y abierto con
+`file://`, sin servidor—. Pero `@playwright/test` no figuraba en `devDependencies` ni en
+`node_modules`, aunque `playwright.config.ts` y el script `e2e` ya lo usaban. Chromium sí estaba
+bajado: la caché global `ms-playwright` tenía `chromium-1243`.
+
+**Por qué importa.** Es el lado complementario de [[L46]]. Aquella es «no hay interfaz y se sembró
+el config igual»; esta es **«hay interfaz, se sembró el config, y nadie instaló aquello de lo que el
+config depende»**.
+
+- **El archivo que usa la dependencia tiene productor; la dependencia no.** `harness-init` siembra
+  `playwright.config.ts`, cuya primera línea importa `@playwright/test`. Pero su propia regla es
+  «este paso escribe el contrato, no el proyecto», y el contrato sembrado dice «no agregar
+  dependencias sin necesidad». Ningún paso del ciclo queda a cargo de instalarlo.
+- **Nada lo detecta antes del paso 7.** `tsc` no revisa el config, Vitest excluye `end2end/` a
+  propósito, y ninguna tarea de una feature importa Playwright. La única comprobación es la
+  precondición 4 de `verify-e2e`: la última puerta, después de toda la implementación.
+- **La caché global disfraza el estado.** El browser vive fuera del proyecto, así que un proyecto
+  nuevo en una máquina que ya corrió Playwright parece casi listo. Le falta justo la pieza que no se
+  ve.
+- **Bug aparte en el config sembrado:** `trace: 'on-first-retry'` con `retries: 0`. El reintento
+  nunca ocurre, así que **nunca se graba un trace**, y el triager diagnostica sin él.
+
+Misma familia que [[L42]]: una condición que se siembra en un lugar y se verifica desde otro, sin
+nada que los ate.
+
+**Qué habría que hacer.** Decidido con la persona: Playwright se deja instalado en el **paso 0**,
+con su sí, cuando el proyecto tiene front web. Cuatro cambios:
+
+1. **`harness-init/SKILL.md`** — regla nueva: *un config se siembra junto con su dependencia, o no se
+   siembra*. La tabla de «Qué sembrar» gana una columna «Dependencia» (`vitest.config.ts` →
+   `vitest`; `playwright.config.ts` → `@playwright/test` + Chromium). Si la pregunta de superficie
+   que agrega [[L46]] da sí, se siembra el config y **se pide el sí** para correr
+   `npm i -D @playwright/test` y `npx playwright install chromium` — la misma decisión que hoy se
+   pide en el paso 7, movida al 0. En el modo revisión, el ítem 4 pasa a ser «los configs existen
+   **y su dependencia está instalada**».
+2. **Script nuevo `skills/verify-e2e/scripts/e2e-doctor.cjs`** — un chequeo mecánico único: el
+   paquete está en `devDependencies`, resuelve desde el proyecto, y **el browser que esa versión
+   espera** existe en disco (no «algún chromium en la caché»). Vive en `verify-e2e` porque es el
+   dueño de la precondición; `harness-init` lo invoca al terminar, junto al `grep` de ranuras.
+3. **`verify-e2e/SKILL.md`, precondición 4** — correr el doctor en vez de inspeccionar a ojo. Si
+   falla, decirlo como hallazgo del paso 0 («`harness-init` debía dejarlo listo») y seguir pidiendo
+   permiso para instalar, como hoy.
+4. **`assets/stacks/typescript-node/playwright.config.ts`** — `trace: 'retain-on-failure'`, con el
+   porqué en el comentario, y una línea para superficies estáticas: HTML generado no necesita
+   `webServer`, los specs abren `file://`.
+
+Aplicarla **en el mismo lote que [[L46]]**: tocan los mismos archivos, y la pregunta de superficie
+que esta necesita la introduce aquella.
+
+**Lo que este caso no es.** No es un fallo del ciclo: la precondición 4 hizo exactamente lo que dice,
+detectó la falta y no instaló nada sin permiso. Es que la pregunta llegó en el paso 7, donde cuesta
+una feature entera de espera, en vez de en el paso 0, donde cuesta una línea.
 
 ---
 
