@@ -36,7 +36,20 @@ explícitamente en el prompt, y el archivo resultante no tenía forma de delatar
 
 **No lo pises.** Este skill no es «regenerá el contrato»; sobre un repo que ya tiene uno, su trabajo
 es revisarlo contra lo que el harness necesita y **proponer** los arreglos, uno por uno, para que la
-persona decida. Mirá cuatro cosas:
+persona decida.
+
+**Antes de las cuatro comprobaciones, leé el archivo entero buscando afirmaciones que el repo
+contradiga — las que ya están y las que vas a proponer vos.** Toda frase sobre el estado del
+proyecto —qué existe, qué falta, qué funciona, cuántos pasos tiene el ciclo— se contrasta contra el
+repo real, no contra lo que el archivo dice de sí mismo. Una afirmación falsa en el contrato es peor
+que una ausente: la leen todos los agentes y la tratan como cierta. **Antes de presentar un cambio,
+releé tu propio texto con el mismo criterio** — una frase nueva puede ser falsa desde el día en que
+se escribe. Y cuando una frase de estado haga falta, escribila en condicional («si no están
+instalados, `npx playwright install chromium` los instala»): una afirmación de estado envejece, una
+condicional no. Las cuatro comprobaciones de abajo son lo mínimo que el harness necesita, no la
+lista completa de lo que puede estar mal.
+
+Mirá cuatro cosas:
 
 1. **Las dos ranuras de comandos** están rotuladas y separadas. Si hay una sola lista de comandos,
    ese es el hallazgo más caro de los cuatro: sin la separación, `implement-task` y `close-feature`
@@ -44,7 +57,8 @@ persona decida. Mirá cuatro cosas:
    verificación de una tarea por una queja de formato.
 2. **No hay sección de estructura** ni nombres de archivos concretos.
 3. **La tabla del ciclo** nombra a los productores actuales de cada paso.
-4. **Los configs** de la sección «Qué sembrar» existen y dicen lo que tienen que decir.
+4. **Los configs** de la sección «Qué sembrar» existen, dicen lo que tienen que decir, **y su
+   dependencia está instalada** — corré el doctor de la sección de abajo, no lo inspecciones a ojo.
 
 Un cambio al `CLAUDE.md` de un proyecto que ya trabaja es un cambio de contrato: se propone y se
 espera el sí. No lo apliques de corrido.
@@ -61,6 +75,12 @@ gasta la paciencia de la persona sin comprar nada.
 - **El stack.** Esta es la que nunca se saltea, ni siquiera cuando la respuesta parece obvia. Si
   tenés una recomendación, dala — pero **etiquetada**: «lo decidí yo, decime si va». Lo que no se
   puede es escribirla en el archivo como si la hubieran pedido.
+- **¿Va a haber una interfaz navegable?** Una URL o un `file://` que alguien pueda abrir — web, un
+  dashboard, cualquier cosa que Playwright pueda visitar. Mirá el repo antes de preguntar y
+  **proponé la respuesta**: un `index.html`, un `vite.config`, un framework de UI en
+  `package.json` la sugieren sola; un proyecto de CLI o de librería, también. Esta respuesta decide
+  si en «Qué sembrar» instalás Playwright ahora o no instalás nada todavía — no decide si *esta*
+  feature en particular la va a tener: eso lo declara cada `design.md`, por separado.
 
 **Segunda ronda — lo que depende del stack:**
 
@@ -103,17 +123,42 @@ Están en `assets/stacks/<stack>/`, y hoy hay uno solo, `typescript-node`. **Es 
 arranca con un stack y se agregan a medida que aparezcan**, en vez de inventar configs para stacks
 que nadie usó todavía.
 
-| Archivo | Qué codifica |
-|---|---|
-| `vitest.config.ts` | Excluye `end2end/` del runner de unidad. Sin esto, los dos runners se pelean por los `.spec.ts` — y el fallo aparece recién cuando el ciclo e2e puebla la carpeta, invalidando veredictos de tareas que nadie tocó. |
-| `playwright.config.ts` | `retries: 0`. Un caso que pasa al segundo intento es un hallazgo, no un caso resuelto, y el triager lo tiene que ver así. |
+**Regla: un config se siembra junto con su dependencia, o no se siembra.** Un `playwright.config.ts`
+sin `@playwright/test` instalado es el mismo problema que un archivo sin dueño, solo que disfrazado:
+el config tiene productor (este skill), la dependencia no tiene a nadie a cargo, y nada lo nota hasta
+el paso 7 — al final de toda una feature, no al principio del proyecto.
+
+| Archivo | Qué codifica | Dependencia |
+|---|---|---|
+| `vitest.config.ts` | Excluye `end2end/` del runner de unidad. Sin esto, los dos runners se pelean por los `.spec.ts` — y el fallo aparece recién cuando el ciclo e2e puebla la carpeta, invalidando veredictos de tareas que nadie tocó. | `vitest` |
+| `playwright.config.ts` | `retries: 0`. Un caso que pasa al segundo intento es un hallazgo, no un caso resuelto, y el triager lo tiene que ver así. | `@playwright/test` + Chromium |
+
+**`playwright.config.ts` se siembra solo si la entrevista respondió que va a haber interfaz
+navegable.** Si es así, sembralo junto con su dependencia, en el mismo momento, con un solo sí:
+
+```bash
+npm i -D @playwright/test
+npx playwright install chromium
+```
+
+Es la misma instalación que antes se pedía en el paso 7, movida acá: ahí costaba una feature entera
+de espera, acá cuesta una línea. **Si la respuesta fue que no va a haber interfaz —o que todavía no
+se sabe—, no siembres el config ni la pata `e2e` del comando de higiene.** La ranura de higiene se
+completa sin esa pata, y lo decís en condicional al escribirla («si aparece una interfaz, esta
+ranura suma `npx playwright test`»): la primera feature que declare superficie navegable en su
+`design.md` va a traer de vuelta a este skill, en modo revisión, a sembrar lo que hoy falta.
 
 **Copialos con sus comentarios.** Los comentarios *son* el contenido: explican por qué el archivo
 existe, y sin ellos el primero que los lea va a borrar la exclusión por parecer arbitraria.
 
 Si el stack no es ninguno de los que hay en `assets/stacks/`, **no improvises los configs**: decí
-qué problema resuelven —los dos de la tabla— y dejá que la persona decida cómo se traduce a su
-stack. Un config inventado para un runner que no conocés es peor que ninguno.
+qué problema resuelven —los de la tabla— y dejá que la persona decida cómo se traduce a su stack. Un
+config inventado para un runner que no conocés es peor que ninguno.
+
+**Si sembraste Playwright, corré el doctor al terminar**, junto al chequeo de ranuras sin llenar de
+más arriba: `node <ruta-de-verify-e2e>/scripts/e2e-doctor.cjs`, con la ruta del proyecto. Confirma
+que la dependencia y el browser efectivamente quedaron instalados — no que el comando se corrió sin
+error, que no es lo mismo si la instalación falló a mitad de camino.
 
 **Ofrecé `git init` si el repo no lo es.** El método pide un commit por tarea, y sin repo eso no
 existe. Pasó: un proyecto entero se hizo sin repo porque nadie lo corrió y nada en el método lo
@@ -130,7 +175,8 @@ pedía.
 
 ## Al terminar
 
-Contá en tres líneas qué quedó: el stack acordado, los dos comandos, y qué configs sembraste. Después
+Contá en tres líneas qué quedó: el stack acordado, los dos comandos, y qué configs sembraste (y si
+Playwright quedó afuera porque todavía no hay interfaz). Después
 nombrá el **paso 1**, el skill `brainstorming`: es por donde entra la primera feature. No lo
 arranques vos.
 

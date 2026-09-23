@@ -63,15 +63,15 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L36 | El progreso del workflow existía y ningún paso lo nombraba | `resuelto` | Lote 8 · `planning-tasks` |
 | L37 | Un slash command que no resuelve no da error: improvisa | `descartada` | la premisa era falsa: corrió el router |
 | L38 | «Preguntá y esperá el sí» se tradujo a una pregunta estructurada inválida | `resuelto` | Lote 8 · `planning-tasks` |
-| L39 | El modo revisión de `harness-init` aprueba un contrato que miente | **`listo para aplicar`** | el arreglo está escrito en la entrada |
+| L39 | El modo revisión de `harness-init` aprueba un contrato que miente | `resuelto` | Lote 9 · `harness-init` |
 | L40 | La segunda ronda de una tarea no decía si espera el sí | **`listo para aplicar`** | decidido: espera el sí, siempre |
 | L41 | Los pasos 0 a 3 no commitean | `en observación` | una ocurrencia, sin daño |
 | L42 | Una regla vive en `CLAUDE.md` y en la plantilla, sin verificación | `resuelto` | Lote 8 · `check-rules-parity.cjs` |
 | L43 | Un skill extendió un principio escrito más allá de la lista | `resuelto` | evidencia positiva, sin acción |
 | L44 | Dos plugins con el mismo nombre no conviven: uno se apaga en silencio | `resuelto` | documentado en el README, al forkear |
 | L45 | Las advertencias del `Registro` no tienen lector ni destinatario | **`listo para aplicar`** | el arreglo está escrito en la entrada |
-| L46 | El ciclo asume que toda feature tiene interfaz | **`listo para aplicar`** | el arreglo está escrito en la entrada |
-| L47 | Se siembra el config de Playwright y la dependencia no tiene dueño | **`listo para aplicar`** | el arreglo está escrito en la entrada; aplicar junto con L46 |
+| L46 | El ciclo asume que toda feature tiene interfaz | `resuelto` | Lote 9 · `design-template`, router, `harness-init`, `verify-e2e` |
+| L47 | Se siembra el config de Playwright y la dependencia no tiene dueño | `resuelto` | Lote 9 · `e2e-doctor.cjs` + `harness-init` |
 
 ### Lo que queda
 
@@ -79,12 +79,12 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 > [`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md). Ejecutar cuando
 > no haya ninguna corrida del ciclo en vuelo.
 
-**Listo para aplicar — el insumo del próximo ciclo:** [[L39]] (el modo revisión de `harness-init`
-tiene que buscar afirmaciones falsas —las del archivo y las que propone—, no solo sus cuatro
-puntos), [[L40]] (la segunda ronda de una tarea espera el sí), [[L45]] (dar lector y destinatario a
-lo que anota quien implementa), [[L46]] (bifurcar el ciclo según si la feature tiene superficie
-navegable) y [[L47]] (config y dependencia de Playwright se siembran juntos en `harness-init`; se
-aplica con [[L46]]). Los cinco tienen el arreglo escrito, y son los Lotes 9 y 10 del plan.
+**Listo para aplicar — el insumo del próximo ciclo:** [[L40]] (la segunda ronda de una tarea
+espera el sí) y [[L45]] (dar lector y destinatario a lo que anota quien implementa), más [[L41]] (en
+observación, y que L40/L45 cierran de paso: *quien recibe el sí de un documento lo commitea*). Los
+dos primeros tienen el arreglo escrito, y son el Lote 10 del plan — el vocabulario de destinatarios
+que usa L45 (`[Tn]`, `[paso 7]`, `[paso 8]`, `[decidir ya]`) ya puede escribirse tal cual: `[paso 7]`
+es válido de nuevo desde que [[L46]] lo hizo condicional en vez de eliminarlo.
 
 **Abiertos, en el orden en que conviene tomarlos:**
 
@@ -1489,7 +1489,7 @@ evita un intento perdido en cada corrida.
 **Por qué queda en `en observación` y no en `listo para aplicar`.** Una sola ocurrencia, con
 recuperación limpia y costo casi nulo. Si vuelve a pasar en la próxima corrida deja de ser anécdota.
 
-## L39 · El modo revisión de `harness-init` aprueba un contrato que miente · `listo para aplicar`
+## L39 · El modo revisión de `harness-init` aprueba un contrato que miente · `resuelto` (Lote 9)
 
 **Qué pasó.** En el demo (2026-09-11) `harness-init` corrió en modo revisión sobre un `CLAUDE.md` en
 uso. Marcó ✓ sus cuatro comprobaciones —ranuras de comandos, sin sección de estructura, tabla del
@@ -1742,7 +1742,7 @@ archivo pide no tocar un skill a mitad de una prueba: después no se puede disti
 
 ---
 
-## L46 · El ciclo asume que toda feature tiene interfaz · `listo para aplicar`
+## L46 · El ciclo asume que toda feature tiene interfaz · `resuelto` (Lote 9)
 
 **Qué pasó.** La feature *motor de medición* de OoklaWeb (2026-09-18) se cerró sin pasar por el paso
 7. Es un motor de medición con CLI: no tiene superficie navegable y Playwright no tiene URL que
@@ -1815,7 +1815,7 @@ la siguiente.
 
 ---
 
-## L47 · Se siembra el config de Playwright y la dependencia no tiene dueño · `listo para aplicar`
+## L47 · Se siembra el config de Playwright y la dependencia no tiene dueño · `resuelto` (Lote 9)
 
 **Qué pasó.** En el proyecto del dashboard HTML (2026-09-19), la fase 1 de `verify-e2e` se frenó en
 la precondición 4. Las otras tres estaban en verde: spec aprobado, 31 tareas en `hecho`, y una
@@ -2317,6 +2317,76 @@ Dos puntos de entrega baratos en vez de un hook — si igual falla, eso es evide
 `dod-checker`, y el de L36 y L38 no se probaron con una re-planificación real: los tres se
 verificaron leyendo el archivo, no viéndolos actuar. Quedan para la primera corrida del ciclo que
 los toque, en sesión nueva.
+
+## Lote 9 aplicado — 2026-09-22
+
+Superficie navegable: L46, L47, L39. El lote más grande de
+[`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md), y el que deja lista
+la base de [[L45]] (Lote 10).
+
+**L46.1 — la ranura `## Superficie` en `design-template.md`.** Navegable (URL o `file://`, y cómo
+se levanta) o no navegable (CLI, librería, base, job), con la instrucción de borrar la que no
+aplica. Es por feature, no por proyecto — la distinción que hacía no trivial el arreglo: un mismo
+proyecto puede tener un motor sin UI y una interfaz web como features separadas.
+
+**L46.2 — el paso 7 pasó a condicional en la tabla del ciclo**, en el router y en
+`CLAUDE.template.md`, con la misma nota en los dos: una feature sin superficie navegable no pasa
+por el paso 7 como excepción, sino como su camino normal hacia el paso 8. Se verificó que la
+anotación no rompe `check-rules-parity.cjs`: el chequeo compara la columna del productor
+(`skill \`verify-e2e\``, sin cambios), no la del producto, así que la marca `— **condicional**` no
+cuenta como deriva.
+
+**L46.3 y L47.1 — `harness-init` pregunta por la superficie y siembra Playwright con su
+dependencia, o no siembra nada.** La pregunta nueva en la entrevista propone la respuesta a partir
+del repo (`index.html`, `vite.config`, un framework de UI). Si es sí, `playwright.config.ts` se
+siembra junto con el `npm i -D @playwright/test && npx playwright install chromium`, con un solo
+sí — la misma instalación que antes se pedía recién en el paso 7, movida al paso 0. Si es no, la
+ranura de higiene se completa sin la pata `e2e` y en condicional, y la primera feature que declare
+superficie navegable en su `design.md` trae de vuelta a `harness-init` en modo revisión (ahora
+también nombrado por `specify`, fase 2, apenas se aprueba un design con superficie navegable).
+
+**L47.2 — `scripts/e2e-doctor.cjs`, nuevo, en `verify-e2e`.** Dos comprobaciones mecánicas
+reemplazan la inspección a ojo de la precondición 4: la dependencia declarada y **resuelta desde el
+proyecto** (no solo listada en `package.json`), y el browser que *esa instalación* de Playwright
+espera, presente en disco. La segunda es la que motivó el chequeo — el caso real fue una caché
+global de browsers que disfrazaba la falta del paquete — y se dejó como `TODO(human)` para la
+persona, con la pista completa en el comentario.
+
+**Lo que apareció al escribirla, y por qué vale la pena anotarlo.** La pista que yo mismo había
+dejado en el `TODO(human)` — `require.resolve('playwright-core/browsers.json', ...)` — **no
+funciona**: el paquete restringe con su campo `exports` qué subrutas internas se pueden pedir así, y
+`browsers.json` no está en la lista. Se probó antes de escribir la implementación final y se
+encontró el rodeo correcto: `playwright-core/package.json` sí está permitido, y `browsers.json`
+vive en la misma carpeta. Un `TODO(human)` con una pista rota es peor que uno sin pista — manda a
+quien lo resuelve por un camino que ya se sabía cerrado. Mismo espíritu que [[L39]]: releer la
+propia propuesta con el mismo criterio con que se audita lo existente, antes de entregarla.
+
+Se probaron los tres casos reales antes de darla por buena, con fixtures armados a mano en el
+scratchpad: dependencia y browser correctos (exit 0), dependencia correcta y revisión de Chromium
+inventada sin esa carpeta en la caché (exit 1, con el `arreglo` correcto), y la misma revisión
+inventada con `PLAYWRIGHT_BROWSERS_PATH` apuntando a una carpeta donde sí estaba (exit 0) — para
+confirmar que la variable de entorno gana sobre el default del sistema operativo, tal como dice el
+comentario del código.
+
+**Un segundo bug, en el `main()` que yo mismo había escrito para el Lote 9, no en la parte de la
+persona.** La primera versión juntaba los dos resultados en una lista y recién imprimía todo al
+final; como el chequeo del browser todavía tiraba (`chequearBrowser sin implementar`), el resultado
+del primer chequeo —incluido el caso en que la dependencia faltaba— nunca llegaba a la consola. Se
+reescribió para reportar cada chequeo apenas termina. Mismo patrón que el falso positivo de [[L42]]
+en el Lote 8: la primera corrida de una herramienta nueva prueba la herramienta, no lo que mide.
+
+**L39 — la auditoría de afirmaciones falsas, ahora escrita en el skill.** Antes de las cuatro
+comprobaciones del modo revisión, `harness-init` lee el archivo entero buscando afirmaciones que el
+repo contradiga — las que ya estaban *y* las que el propio skill va a proponer, que es el matiz que
+la corrida del 2026-09-11 había dejado pendiente. Las frases de estado nuevas se escriben en
+condicional. El ítem 4 del modo revisión se amplió de paso, sin agregar un quinto punto: ahora
+también pregunta si la dependencia del config está instalada, corriendo el doctor.
+
+**Lo que este lote no ejercitó.** Las tres piezas conversacionales —la pregunta de superficie en una
+corrida real de `harness-init`, la auditoría de L39 sobre un contrato con afirmaciones falsas, y
+`verify-e2e` rutéando al paso 8 sin escribir nada ante una feature no navegable— se verificaron
+leyendo el skill, no viéndolas actuar en una sesión nueva. El doctor sí se ejercitó de punta a
+punta, con los tres casos, porque es código y se puede correr sin abrir una sesión.
 
 ## Primera corrida con el harness nuevo — 2026-09-11
 

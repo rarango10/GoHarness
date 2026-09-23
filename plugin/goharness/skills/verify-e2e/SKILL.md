@@ -40,8 +40,24 @@ Después comprobá cuatro cosas, y **paralo todo si falla cualquiera**:
 
 1. **`requirements.md` y `design.md` dicen `aprobado`** en su encabezado. Si no, remití al skill `specify`. Un plan de tests e2e escrito sobre un spec sin aprobar prueba una feature que todavía puede cambiar.
 2. **Hay algo implementado que valga la pena probar.** Si toda la tabla de `tasks.md` está en `pendiente`, no hay nada que verificar de punta a punta todavía. Si algunas tareas están en `hecho` y otras no, decilo y preguntá si vale la pena igual: un e2e sobre una feature a medias falla por diseño, y esos fallos no significan nada.
-3. **Existe una app navegable.** Esto es lo que hace posible el resto: Playwright necesita una URL que abrir. Buscá un script `dev`/`start`/`serve` en `package.json`, un `index.html`, un servidor, un `baseURL` en `playwright.config.ts`. **Si no hay ninguno, pará y decilo con todas las letras**: sin superficie navegable no hay e2e que generar, y el remedio no es inventarlo ni caer a tests de unidad disfrazados —para eso ya está Vitest— sino construir la interfaz como una feature aparte, con su propio brainstorming. No escribas ningún archivo cuando pares acá.
-4. **Playwright está instalado y con browser.** `@playwright/test` en `devDependencies` y el browser bajado. Si falta, reportalo con el comando que lo arregla (`npm i -D @playwright/test`, `npx playwright install chromium`) y esperá: instalar dependencias o bajar un browser de cientos de megas es una decisión de la persona, no tuya.
+3. **La feature tiene superficie navegable.** Leé la sección `## Superficie` de `design.md`. Si
+   declara **no navegable**, esto no es un fallo: es una rama. Decilo con todas las letras y nombrá
+   el **paso 8** (`close-feature`) — no hay e2e que generar para esta feature, y no escribas ningún
+   archivo cuando pares acá. Si declara **navegable**, seguí con la URL (o el `file://`) y cómo se
+   levanta que la misma sección describe.
+
+   Los specs escritos antes de que existiera esta ranura no la tienen. Para esos, el sondeo de
+   respaldo: buscá un script `dev`/`start`/`serve` en `package.json`, un `index.html`, un servidor,
+   un `baseURL` en `playwright.config.ts`. Si tampoco aparece nada ahí, pará y decilo con todas las
+   letras: sin superficie navegable no hay e2e que generar, y el remedio no es inventarlo ni caer a
+   tests de unidad disfrazados —para eso ya está Vitest— sino construir la interfaz como una
+   feature aparte, con su propio brainstorming.
+4. **El doctor de Playwright da verde.** Corré `node scripts/e2e-doctor.cjs <ruta-del-proyecto>`
+   (la ruta del proyecto, no la del skill). Reemplaza la inspección a ojo por dos comprobaciones
+   mecánicas: la dependencia declarada y resuelta desde el proyecto, y el browser que esa versión
+   espera presente en disco. Si falla, reportalo con el `arreglo` que imprime cada línea
+   (`npm i -D @playwright/test`, `npx playwright install chromium`) y esperá: instalar dependencias
+   o bajar un browser de cientos de megas es una decisión de la persona, no tuya.
 
 Cerrá la fase contando en una línea qué encontraste: la superficie de la app, cómo se levanta, y cuántas tareas hay en `hecho`.
 
@@ -96,3 +112,5 @@ Porque ya existe uno y es el TDD del proyecto. Un fallo e2e cuya causa es el có
 ## Archivos de este skill
 
 - `assets/e2e-tests-plan-template.md` — estructura de `e2e-tests-plan.md`
+- `scripts/e2e-doctor.cjs` — la precondición 4: dependencia y browser instalados. `harness-init`
+  también lo invoca, al terminar el paso 0 en un proyecto con superficie navegable.
