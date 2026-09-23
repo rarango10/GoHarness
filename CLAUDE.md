@@ -105,7 +105,9 @@ tiene siempre cargado, incluso cuando no hay ningún workflow corriendo.
 - **La unidad del paso 5 es la tarea, no la fase.** Cada tarea es su propio ciclo de TDD y su
   propia verificación. La compuerta entre tareas se renuncia solo con el vocabulario de
   `implement-task` (`--modo corrido`), nunca por inferencia; que cada tarea se verifique y que un
-  veredicto menor corte la corrida no se renuncian en ningún modo.
+  veredicto menor corte la corrida no se renuncian en ningún modo. Y la segunda ronda de una misma
+  tarea —cuando un veredicto salió menor que `cumple`— también espera el sí, siempre, en cualquier
+  modo: no es «la tarea siguiente», así que `--modo corrido` no la alcanza.
 - **Un commit por tarea, con su id en el mensaje.**
 - **Un veredicto se toma sobre un estado.** El `cumple` de `dod-checker` vale para el repo tal
   como estaba al tomarlo, y puede volverse falso sin que la tarea cambie una línea. Por eso el

@@ -161,6 +161,10 @@ const SCOUT_SCHEMA = {
       type: 'string',
       description: 'Resumen del estado real: rama y ultimos commits, estructura de src, y resultado literal de los comandos de verificacion',
     },
+    existingPendientes: {
+      type: 'string',
+      description: 'Contenido LITERAL de la seccion "## Pendientes" de tasks.md, linea por linea, con el destinatario que ya traiga cada una. Cadena vacia si la seccion no existe o no tiene contenido real. La escribe quien implementa; esta corrida solo la transcribe para que el writer la preserve.',
+    },
   },
 }
 
@@ -292,7 +296,10 @@ todos los revisores que vienen después trabajan con lo que devuelvas vos.
    paréntesis que lo envolvían. Si no los transcribís se pierden para
    siempre: una tarea que se queda sin coversNote se relee como alcance que nadie pidió, y una
    sin note pierde el rastro de a qué tarea reemplazó. Si no existe tasks.md, tasksExist = false
-   y tasks = []. Transcribí también "Criterios sin tarea asignada" si tiene contenido real.
+   y tasks = []. Transcribí también "Criterios sin tarea asignada" si tiene contenido real, y el
+   contenido LITERAL de la sección "## Pendientes" en existingPendientes — línea por línea, con el
+   destinatario que ya traiga cada una, sin resumir ni reordenar. Es la región de quien implementa,
+   no la tuya: si no la transcribís tal cual, el writer no tiene con qué preservarla.
 4. Del encabezado de tasks.md, transcribí el número de la línea "Ids emitidos: hasta T<n>" en
    maxIdIssued. Si esa línea no está —archivos escritos antes de que existiera— devolvé 0: el
    workflow cae al cálculo de siempre. Esa línea es la memoria de qué ids ya se repartieron,
@@ -314,6 +321,7 @@ if (!scout) {
 }
 
 const specDir = scout.specDir
+const existingPendientes = scout.existingPendientes || ''
 
 if (!FORCE && (scout.requirementsStatus !== 'aprobado' || scout.designStatus !== 'aprobado')) {
   return {
@@ -606,10 +614,19 @@ ${JSON.stringify(plan, null, 2)}
 CRITERIOS SIN TAREA ASIGNADA:
 ${unassigned.length ? JSON.stringify(unassigned, null, 2) : 'ninguno'}
 
-PENDIENTES (huecos de spec detectados durante la revisión — para que los decida una persona):
-${specGaps.length ? specGaps.map((g) => `- ${g}`).join('\n') : '- Ninguno detectado en esta pasada.'}
-${finalGaps.length ? `- Criterios que quedaron sin cubrir: ${finalGaps.join(', ')}` : ''}
-${finalDupes.length ? `- Ids duplicados sin resolver: ${finalDupes.join(', ')}` : ''}
+PENDIENTES — fusioná, no reemplaces:
+
+Lo que ya estaba en la sección "## Pendientes" del archivo. **Preservalo tal cual, línea por
+línea, con el destinatario que ya tenía cada una** — es la región de quien implementa, no tuya, y
+una re-planificación no es el momento de decidir si una advertencia sigue vigente:
+${existingPendientes ? existingPendientes : '(la sección no existía o no tenía contenido real)'}
+
+Sumale, como líneas nuevas, los huecos de spec que esta corrida detectó — necesitan que una
+persona decida, así que van con destinatario [decidir ya] salvo que digan otra cosa. No repitas
+una si una línea ya existente dice lo mismo:
+${specGaps.length ? specGaps.map((g) => `- [decidir ya] ${g}`).join('\n') : '(ninguno detectado en esta pasada)'}
+${finalGaps.length ? `- [decidir ya] Criterios que quedaron sin cubrir: ${finalGaps.join(', ')}` : ''}
+${finalDupes.length ? `- [decidir ya] Ids duplicados sin resolver: ${finalDupes.join(', ')}` : ''}
 
 Dónde van los campos opcionales, cuando la tarea los trae (seguí assets/tasks-template.md del
 skill specify):

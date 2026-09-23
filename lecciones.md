@@ -64,12 +64,12 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L37 | Un slash command que no resuelve no da error: improvisa | `descartada` | la premisa era falsa: corrió el router |
 | L38 | «Preguntá y esperá el sí» se tradujo a una pregunta estructurada inválida | `resuelto` | Lote 8 · `planning-tasks` |
 | L39 | El modo revisión de `harness-init` aprueba un contrato que miente | `resuelto` | Lote 9 · `harness-init` |
-| L40 | La segunda ronda de una tarea no decía si espera el sí | **`listo para aplicar`** | decidido: espera el sí, siempre |
-| L41 | Los pasos 0 a 3 no commitean | `en observación` | una ocurrencia, sin daño |
+| L40 | La segunda ronda de una tarea no decía si espera el sí | `resuelto` | Lote 10 · `implement-task` + `CLAUDE.md` + plantilla + router |
+| L41 | Los pasos 0 a 3 no commitean | `resuelto` | Lote 10 · `specify` + `harness-init` + `implement-task` |
 | L42 | Una regla vive en `CLAUDE.md` y en la plantilla, sin verificación | `resuelto` | Lote 8 · `check-rules-parity.cjs` |
 | L43 | Un skill extendió un principio escrito más allá de la lista | `resuelto` | evidencia positiva, sin acción |
 | L44 | Dos plugins con el mismo nombre no conviven: uno se apaga en silencio | `resuelto` | documentado en el README, al forkear |
-| L45 | Las advertencias del `Registro` no tienen lector ni destinatario | **`listo para aplicar`** | el arreglo está escrito en la entrada |
+| L45 | Las advertencias del `Registro` no tienen lector ni destinatario | `resuelto` | Lote 10 · `implement-task`, `tasks-template`, `task-writer`, `tasks-fanout.js` |
 | L46 | El ciclo asume que toda feature tiene interfaz | `resuelto` | Lote 9 · `design-template`, router, `harness-init`, `verify-e2e` |
 | L47 | Se siembra el config de Playwright y la dependencia no tiene dueño | `resuelto` | Lote 9 · `e2e-doctor.cjs` + `harness-init` |
 
@@ -79,12 +79,9 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 > [`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md). Ejecutar cuando
 > no haya ninguna corrida del ciclo en vuelo.
 
-**Listo para aplicar — el insumo del próximo ciclo:** [[L40]] (la segunda ronda de una tarea
-espera el sí) y [[L45]] (dar lector y destinatario a lo que anota quien implementa), más [[L41]] (en
-observación, y que L40/L45 cierran de paso: *quien recibe el sí de un documento lo commitea*). Los
-dos primeros tienen el arreglo escrito, y son el Lote 10 del plan — el vocabulario de destinatarios
-que usa L45 (`[Tn]`, `[paso 7]`, `[paso 8]`, `[decidir ya]`) ya puede escribirse tal cual: `[paso 7]`
-es válido de nuevo desde que [[L46]] lo hizo condicional en vez de eliminarlo.
+**Las diez pendientes del plan de lotes 8 a 10 están cerradas.** Ver
+[`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md) para el orden en que
+se aplicaron y las secciones «Lote N aplicado» de más abajo para lo que apareció en cada una.
 
 **Abiertos, en el orden en que conviene tomarlos:**
 
@@ -1541,7 +1538,7 @@ Entonces el paso a escribir en el skill tiene que cubrir las dos puntas:
 
 ---
 
-## L40 · La segunda ronda de una tarea no decía si espera el sí · `listo para aplicar`
+## L40 · La segunda ronda de una tarea no decía si espera el sí · `resuelto` (Lote 10)
 
 **Qué pasó.** En la misma corrida del demo (2026-09-11), en `--modo corrido`, dos tareas volvieron
 `cumple-parcial` y se trataron distinto:
@@ -1581,7 +1578,7 @@ Que sean cuatro lugares y que nada compruebe que digan lo mismo es [[L42]].
 
 ---
 
-## L41 · Los pasos 0 a 3 no commitean · `en observación`
+## L41 · Los pasos 0 a 3 no commitean · `resuelto` (Lote 10)
 
 **Qué pasó.** En el demo (2026-09-11), `harness-init` agregó `retries: 0` a `playwright.config.ts` y
 dijo *«No commiteé el cambio — decime si querés que lo incluya en un commit»*; `specify` agregó una
@@ -1682,7 +1679,7 @@ Es comportamiento de Claude Code, no del harness; no hay nada que arreglar en el
 
 ---
 
-## L45 · Las advertencias del `Registro` no tienen lector ni destinatario · `listo para aplicar`
+## L45 · Las advertencias del `Registro` no tienen lector ni destinatario · `resuelto` (Lote 10)
 
 **Qué pasó.** Durante una corrida de 27 tareas (OoklaWeb, feature *motor de medición*), quien
 implementa escribió en los `Registro` de T1 a T9 unas ocho advertencias dirigidas al futuro: deuda
@@ -2387,6 +2384,56 @@ corrida real de `harness-init`, la auditoría de L39 sobre un contrato con afirm
 `verify-e2e` rutéando al paso 8 sin escribir nada ante una feature no navegable— se verificaron
 leyendo el skill, no viéndolas actuar en una sesión nueva. El doctor sí se ejercitó de punta a
 punta, con los tres casos, porque es código y se puede correr sin abrir una sesión.
+
+## Lote 10 aplicado — 2026-09-22
+
+`implement-task` y las reglas repetidas: L45, L40, L41. Cierra
+[`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md) — las diez entradas
+que el plan enumeraba quedan `resuelto`.
+
+**L45 — lector y destinatario para `Pendientes`, en una sola pasada de `implement-task`.** Cuatro
+cambios en el mismo archivo, como pedía el plan: el paso 1 (`Abrí la tarea`) ahora lee
+`## Pendientes` y nombra los ítems dirigidos a la tarea que se abre; `Pendientes` entra a la lista
+de regiones escribibles junto a `Estado` y `Registro`, resolviendo la contradicción que el propio
+skill tenía consigo mismo (decía que un hallazgo iba «como una línea en `Pendientes`» y después no
+la listaba entre lo que podía escribir); y toda línea nueva lleva destinatario obligatorio —
+`[Tn]`, `[paso 7]`, `[paso 8]`, `[decidir ya]`, el mismo vocabulario que ya resolvió la contradicción
+entre L45 y L46 en el plan. `tasks-template.md` documenta el formato con los cuatro casos.
+
+**L45.4 — la fusión, no solo el formato.** `task-writer` y `tasks-fanout.js` regeneraban
+`Pendientes` desde los `specGaps` de la corrida, sin mirar lo que ya había en el archivo — el mismo
+riesgo que ya tenía `Registro` antes de que se le pusiera regla de preservación. Ahora el scout
+transcribe `## Pendientes` literal en `existingPendientes`, el prompt del writer pide fusión
+explícita («preservá tal cual lo que ya estaba, sumá lo nuevo, no repitas lo que ya dice lo mismo»),
+y los huecos de spec nuevos llegan ya etiquetados `[decidir ya]`. `task-writer.md` suma la
+prohibición simétrica a la que ya tenía `Registro`: no se borra ni se reescribe una línea de
+`Pendientes` que ya estaba.
+
+**L40 — la segunda ronda espera el sí, en los cuatro lugares que decía el plan.** `implement-task`
+(la sección de modo y el paso 8 de la compuerta), `CLAUDE.md` de este repo, `CLAUDE.template.md` y
+la regla 3 del router — los tres últimos con la misma cláusula agregada al mismo bullet en negrita,
+así que `check-rules-parity.cjs` los sigue viendo como la misma regla. La distinción que quedó
+explícita: «no arrancás la siguiente» y «esperá el sí antes de la segunda ronda de esta misma» son
+dos compuertas distintas que antes compartían una sola frase, y esa ambigüedad fue la causa
+documentada de que dos tareas de la misma corrida (T7 y T9) se trataran distinto.
+
+**L41 — quien recibe el sí de un documento lo commitea, en los tres lugares que decía el plan.**
+Una línea en `specify` después de aprobar `requirements.md` y otra después de aprobar `design.md`;
+una línea en `harness-init`, al terminar, para el `CLAUDE.md`, los configs y el `package.json` de
+una instalación; y una línea en `implement-task`, en la comprobación que asienta la aprobación de
+`tasks.md`. Subió de `en observación` a `resuelto` sin esperar una segunda ocurrencia — el plan lo
+decidió así porque el arreglo es barato y porque [[L9]] le da una razón adicional: commitear antes
+achica lo que un `git stash` accidental podría llevarse.
+
+**Lo que este lote no ejercitó.** Las cuatro verificaciones mecánicas dieron verde
+(`check-rules-parity.cjs`, `lint-workflow-literals.cjs`, y las dos de `claude plugin validate`), y
+son la parte que se puede probar sin abrir una sesión nueva. Lo que sí necesita una sesión nueva y
+una corrida real no se probó en esta pasada: una re-planificación de un `tasks.md` con un
+`Pendiente` `[T2]` para confirmar que sobrevive intacto, `implement-task` abriendo esa tarea y
+nombrándolo, y —el más caro de ejercitar— una segunda ronda real de L40, que solo ocurre cuando
+`dod-checker` devuelve un veredicto menor que `cumple` de verdad. Sin esa corrida, L40 queda
+verificado por lectura, no por haberlo visto actuar; es el mismo hueco que ya quedó anotado en los
+Lotes 8 y 9 para sus propios arreglos de prosa.
 
 ## Primera corrida con el harness nuevo — 2026-09-11
 

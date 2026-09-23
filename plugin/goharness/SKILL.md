@@ -63,7 +63,9 @@ justo lo que hacía que llevar el harness a otro repo fuera trabajo manual.
 3. **La unidad del paso 5 es la tarea, no la fase.** Once tareas son once ciclos, cada uno
    cerrado por un veredicto de `dod-checker` y su aprobación. La compuerta entre tareas se
    renuncia solo con el vocabulario de `implement-task` (`--modo corrido`), nunca por inferencia;
-   la verificación de cada tarea y el corte ante un veredicto menor no se renuncian nunca.
+   la verificación de cada tarea y el corte ante un veredicto menor no se renuncian nunca. Y la
+   segunda ronda de una misma tarea —cuando un veredicto salió menor que `cumple`— también espera
+   el sí, siempre: no es «la tarea siguiente», así que `--modo corrido` no la alcanza.
 
 4. **`hecho` significa verificado, y sobre un estado.** Una tarea pasa a `hecho` solo cuando
    `dod-checker` devolvió `cumple` y ese veredicto quedó asentado en su `Registro`; cualquier

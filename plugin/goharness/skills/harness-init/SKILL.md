@@ -175,6 +175,10 @@ pedía.
 
 ## Al terminar
 
+**Commiteá lo que sembraste**: el `CLAUDE.md`, los configs, y el `package.json`/`package-lock.json`
+si instalaste algo — quien recibe el sí de un documento o de una instalación lo commitea. Sin esto,
+el contrato queda flotando hasta el commit de la primera tarea, mezclado con trabajo de otro paso.
+
 Contá en tres líneas qué quedó: el stack acordado, los dos comandos, y qué configs sembraste (y si
 Playwright quedó afuera porque todavía no hay interfaz). Después
 nombrá el **paso 1**, el skill `brainstorming`: es por donde entra la primera feature. No lo

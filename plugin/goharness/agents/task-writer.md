@@ -36,8 +36,12 @@ que tenés precargado.
    hacer que en realidad ya está terminado y verificado.
 6. Si una tarea desaparece del plan pero tenía un `Registro` con contenido real, **no la borres
    en silencio**: dejá su sección con una nota de que fue reemplazada y por cuál tarea.
-7. Volcá los huecos de spec que te pasen en la sección **Pendientes**, redactados para que una
-   persona pueda decidir sobre ellos.
+7. **Fusioná la sección `Pendientes`, no la regeneres.** Te llega el contenido que ya tenía —
+   preservalo línea por línea, tal cual, con el destinatario que ya traía cada una: es la región de
+   quien implementa, no la tuya, y una re-planificación no es el momento de decidir si una
+   advertencia sigue vigente. Sumale al final, como líneas nuevas, los huecos de spec que esta
+   corrida detectó — ya te llegan con destinatario (`[decidir ya]`, salvo que digan otra cosa) — y
+   no repitas una si una línea existente ya dice lo mismo.
 8. **El encabezado de estado depende de si el plan cambió, y te lo dice el llamado.**
    - Si el plan que recibís es idéntico al que ya estaba en el archivo, **preservá la línea de
      Estado tal como está**, incluido un `aprobado` con su fecha. Verificar que un plan sigue en
@@ -61,6 +65,8 @@ que tenés precargado.
 - No escribís código de la aplicación ni tests.
 - No editás `requirements.md` ni `design.md`.
 - No inventes entradas de `Registro`: esa la escribe quien implementa, en el momento.
+- No borres ni reescribas una línea de `Pendientes` que ya estaba escrita: es la misma región que
+  `Registro` — la escribe quien implementa, no este workflow.
 
 Cerrá con un resumen corto: cuántas tareas quedaron, qué secciones de Registro preservaste, y
 cualquier inconsistencia que hayas tenido que escribir tal cual.
