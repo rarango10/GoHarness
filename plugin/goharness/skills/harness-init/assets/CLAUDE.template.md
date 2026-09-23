@@ -45,8 +45,13 @@ volverse mentira sin que la tarea cambie una línea.
 | 4 | `tasks.md` | skill `planning-tasks` → workflow `tasks-fanout` | «planeemos las tareas» |
 | 5 | código + tests | skill `implement-task` (TDD) | «implementemos T3» |
 | 6 | veredicto por tarea (en el chat) | subagente `dod-checker` | «verificá T3» |
-| 7 | `e2e-tests-plan.md` + `e2e-test-report.md` | skill `verify-e2e` | «verifiquemos e2e» |
+| 7 | `e2e-tests-plan.md` + `e2e-test-report.md` — **condicional** | skill `verify-e2e` | «verifiquemos e2e» |
 | 8 | corrida de higiene + commit de cierre | skill `close-feature` | «cerremos la feature» |
+
+**El paso 7 no es de todas las features.** Aplica solo si el `design.md` de la feature declara
+superficie navegable — algo que Playwright pueda abrir. Una feature sin interfaz (una CLI, una
+librería, un job) termina sus tareas en `hecho` y salta directo al paso 8: no es una excepción, es
+el camino para ese tipo de feature.
 
 Todo el papeleo de una feature vive en `docs/AAAA-MM-DD-<feature>/`, salvo los specs de Playwright,
 que van en `end2end/` en la raíz porque son código y los tiene que ver `playwright.config.ts`.
