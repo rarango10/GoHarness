@@ -53,11 +53,18 @@ Para actualizar: `claude plugin marketplace update goharness`, después
 | 4 | `tasks.md` | skill `planning-tasks` → workflow `tasks-fanout` | «planeemos las tareas» |
 | 5 | código + tests + un commit por tarea | skill `implement-task` (TDD) | «implementemos T3» |
 | 6 | veredicto por tarea (en el chat) | subagente `dod-checker` | «verificá T3» |
-| 7 | `e2e-tests-plan.md` + `e2e-test-report.md` | skill `verify-e2e` | «verifiquemos e2e» |
+| 7 | `e2e-tests-plan.md` + `e2e-test-report.md` — **condicional** | skill `verify-e2e` | «verifiquemos e2e» |
 | 8 | corrida de higiene + commit de cierre | skill `close-feature` | «cerremos la feature» |
 
 El paso 0 corre una vez por repo; del 1 al 8, una vez por feature. Todo el papeleo vive en
 `docs/AAAA-MM-DD-<feature>/`.
+
+**El paso 7 no es de todas las features.** Su `design.md` declara si hay superficie navegable —algo
+que abrir con una URL o un `file://`—, por feature y no por proyecto. Sin eso, el veredicto de
+`dod-checker` pasa directo al paso 8: no es una excepción, es el camino para una CLI, una librería o
+un job. Cuando sí la hay, `harness-init` instala Playwright junto con `playwright.config.ts` en el
+paso 0, con el mismo sí — no recién en el paso 7, donde un paquete ausente cuesta la feature entera
+de espera.
 
 **Entre el 5 y el 6 no hay compuerta, y es a propósito.** Una tarea implementada y sin verificar
 queda en un limbo indistinguible de «a medio hacer», así que implementar y verificar son el mismo
@@ -156,7 +163,7 @@ docs/2026-09-07-calculadora-operaciones/ la segunda, 9 tareas, con el harness co
   e2e-test-report.md   resultado de la corrida real de Playwright
 
 docs/2026-09-06-mejoras-del-harness/     el plan con el que se corrigió el propio harness
-lecciones.md                             44 lecciones de usarlo: qué falló y por qué
+lecciones.md                             47 lecciones de usarlo: qué falló y por qué
 end2end/                                 los specs, escritos por e2e-test-writer
 src/                                     el código: calc.ts (lógica pura) + App.tsx (UI)
 ```
@@ -319,23 +326,26 @@ Playwright · Biome · npm.
 
 ## Estado y límites conocidos
 
-El harness funciona de punta a punta: el ciclo completo corrió dos veces, la segunda con nueve tareas,
-37 tests y seis de seis casos e2e en verde. Esto es lo que todavía no se sostiene solo, y está acá
-porque un método que no dice dónde es frágil se lee como si no lo fuera. El registro completo, con el
-análisis de cada caso, está en [`lecciones.md`](lecciones.md).
+El harness funciona de punta a punta: el ciclo completo corrió tres veces sobre este ejemplo, la
+segunda con nueve tareas, 37 tests y seis de seis casos e2e en verde. Esto es lo que todavía no se
+sostiene solo, y está acá porque un método que no dice dónde es frágil se lee como si no lo fuera. El
+registro completo, con el análisis de cada caso, está en [`lecciones.md`](lecciones.md).
 
-- **Tres arreglos escritos y sin aplicar.** Nombrar `/workflows` al lanzar el plan, que el modo
-  revisión de `harness-init` busque afirmaciones falsas en el contrato, y que la segunda ronda de una
-  tarea espere el sí. Los tres salieron de la última corrida.
-- **El ruteo del ciclo e2e nunca se ejercitó.** Corrió entero dos veces y las dos en verde, así que
+**Resuelto en los lotes 8 a 10 (2026-09-22).** `planning-tasks` nombra `/workflows` al lanzar el plan
+y reporta duración y logs al terminar; el modo revisión de `harness-init` lee el contrato entero
+buscando afirmaciones falsas —las que ya están y las que él mismo propone— antes de sus cuatro
+comprobaciones; la segunda ronda de una tarea espera el sí siempre, en cualquier modo; y la
+prohibición de escritura de `dod-checker` y `spec-scout` quedó escrita sobre la ejecución, no sobre
+el efecto neto, después de que uno de los dos corriera `git stash` y `git stash pop` verificando una
+tarea real.
+
+- **El ruteo del ciclo e2e nunca se ejercitó.** Corrió entero tres veces y las tres en verde, así que
   el camino del fallo —`causa: test` / `codigo` / `spec`— sigue con cero pruebas.
-- **En dos agentes, no escribir es conducta y no impedimento.** `task-reviewer` y `plan-reducer` no
-  tienen ninguna herramienta de escritura; `dod-checker` y `spec-scout` tienen `Bash`, que sí puede.
-  Y ya falló una vez: verificando una tarea, `dod-checker` corrió `git stash` y `git stash pop`.
 - **No hay evidencia independiente del orden del TDD.** El commit por tarea prueba que la tarea fue
   una unidad de trabajo, no que el test se escribió primero: trae los dos juntos.
 - **Las compuertas de aprobación son instrucciones, no mecanismos.** Ningún borde de llamada a
-  herramienta significa «el plan fue aprobado».
+  herramienta significa «el plan fue aprobado» — con el matiz de que el retorno del tool `Workflow`
+  sí es un borde exacto, y es lo que aprovecha el arreglo de arriba.
 
 ---
 
@@ -345,7 +355,7 @@ El harness se construyó en [`rarango10/10X-mis-finanzas`](https://github.com/ra
 hoy archivado: ahí están los 58 commits de su construcción. Se mudó acá porque una semilla se juzga
 por lo que muestra funcionando, y este es el repo donde el método se usó de verdad.
 
-`lecciones.md` viajó con él. Es la parte que no se puede reconstruir leyendo el código: 44 entradas
+`lecciones.md` viajó con él. Es la parte que no se puede reconstruir leyendo el código: 47 entradas
 de qué falló al usarlo, por qué, y qué se cambió — incluidas las que siguen abiertas.
 
 ## Licencia

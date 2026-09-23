@@ -18,7 +18,7 @@ plugin/goharness/                 EL PLUGIN. Esto es lo que se instala
 ├── skills/                       los 7 skills, uno por paso con dueño
 ├── agents/                       los 7 subagentes
 ├── workflows/tasks-fanout.js     el único escritor de tasks.md
-└── checks/                       el linter de literales y el script de sincronización
+└── checks/                       el linter de literales, la guarda de paridad y el sync
 ```
 
 **No está en `.claude/` a propósito.** Ahí este repo cargaría sus propios skills *además* del plugin
