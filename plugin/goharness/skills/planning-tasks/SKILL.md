@@ -26,6 +26,10 @@ un agente por tarea, así que ese número es lo que hace que la pregunta signifi
 
 Esperá el sí. Una confirmación corta («dale», «va») alcanza.
 
+**La confirmación va en prosa, no con una pregunta estructurada.** Pedir un sí no es ofrecer una
+elección: acá hay un solo camino —lanzar— y `AskUserQuestion` exige dos opciones distintas, así
+que rechaza la llamada y la persona nunca ve la pregunta. Escribí la línea y esperá la respuesta.
+
 ## 3. Lanzá
 
 Llamá al tool `Workflow` con el workflow guardado `tasks-fanout` y `args` igual a la ruta de la
@@ -37,6 +41,23 @@ Workflow(tasks-fanout, args: "docs/AAAA-MM-DD-<feature>")
 
 `args` también acepta un objeto, para acotar las rondas o forzar un spec sin aprobar:
 `{"specDir": "docs/AAAA-MM-DD-<feature>", "maxRounds": 2}`.
+
+**Al confirmar el lanzamiento, decí estas tres cosas y ninguna menos:**
+
+- Que quedó corriendo, con su `Task ID`.
+- **`/workflows` para ver el avance en vivo.** El fan-out lanza un agente por tarea y la corrida
+  puede tomar varios minutos; sin esta línea la persona espera a ciegas, y esperar a ciegas la
+  empuja a abrir el repo a mirar qué pasa — que sobre una corrida en vuelo da instantáneas, no
+  conclusiones. La salida del tool `Workflow` ya trae el puntero (`Use /workflows to watch live
+  progress.`): no lo descartes al resumir.
+- La forma del fan-out: 1 scout + 1 plan inicial + 1 revisor por tarea + 1 reducer por ronda con
+  cambios + 1 escritor. **El número exacto no se puede anticipar en la primera corrida** —el plan
+  lo dibuja el propio workflow— pero la forma sí, y alcanza para dimensionar la espera.
+
+**Al llegar la notificación de fin**, antes de resumir, leé
+`~/.claude/projects/<proyecto>/<sesión>/workflows/wf_<runId>.json` y reportá `agentCount`, la
+duración y los `logs` de la corrida. Es el mismo dato que `/workflows` mostraba en vivo: si el
+puntero se perdió al lanzar, acá llega igual.
 
 **El nombre puede venir con prefijo.** Si el harness está empaquetado como plugin, el workflow se
 registra como `<nombre-del-plugin>:tasks-fanout` y el nombre pelado no resuelve. Lanzá el pelado

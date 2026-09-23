@@ -43,12 +43,13 @@ carga la sesión hasta que corras `claude plugin update` y reinicies. Por eso ex
 
 ## Las verificaciones
 
-Los cuatro comandos, y ninguno es opcional antes de un commit al plugin:
+Los cinco comandos, y ninguno es opcional antes de un commit al plugin:
 
 ```bash
 claude plugin validate . --strict                  # el marketplace
 claude plugin validate plugin/goharness --strict   # el plugin
 node plugin/goharness/checks/lint-workflow-literals.cjs plugin/goharness/workflows/tasks-fanout.js
+node plugin/goharness/checks/check-rules-parity.cjs # reglas y tabla del ciclo, sin deriva
 bash plugin/goharness/checks/sync-plugin.sh        # tiene que decir "sin deriva"
 ```
 
@@ -63,6 +64,14 @@ claude plugin list --json          # 7 skills, 7 agentes, el workflow y el route
 claude plugin uninstall goharness@goharness --scope local
 claude plugin marketplace remove goharness --scope local
 ```
+
+**`check-rules-parity.cjs` cuida una duplicación que no se puede eliminar.** Las reglas del método
+viven en el `CLAUDE.md` de este repo y otra vez en `CLAUDE.template.md`, la que `harness-init`
+siembra en cualquier proyecto; la tabla del ciclo vive en el router y otra vez en esa plantilla. No
+son copias redundantes —una habla de este repo y la otra del proyecto que nace—, pero tienen que
+nombrar las mismas reglas y los mismos productores. Arreglar una regla de un solo lado no rompe
+nada visible: el próximo proyecto sembrado nace con la versión vieja. El chequeo compara los
+títulos en negrita de cada regla y el productor de cada paso, no la prosa, que difiere a propósito.
 
 El linter parece de más y no lo es: `tasks-fanout.js` es casi todo prompts entre backticks, y uno de
 más cierra el literal y abre otro. El archivo sigue siendo JavaScript válido y el prompt quedó

@@ -33,7 +33,7 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L6 | El MCP de Playwright elegiría mejores selectores | `abierto` | segunda ronda |
 | L7 | El ciclo e2e nunca había corrido entero | `resuelto` | corrió en el demo · README en Lote 7 |
 | L8 | Las compuertas son instrucciones, no mecanismos | **`límite asumido`** | análisis cerrado |
-| L9 | Solo-lectura: ¿conducta o impedimento? | `abierto` | **violada el 2026-09-11** · `git stash` en `dod-checker` |
+| L9 | Solo-lectura: ¿conducta o impedimento? | `resuelto` | Lote 8 · `dod-checker` + `spec-scout` |
 | L10 | Re-planificar desaprobaba un plan intacto | `resuelto` | Lote 1 · `task-writer` |
 | L11 | El próximo id libre se podía reutilizar | `resuelto` | Lote 1 · `tasks-fanout.js` + `spec-scout` |
 | L12 | Un test que pasa no prueba lo que dice probar | `abierto` | segunda ronda — **L29 le dejó el lever** |
@@ -60,13 +60,13 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L33 | Un veredicto vale solo para el estado en que se tomó | `resuelto` | Lote 5b · `close-feature` |
 | L34 | Razonó su frontera mejor de lo que se le pidió | `resuelto` | evidencia positiva, sin acción |
 | L35 | Dos archivos del plugin sin fuente en el repo | `resuelto` | Lote 5 · `plugin-root/` + `sync-plugin.sh` |
-| L36 | El progreso del workflow existía y ningún paso lo nombraba | **`listo para aplicar`** | el arreglo está escrito en la entrada |
+| L36 | El progreso del workflow existía y ningún paso lo nombraba | `resuelto` | Lote 8 · `planning-tasks` |
 | L37 | Un slash command que no resuelve no da error: improvisa | `descartada` | la premisa era falsa: corrió el router |
-| L38 | «Preguntá y esperá el sí» se tradujo a una pregunta estructurada inválida | `en observación` | fricción, se recuperó solo |
+| L38 | «Preguntá y esperá el sí» se tradujo a una pregunta estructurada inválida | `resuelto` | Lote 8 · `planning-tasks` |
 | L39 | El modo revisión de `harness-init` aprueba un contrato que miente | **`listo para aplicar`** | el arreglo está escrito en la entrada |
 | L40 | La segunda ronda de una tarea no decía si espera el sí | **`listo para aplicar`** | decidido: espera el sí, siempre |
 | L41 | Los pasos 0 a 3 no commitean | `en observación` | una ocurrencia, sin daño |
-| L42 | Una regla vive en `CLAUDE.md` y en la plantilla, sin verificación | `en observación` | se vuelve urgente al aplicar L40 |
+| L42 | Una regla vive en `CLAUDE.md` y en la plantilla, sin verificación | `resuelto` | Lote 8 · `check-rules-parity.cjs` |
 | L43 | Un skill extendió un principio escrito más allá de la lista | `resuelto` | evidencia positiva, sin acción |
 | L44 | Dos plugins con el mismo nombre no conviven: uno se apaga en silencio | `resuelto` | documentado en el README, al forkear |
 | L45 | Las advertencias del `Registro` no tienen lector ni destinatario | **`listo para aplicar`** | el arreglo está escrito en la entrada |
@@ -79,26 +79,23 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 > [`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md). Ejecutar cuando
 > no haya ninguna corrida del ciclo en vuelo.
 
-**Listo para aplicar — el insumo del próximo ciclo:** [[L36]] (nombrar `/workflows` al lanzar),
-[[L39]] (el modo revisión de `harness-init` tiene que buscar afirmaciones falsas —las del archivo y
-las que propone—, no solo sus cuatro puntos), [[L40]] (la segunda ronda de una tarea espera el sí),
-[[L45]] (dar lector y destinatario a lo que anota quien implementa), [[L46]] (bifurcar el ciclo
-según si la feature tiene superficie navegable) y [[L47]] (config y dependencia de Playwright se
-siembran juntos en `harness-init`; se aplica con [[L46]]). Los seis tienen el arreglo escrito.
+**Listo para aplicar — el insumo del próximo ciclo:** [[L39]] (el modo revisión de `harness-init`
+tiene que buscar afirmaciones falsas —las del archivo y las que propone—, no solo sus cuatro
+puntos), [[L40]] (la segunda ronda de una tarea espera el sí), [[L45]] (dar lector y destinatario a
+lo que anota quien implementa), [[L46]] (bifurcar el ciclo según si la feature tiene superficie
+navegable) y [[L47]] (config y dependencia de Playwright se siembran juntos en `harness-init`; se
+aplica con [[L46]]). Los cinco tienen el arreglo escrito, y son los Lotes 9 y 10 del plan.
 
 **Abiertos, en el orden en que conviene tomarlos:**
 
-- **[[L9]] subió de prioridad.** Tuvo su primera violación observada, y el arreglo más barato ya
-  está identificado: escribir la prohibición de `dod-checker` sobre la **ejecución**, no sobre el
-  efecto neto.
 - **[[L12]]** — el commit por tarea le dejó el diff que le faltaba, y `dod-checker` ya tiene `Bash`
   con `git log` autorizado.
 - **[[L6]]** — cuando el ciclo e2e tenga un fallo real que diagnosticar.
 - **[[L8]]** — cerrada, con el matiz que le agregó [[L36]]: los hooks sí mapean sobre bordes de
   tool-call; lo que no tiene borde es la aprobación.
 
-**En observación:** [[L38]], [[L41]] y [[L42]]. [[L42]] se vuelve urgente la primera vez que se
-aplique un arreglo de reglas, que es [[L40]].
+**En observación:** [[L41]], que el Lote 10 va a cerrar con la regla *quien recibe el sí de un
+documento lo commitea*.
 
 **Lo que ninguna corrida ejercitó todavía:** el ruteo del ciclo e2e (`causa: test` / `codigo` /
 `spec`), la resta de dependencias de [[L24]], la detección de un veredicto envejecido de [[L33]],
@@ -312,7 +309,7 @@ aprobado».
 
 ---
 
-## L9 · Que los agentes de solo lectura no escriban es conducta, no impedimento · `abierto` — acotada a dos agentes, violada una vez
+## L9 · Que los agentes de solo lectura no escriban es conducta, no impedimento · `resuelto` (Lote 8)
 
 **Qué pasó.** Se mide con un manifiesto de hashes del working tree antes y después de cada corrida
 —nunca preguntándole a un agente qué herramientas cree tener— y hasta ahora dio limpio. Pero a todos
@@ -1339,7 +1336,7 @@ encontrar los errores que ya se imaginaron.
 
 ---
 
-## L36 · El progreso del workflow existía y ningún paso lo nombraba · `listo para aplicar`
+## L36 · El progreso del workflow existía y ningún paso lo nombraba · `resuelto` (Lote 8)
 
 **Qué pasó.** En la corrida de `tasks-fanout` sobre `calculadora-operaciones` (demo, 2026-09-07) la
 persona esperó **8 minutos y 19 segundos** sin ninguna señal de qué estaba pasando. `planning-tasks`
@@ -1471,7 +1468,7 @@ dos se arreglan distinto.
 
 ---
 
-## L38 · «Preguntá y esperá el sí» se tradujo a una pregunta estructurada inválida · `en observación`
+## L38 · «Preguntá y esperá el sí» se tradujo a una pregunta estructurada inválida · `resuelto` (Lote 8)
 
 **Qué pasó.** En el demo (2026-09-07), `planning-tasks` llegó a su paso 2 y el modelo formuló la
 confirmación con `AskUserQuestion` y **una sola opción**. El harness la rechazó
@@ -1606,7 +1603,7 @@ lo que produjiste»— es barato, pero conviene ver si se repite.
 
 ---
 
-## L42 · Una regla vive en `CLAUDE.md` y en la plantilla, sin verificación · `en observación`
+## L42 · Una regla vive en `CLAUDE.md` y en la plantilla, sin verificación · `resuelto` (Lote 8)
 
 **Qué pasó.** Las reglas del método viven dos veces: en el `CLAUDE.md` de este repo, para que rijan
 acá, y en `harness-init/assets/CLAUDE.template.md`, que es el único vehículo por el que llegan a
@@ -2258,6 +2255,68 @@ invirtió, con las dos razones escritas en el propio plan: correrlo antes lo med
 **viejo**, que va a dejar de existir; y **rehacer el demo termina con todo en verde**, que es el
 único estado desde el cual no se puede ejercitar el camino del fallo. Plegar la prueba de ruteo
 adentro de la corrida final da las dos cosas de una.
+
+## Lote 8 aplicado — 2026-09-22
+
+Guardas y arreglos aislados: L42, L9, L38 y L36. Es el primer lote de
+[`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md), y va primero porque
+L42 es la herramienta que cuida a los dos lotes que siguen.
+
+**L42 — `checks/check-rules-parity.cjs`, la quinta verificación.** Compara el conjunto de reglas de
+«Reglas del harness» del `CLAUDE.md` de este repo contra las de `CLAUDE.template.md`, y el productor
+de cada paso de la tabla del ciclo entre el router y esa misma plantilla. La decisión de diseño que
+lo hace usable: **compara títulos en negrita, no prosa.** Las dos copias difieren en el cuerpo a
+propósito —el repo dice «Cada tarea es su propio ciclo de TDD», la plantilla dice «Once tareas son
+once ciclos»— y un chequeo que diera rojo por eso se aprendería a ignorar, que es peor que no
+tenerlo. Los tres bullets sin negrita se comparan enteros: son una línea corta y completa, sin
+cuerpo que pueda diferir.
+
+**Su primera corrida dio un rojo falso, y el falso positivo valía.** Reportó tres reglas presentes
+en la plantilla y ausentes en el repo: *«nombres de archivos, módulos o componentes concretos»*,
+*«requisitos ni criterios de aceptación»* y *«el plan de trabajo»*. No son reglas — son los bullets
+del bloque `<!-- Qué NO va en este archivo -->` con el que la plantilla cierra su sección. Como el
+comentario vive **dentro** de la sección «Reglas» y después no hay otro `##`, el parseo se lo tragó.
+Se descartan los comentarios HTML antes de parsear. La moraleja no es sobre markdown: **la primera
+corrida de una guarda mide la guarda, no lo guardado**, y conviene reservarle ese crédito en vez de
+creerle el primer hallazgo.
+
+**Y se probó que da rojo cuando toca.** Una línea base en verde no prueba nada: se borró
+*«Un commit por tarea, con su id en el mensaje»* del `CLAUDE.md`, el chequeo la reportó como
+faltante con exit 1, y se restauró. Una guarda que nunca se vio fallar es una guarda no verificada.
+
+**L9 — la prohibición se reescribió sobre la ejecución, no sobre el efecto neto.** En
+`dod-checker` y `spec-scout`, los dos agentes de solo lectura que tienen `Bash`, decía *«ni ningún
+comando que deje un cambio en el repo»*. Esa redacción autoriza `git stash && … && git stash pop`
+por lectura literal —el working tree termina igual— y fue exactamente la violación observada el
+2026-09-11. Ahora nombra los comandos prohibidos aunque restauren (`git stash` con `pop` o sin él,
+`checkout`, `reset`, `clean`) y explica la ventana: entre el cambio y la restauración, el trabajo
+sin commitear de otro vive solo en un stash que nadie sabe que existe. Y nombra la alternativa, que
+es la mitad que faltaba: `git log -1 -- <archivo>`, `git diff`, `git show`, `git blame` contestan la
+misma pregunta sin tocar nada. Cierra con qué hacer si aun así no alcanza: anotarlo en `specGaps` y
+seguir.
+
+**El patrón que comparten L9 y L38.** Las dos eran instrucciones escritas sobre el *efecto deseado*
+—que el repo quede igual, que llegue un sí— y se reescribieron como restricción sobre el *acto*:
+qué comandos no corrés, en qué medio pedís la confirmación. Una instrucción sobre el efecto se
+racionaliza; una sobre el acto se cumple o no se cumple, y se ve.
+
+**L38 — la confirmación va en prosa.** El paso 2 de `planning-tasks` decía «esperá el sí, una
+confirmación corta alcanza», y el modelo alcanzó `AskUserQuestion` con una sola opción, que el
+harness rechaza por diseño (`minimum: 2`). Ahora lo dice explícito, con el porqué: pedir un sí no es
+ofrecer una elección, y acá hay un solo camino. Subió de `en observación` a `resuelto` sin esperar
+la segunda ocurrencia — el arreglo era una línea.
+
+**L36 — el puntero a `/workflows`, como paso y no como intención.** El paso 3 de `planning-tasks`
+enumera ahora tres cosas que decir al lanzar y «ninguna menos»: el `Task ID`, `/workflows` para ver
+el avance en vivo, y la forma del fan-out. Se agregó además una segunda oportunidad independiente:
+al llegar la notificación de fin, leer `wf_<runId>.json` y reportar `agentCount`, duración y `logs`.
+Dos puntos de entrega baratos en vez de un hook — si igual falla, eso es evidencia para reabrir
+[[L8]], no para escribir más prosa.
+
+**Lo que este lote no ejercitó.** El arreglo de L9 no se probó con una corrida real de
+`dod-checker`, y el de L36 y L38 no se probaron con una re-planificación real: los tres se
+verificaron leyendo el archivo, no viéndolos actuar. Quedan para la primera corrida del ciclo que
+los toque, en sesión nueva.
 
 ## Primera corrida con el harness nuevo — 2026-09-11
 
