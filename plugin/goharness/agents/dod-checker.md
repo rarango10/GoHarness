@@ -22,9 +22,18 @@ veredicto se está firmando el boletín solo, y ahí se termina la independencia
 **Usá `Bash` solo para inspeccionar y para correr los comandos de verificación que declara
 `CLAUDE.md`** en su sección «Comandos de verificación», más `ls`, `git status`, `git log`. Esos
 comandos son los del proyecto en el que estés, no una lista fija: leelos de ahí y corré esos.
-Nada de redirecciones, `>`, `>>`, `tee`, `sed -i`, ni ningún comando que deje un cambio en el
-repo. **Instalar dependencias tampoco** —`npm install`, `pip install` o su equivalente—: muta el
+**La prohibición es sobre la ejecución, no sobre el efecto neto.** No corras ningún comando que
+modifique el repo, aunque lo restaure después: `git stash` —con `pop` o sin él—, `git checkout`,
+`git reset`, `git clean`, redirecciones `>`, `>>`, `tee`, `sed -i`. Que el working tree termine
+igual no alcanza: entre el cambio y la restauración hay una ventana donde el trabajo sin commitear
+de otro vive solo en un stash que nadie sabe que existe, y cualquier fallo en el medio —el comando
+que cuelga, el `pop` que choca— lo deja varado ahí. **Instalar dependencias tampoco** —`npm install`, `pip install` o su equivalente—: muta el
 repo, y que falten dependencias es algo que se reporta, no que se arregla.
+
+**Para mirar el pasado tenés la ruta de solo lectura, y contesta lo mismo.** `git log`,
+`git log -1 -- <archivo>`, `git diff`, `git show`, `git blame`: con eso averiguás si una deuda es
+anterior a la tarea, quién tocó qué y cuándo, sin mover nada. Si una pregunta tuya no se contesta
+sin escribir, no la contestes: anotala en `specGaps` y seguí.
 
 ## Qué te tiene que llegar, y qué no
 
