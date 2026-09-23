@@ -39,7 +39,12 @@ opinable, que es exactamente lo que este skill viene a cerrar.
 - **La regla de corte.** Si un veredicto vuelve distinto de `cumple`, **pará ahí**: la tarea queda en
   `en curso`, lo asentás, avisás, y no arrancás la siguiente. Renunciar a la aprobación intermedia es
   acelerar; renunciar al corte es cambiar lo que significa terminar. `hecho` significa verificado, y
-  eso no lo mueve ningún modo.
+  eso no lo mueve ningún modo. **Y la segunda ronda de esa misma tarea también espera el sí,
+  siempre, en cualquier modo.** Pararse no es solo «no arrancar la siguiente»: es devolverle a la
+  persona la decisión de seguir, porque un veredicto parcial puede estar diciendo que el criterio
+  está mal, no el código. Ya pasó que dos tareas de la misma corrida se trataron distinto —una
+  preguntó antes de su segunda ronda, la otra no— porque «no arrancás la siguiente» no dice nada
+  sobre volver a la misma.
 
 **Decí al arrancar qué modo entendiste**, en una línea, antes de tocar nada. Si la persona se
 equivocó al escribirlo, ese es el único momento barato para descubrirlo.
@@ -55,10 +60,13 @@ Cuatro comprobaciones, antes de la primera tarea:
 1. **El encabezado de `tasks.md` dice `aprobado`.** Si dice `pendiente de aprobación`, el plan puede
    estar aprobado igual y sin asentar: `task-writer` tiene prohibido tocar ese encabezado, así que
    el sí ocurrió en el chat y no aterrizó en el archivo. **Preguntá en una línea si el plan está
-   aprobado, y con el sí escribí `> Estado: aprobado (AAAA-MM-DD)` en el acto.** Ese encabezado es
-   registro durable: lo lee `planning-tasks` para decidir si el spec está listo, y el scout del
-   workflow en la corrida siguiente. Un plan aprobado que figura como pendiente se trata como no
-   aprobado. Si la respuesta es que no está aprobado, pará y remití a `planning-tasks`.
+   aprobado, y con el sí escribí `> Estado: aprobado (AAAA-MM-DD)` en el acto — y commiteá ese
+   cambio ahí mismo.** Quien recibe el sí de un documento lo commitea: sin eso, el `aprobado` queda
+   flotando junto al resto del trabajo de esta tarea, expuesto a cualquier cosa que toque el
+   working tree antes de que llegue su commit. Ese encabezado es registro durable: lo lee
+   `planning-tasks` para decidir si el spec está listo, y el scout del workflow en la corrida
+   siguiente. Un plan aprobado que figura como pendiente se trata como no aprobado. Si la respuesta
+   es que no está aprobado, pará y remití a `planning-tasks`.
 
 2. **El repo es un repo git.** Si no lo es, decilo y ofrecé `git init` antes de empezar. No es
    trámite: sin repo no hay commits por tarea, y con eso se pierde el único registro del avance que
@@ -82,6 +90,11 @@ que corresponde y parate.
    que hay que lograr evita el modo de falla más común de esta fase: implementar lo que uno recuerda
    del design en vez de lo que la tarea pide.
 
+   **Leé también `## Pendientes`** y nombrá los ítems dirigidos a esta tarea (`[T<n>]`, con el id
+   que estás abriendo). Son advertencias que alguien dejó para este momento exacto: una que decía
+   «conviene decidirlo antes de T9», sin más destinatario que esa frase suelta, nunca se volvió a
+   leer — T9 se abrió, se implementó y se verificó con `cumple` sin que nadie la mirara.
+
 2. **Escribí el primer test y corrélo en rojo.** El que declara la tarea. **Correlo y mirá el
    fallo** — un test que nunca se vio fallar no prueba nada, porque un test que pasa desde el
    principio pasa también con el código roto.
@@ -96,6 +109,13 @@ que corresponde y parate.
    escribe acá, aunque lo veas venir y aunque sea barato: entra como una tarea del plan o como una
    línea en `Pendientes`. Alcance de más en una tarea es alcance que nadie planificó y que ningún
    criterio cubre.
+
+   **Toda línea que agregues en `Pendientes` lleva destinatario, entre corchetes y al principio:**
+   `[T<n>]` si es para una tarea futura ya numerada, `[paso 7]` si importa recién al generar los
+   e2e —solo tiene sentido si `design.md` declara superficie navegable—, `[paso 8]` si es para el
+   cierre, `[decidir ya]` si necesita una decisión de la persona antes de seguir. Una línea sin
+   destinatario es una entrada de diario que nadie vuelve a abrir: es lo que le pasó a la advertencia
+   de T9 del párrafo de arriba.
 
 4. **Corré el comando de corrección** que declara `CLAUDE.md` — typecheck y tests. **No el de
    higiene** (lint, formato, build): ese es del paso 8, antes del commit final del conjunto. Meter
@@ -132,8 +152,11 @@ que corresponde y parate.
    tarea deja el repo en verde.
 
 8. **Compuerta: presentá y parate.** El veredicto, qué asentaste, el commit, y cuál sería la tarea
-   siguiente. Esperá el sí. En `--modo corrido` esta es la única parte que se saltea, y solo mientras
-   el veredicto haya sido `cumple`.
+   siguiente. Esperá el sí. En `--modo corrido` esta es la única parte que se saltea, y solo para
+   pasar a la tarea siguiente, y solo mientras el veredicto haya sido `cumple`. **Si en cambio esto
+   cierra una segunda ronda de la tarea que acabás de reabrir, esperá el sí igual — en cualquier
+   modo.** No es la misma compuerta que la de arrancar la siguiente tarea, aunque las dos vivan en
+   este mismo paso 8.
 
 ## Cómo invocar a `dod-checker`
 
@@ -166,9 +189,11 @@ según cómo esté instalado.
 
 ## Lo que escribís, y lo que no
 
-Escribís **el código y los tests**, y de `tasks.md` exactamente tres cosas: la **celda `Estado`** y el
-**bloque `Registro`** de la tarea que estás haciendo, y el **encabezado de aprobación** cuando recibís
-el sí. Nada más de ese archivo.
+Escribís **el código y los tests**, y de `tasks.md` cuatro cosas: la **celda `Estado`** y el
+**bloque `Registro`** de la tarea que estás haciendo, el **encabezado de aprobación** cuando recibís
+el sí, y **`## Pendientes`** — solo para agregar una línea nueva sobre un hallazgo fuera de alcance,
+nunca para editar o borrar una línea que dejó otra tarea: esa sigue siendo lectura tuya, no
+territorio para limpiar. Nada más de ese archivo.
 
 **La tabla de Plan no es tuya**: qué tareas existen, sus ids, su orden, su título y su `Cubre` los
 escribe únicamente el workflow `tasks-fanout`. Si mientras implementás descubrís que falta una tarea,
@@ -186,8 +211,9 @@ Decilo y parate. Lo que sigue es el **paso 7**, la verificación end-to-end del 
 `dod-checker` contestó once veces «¿esta tarea cumple sus criterios?», y ninguna de esas respuestas
 dice si la feature entera camina. Son verificaciones distintas y ninguna reemplaza a la otra.
 
-No lo arranques vos: nombralo. Y si la feature no tiene superficie navegable —no hay e2e que
-correr—, lo que sigue es el **paso 8**, el skill `close-feature`.
+No lo arranques vos: nombralo. **Leé la sección `## Superficie` de `design.md`**: si declara no
+navegable, no hay paso 7 que correr para esta feature, y lo que sigue directo es el **paso 8**, el
+skill `close-feature`.
 
 Los commits por tarea **no cierran la feature**. Cada uno guarda una tarea; el cierre es otra cosa,
 y es la corrida de higiene sobre el estado final: tu `cumple` de la tarea 3 se tomó sobre un repo que

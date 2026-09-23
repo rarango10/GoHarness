@@ -91,7 +91,18 @@ tarea con la que vino a reemplazar, absorber o dividir.>
 después, deuda asumida a propósito, preguntas sin responder. Sirve para no perderlas sin
 tener que agrandar el alcance ahora.>
 
-- <...>
+<Toda línea lleva un destinatario entre corchetes, al principio: quién tiene que leerla y en qué
+momento. Sin destinatario es una entrada de diario que nadie vuelve a abrir — pasó de verdad: una
+advertencia escrita en prosa suelta («conviene decidirlo antes de T9») nunca encontró lector, y la
+tarea que debía leerla se implementó y se verificó sin ella.>
+
+- `[T7]` <algo que la tarea T7 va a necesitar y que quien la abra no va a adivinar solo leyendo
+  su `Objetivo`>
+- `[paso 7]` <algo que importa recién al generar los tests e2e — solo tiene sentido si el
+  `design.md` de la feature declara superficie navegable>
+- `[paso 8]` <algo que hay que revisar en el cierre, sobre el estado final del repo>
+- `[decidir ya]` <algo que necesita una decisión de la persona antes de seguir, no puede esperar
+  a un paso futuro>
 
 <!--
 Recordatorios al escribir:

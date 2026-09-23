@@ -39,7 +39,7 @@ Separar el "qué" del "cómo" mantiene honesto al diseño: si arrancás por la s
 
 No pases a diseño hasta tener un sí. Si la respuesta trae cambios, ajustá el archivo y volvé a pedir aprobación.
 
-**Cuando llegue el sí, asentalo en el archivo en el acto**: el encabezado de `requirements.md` pasa a `> Estado: aprobado (AAAA-MM-DD)`. La aprobación ocurre en el chat y el chat se pierde; lo que queda es el encabezado, y es lo que van a leer `planning-tasks` para decidir si el spec está listo y el scout del workflow en la corrida siguiente. Un documento aprobado que figura como pendiente se trata como no aprobado.
+**Cuando llegue el sí, asentalo en el archivo en el acto**: el encabezado de `requirements.md` pasa a `> Estado: aprobado (AAAA-MM-DD)`. La aprobación ocurre en el chat y el chat se pierde; lo que queda es el encabezado, y es lo que van a leer `planning-tasks` para decidir si el spec está listo y el scout del workflow en la corrida siguiente. Un documento aprobado que figura como pendiente se trata como no aprobado. **Commiteá ese cambio ahí mismo**: quien recibe el sí de un documento lo commitea, y sin eso el archivo queda flotando hasta el commit de la primera tarea, mezclado con trabajo de otro paso.
 
 ## Fase 2 — Design
 
@@ -56,7 +56,7 @@ Después:
 2. **Referenciá los requisitos**: cada decisión de diseño existe para satisfacer algo. Enlazá secciones con los ids (`R1.2`) y, en la estrategia de testing, mapeá qué test cubre qué criterio.
 3. **Diseñá para lo que hay**: seguí los patrones del código existente y las reglas que declara `CLAUDE.md` — su stack, sus comandos de verificación, y las restricciones que se haya puesto el proyecto (por ejemplo, no agregar dependencias sin necesidad). Si una dependencia o una capa nueva parece necesaria, justificá por qué el requisito no se puede satisfacer sin ella.
 4. **Dejá registro de lo descartado**: qué alternativas consideraste y por qué no. Eso evita rediscutir lo mismo en tres semanas.
-5. **Presentá y esperá aprobación**, igual que en la fase 1: al pedir el sí, decí también qué habilita —el plan de tareas, que arma `planning-tasks` lanzando un workflow con un agente por tarea— para que quien aprueba sepa qué está autorizando y a qué costo. Y cuando el sí llegue, **asentá `> Estado: aprobado (AAAA-MM-DD)` en el encabezado de `design.md` en el acto**, por la misma razón que en la fase 1.
+5. **Presentá y esperá aprobación**, igual que en la fase 1: al pedir el sí, decí también qué habilita —el plan de tareas, que arma `planning-tasks` lanzando un workflow con un agente por tarea— para que quien aprueba sepa qué está autorizando y a qué costo. Y cuando el sí llegue, **asentá `> Estado: aprobado (AAAA-MM-DD)` en el encabezado de `design.md` en el acto, y commiteá el cambio**, por la misma razón que en la fase 1.
 
 **Si el design recién aprobado declara superficie navegable**, antes de nombrar el paso siguiente corré el doctor de Playwright (`node <ruta-de-verify-e2e>/scripts/e2e-doctor.cjs`, con la ruta del proyecto). Puede ser la primera feature del proyecto que necesita una interfaz: si el doctor falla, no lo arregles vos — nombrá el skill `harness-init` **en modo revisión** (siembra `playwright.config.ts`, pide el sí para instalar la dependencia y suma la pata `e2e` al comando de higiene) y esperá a que vuelva antes de seguir con `planning-tasks`. Detectarlo acá, con el design recién aprobado, cuesta una revisión corta; detectarlo en el paso 7 cuesta la feature entera ya implementada.
 
