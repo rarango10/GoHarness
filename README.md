@@ -10,7 +10,7 @@ vista.
    algo, y el lugar donde se puede leer cómo quedó cada documento del ciclo.
 
 Si venís a usarlo en tu proyecto, son dos comandos. Si venís a evaluar el método, andá derecho a
-[Cuatro momentos donde el ciclo hizo su trabajo](#cuatro-momentos-donde-el-ciclo-hizo-su-trabajo). Y
+[Momentos donde el ciclo hizo su trabajo](#momentos-donde-el-ciclo-hizo-su-trabajo). Y
 si venís a **editar el harness**, la puerta es [`EMPEZAR-ACA.md`](EMPEZAR-ACA.md).
 
 ---
@@ -107,11 +107,11 @@ puede volverse falso sin que la tarea cambie una línea. Por eso existe el paso 
 
 ---
 
-## Cuatro momentos donde el ciclo hizo su trabajo
+## Momentos donde el ciclo hizo su trabajo
 
 Están todos asentados en las bitácoras de `docs/`. Son la razón por la que el andamiaje existe. Los
 cuatro primeros son de la feature de suma, la primera que se corrió; el quinto es de la segunda, ya
-con el harness corregido.
+con el harness corregido, y el sexto es de la tercera (`raíz-y-cuadrado`).
 
 **1. El desvío que el verificador no vio, y la persona sí (T1).**
 Se agregó `@testing-library/jest-dom` sin declararla, y el Objetivo de T1 afirmaba explícitamente que
@@ -149,6 +149,16 @@ con tres cláusulas y una sin test, y un objetivo que exigía `verify` en verde 
 por deuda de la tarea anterior. Las dos se cerraron con una segunda ronda y su veredicto anterior
 marcado como superado. Antes de las correcciones, ese mismo caso salía `cumple` con una nota al pie.
 
+**6. El desvío que se vio dos tareas después, y llegó al documento (T5 → T7, tercera feature).**
+En T5 el botón «Elevar al cuadrado» quedó con `setResult(String(square(opA)))` directo, en vez de
+pasar por `showResult` como decía el `design.md`. Era equivalente —`square` nunca devuelve `null`, no
+hay error que traducir— y `dod-checker` dio `cumple`; el `Registro` de T5 cuenta qué se escribió pero
+no lo marca como desvío. Lo marcó el de T7, al probar otro criterio, y **`design.md` se actualizó para
+describir lo que existe**. Es la regla de la bitácora funcionando como segunda pasada: un desvío sin
+registrar deja un documento que describe algo que ya no está, y este quedó registrado y corregido en
+el mismo archivo donde se iba a leer. La feature cerró con 8 tareas, 61 tests y los tres casos e2e en
+verde.
+
 ---
 
 ## Qué hay para mirar
@@ -156,6 +166,7 @@ marcado como superado. Antes de las correcciones, ese mismo caso salía `cumple`
 ```
 docs/2026-09-06-calculadora-suma/        la primera feature, 10 tareas
 docs/2026-09-07-calculadora-operaciones/ la segunda, 9 tareas, con el harness corregido
+docs/2026-09-13-raiz-y-cuadrado/         la tercera, 8 tareas, con un desvío de diseño registrado
   requirements.md      criterios de aceptación en notación EARS
   design.md            arquitectura, interfaces, estrategia de testing
   tasks.md             el plan + la bitácora completa de cada tarea
