@@ -78,6 +78,38 @@ condiciones anidadas para entenderse, probablemente sean varios criterios.
 > IF la detección de duplicados está activa
 > THEN THE SYSTEM SHALL omitir los movimientos repetidos e informar cuántos omitió.
 
+## Criterios de apariencia
+
+Solo hacen falta cuando `design.md` va a declarar una referencia visual **normativa** (la tabla
+adoptar / adaptar / descartar sale del brainstorming). Sin ellos, la referencia no existe para el
+ciclo: nadie la verifica, porque ningún criterio la nombra, y un spec que solo pide «los colores del
+sistema» termina con un resultado que cumple todo y no se parece.
+
+«Se ve como el mockup» no es verificable, igual que «el sistema debe ser rápido». La salida es la
+misma: bajar la cualidad a algo comprobable. Cada pieza que la tabla marca `adoptar` o `adaptar`
+entra en alguno de estos cuatro tipos:
+
+- **Inventario** — qué partes hay y en qué orden.
+  > THE SYSTEM SHALL mostrar, en este orden: el cumplimiento del día, el resumen del día y la línea
+  > de tiempo.
+- **Estructura** — cómo se ubican unas respecto de otras.
+  > THE SYSTEM SHALL mostrar el cumplimiento del día y el resumen del día en una misma fila, con el
+  > cumplimiento al doble de ancho que el resumen.
+- **Componente** — con qué forma se muestra un dato.
+  > THE SYSTEM SHALL representar el porcentaje de cumplimiento como un anillo de progreso.
+- **Token** — qué vocabulario visual se usa.
+  > THE SYSTEM SHALL usar solo colores declarados en la tabla de tokens del sistema de diseño.
+
+Nombrar los tokens o las piezas de un sistema de diseño **no** es «implementación disfrazada de
+requisito» (ver abajo): el valor lo fija algo externo, y eso lo hace requisito. Lo que sigue siendo
+del design es *cómo* se construye — con qué archivos, funciones o estructura de CSS.
+
+**Y cada criterio de apariencia dice quién lo mira y contra qué.** Un test sobre CSS no distingue
+una grilla de doce columnas de una pila de una columna: las dos usan los mismos tokens. Solo el de
+token se prueba bien con un test; los otros tres se comprueban **mirando la pantalla al lado de la
+referencia**, y eso lo hace `close-feature` antes de cerrar. Si el criterio no lo dice, el
+verificador lo termina dando por cumplido leyendo código, que es justo donde la diferencia no se ve.
+
 ## Errores típicos
 
 **Comportamiento no observable.** Si no se puede escribir un test que falle cuando no se cumple,

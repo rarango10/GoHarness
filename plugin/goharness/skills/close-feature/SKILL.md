@@ -1,6 +1,6 @@
 ---
 name: close-feature
-description: "Cierra una feature terminada: corre el comando de higiene completo sobre el estado final del repo, comprueba que todos los veredictos de dod-checker sigan siendo ciertos juntos, y hace el commit de cierre. Un rojo baja la tarea afectada a en curso y la devuelve al TDD. Es el paso 8 del ciclo. Usalo cuando la persona diga 'cerremos la feature', 'commiteemos', 'listo para commitear', 'ya terminamos X', o cuando todas las tareas estén en hecho y el ciclo e2e haya cerrado. No repara código, no toca el plan de tareas y no aprueba nada: si algo sale rojo, nombra la tarea que vuelve a en curso y devuelve el arreglo al skill implement-task."
+description: "Cierra una feature terminada: si tiene pantalla, pide que la persona la mire —contra su referencia visual, si el design declara una— antes de nada; corre el comando de higiene completo sobre el estado final del repo, comprueba que todos los veredictos de dod-checker sigan siendo ciertos juntos, y hace el commit de cierre. Un rojo baja la tarea afectada a en curso y la devuelve al TDD. Es el paso 8 del ciclo. Usalo cuando la persona diga 'cerremos la feature', 'commiteemos', 'listo para commitear', 'ya terminamos X', o cuando todas las tareas estén en hecho y el ciclo e2e haya cerrado. No repara código, no toca el plan de tareas y no aprueba nada: si algo sale rojo, nombra la tarea que vuelve a en curso y devuelve el arreglo al skill implement-task."
 ---
 
 # Close Feature
@@ -12,8 +12,9 @@ antes.
 
 ## Un veredicto se toma sobre un estado
 
-Esta es la única razón por la que este paso existe, así que conviene tenerla clara antes del
-procedimiento.
+Es la razón principal de este paso, así que conviene tenerla clara antes del procedimiento. La
+otra es más simple: en una feature con pantalla, este es el único momento del ciclo en que alguien
+la mira (paso 2 del procedimiento).
 
 `dod-checker` verifica **una tarea, en un momento**. Su `cumple` es cierto para el repo tal como
 estaba cuando lo tomó. Nada garantiza que siga siéndolo después, y **una tarea puede volverse
@@ -33,6 +34,7 @@ cambiar y no había ningún lugar donde usar esa información.** Este paso es es
 | Paso 6 · `dod-checker` | ¿esta tarea cumple los criterios que dice cubrir? | una tarea, en un momento |
 | Paso 7 · `verify-e2e` | ¿la feature entera funciona? | la feature, en un momento |
 | **Paso 8 · este skill** | **¿todos los veredictos siguen siendo ciertos *juntos*?** | **el repo, en su estado final** |
+| **Paso 8 · la persona** | **¿se ve como tenía que verse?** | **la pantalla, al lado de su referencia** |
 
 **Verificar tarea por tarea no garantiza el conjunto.** Es la misma distinción que separa el paso 6
 del paso 7, un nivel más arriba.
@@ -50,7 +52,40 @@ nada — cada tarea ya tiene su commit con su id, así que el trabajo hecho est�
 1. **Mirá el estado antes de correr nada.** La tabla de `tasks.md`, y el `e2e-test-report.md` si
    existe. Decí en una línea qué vas a cerrar y cuántas tareas trae.
 
-2. **Corré el comando de higiene, completo, una vez.** El que `CLAUDE.md` declara como tal — no el de
+2. **Si la feature es navegable, que la persona la mire antes de la higiene.** Leé `## Superficie` y
+   `## Referencia visual` de `design.md`. Si la superficie es navegable, este paso no es opcional:
+   **es el único punto del ciclo donde alguien ve lo que se construyó**. `dod-checker` verifica
+   código contra criterios, `verify-e2e` verifica comportamiento y la higiene verifica que el repo
+   esté sano. Ninguno contesta «¿esto se ve como tenía que verse?». Pasó: un rediseño cerró con
+   todo en verde y la persona lo vio por primera vez después del commit de cierre, muy lejos del
+   mockup que tenía que respetar.
+
+   Decile cómo abrirla —lo dice `## Superficie`— y contra qué mirarla:
+
+   - **Referencia normativa con un skill de fuente:** invocá el skill y pasale su lista de chequeo,
+     para recorrerla con la app al lado de la referencia.
+   - **Referencia normativa con un archivo de fuente:** la lista es la tabla adoptar / adaptar /
+     descartar de `## Referencia visual`. Que abra el archivo al lado de la app.
+   - **Orientativa o ninguna:** alcanza con mirarla y preguntarse si se la mostraría a quien pidió
+     la feature.
+
+   **Quien decide es la persona, y esperás su respuesta antes de seguir.** Si podés sacar capturas,
+   ayudan, pero no reemplazan su mirada. Un design escrito antes de que existiera la sección
+   `## Referencia visual` no la tiene: preguntá si había algo a lo que tenía que parecerse.
+
+   Lo que aparezca **no se arregla acá**, y se rutea según qué criterio lo cubre:
+
+   - **Contradice un criterio que una tarea cubre** → es un rojo como cualquier otro: la tarea baja
+     a `en curso`. Ver «Qué hacer con un rojo».
+   - **No lo cubre ningún criterio** —el caso típico: una pieza de la referencia que nunca llegó al
+     spec— → no hay tarea que reabrir, y este paso no crea tareas. Es un hueco del spec. Nombrá
+     `specify` para sumar el criterio y `planning-tasks` para el plan, y parate. Si la persona
+     decide dejarlo para otra feature, anotalo en `## Pendientes` de `tasks.md` con destinatario
+     `[feature siguiente]` y seguí.
+
+   Una feature no navegable saltea este paso.
+
+3. **Corré el comando de higiene, completo, una vez.** El que `CLAUDE.md` declara como tal — no el de
    corrección, que es el del paso 6.
 
    Dos atajos que hay que no tomar, porque los dos anulan el paso entero: **no lo acotes** a los
@@ -63,9 +98,9 @@ nada — cada tarea ya tiene su commit con su id, así que el trabajo hecho est�
    dependencia sin instalar— decilo explícitamente en vez de dejarla correr y contar el fallo como
    hallazgo. Un rojo de andamiaje ausente no reabre ninguna tarea.
 
-3. **Verde → commit de cierre.** Sección de abajo.
+4. **Verde → commit de cierre.** Sección de abajo.
 
-4. **Rojo → ruteo.** Sección de abajo. **Presentá el rojo y qué pensás hacer con él antes de tocar
+5. **Rojo → ruteo.** Sección de abajo. **Presentá el rojo y qué pensás hacer con él antes de tocar
    `tasks.md`**: bajar una tarea de `hecho` muta el único registro durable de qué está terminado, y
    eso no se hace sin un sí.
 
@@ -110,12 +145,15 @@ verde y no había nada pendiente de commitear».
 
 - **No repara código ni tests.** Rutea a `implement-task`.
 - **No toca el plan.** Qué tareas existen y sus ids son del workflow `tasks-fanout`. Este paso mueve
-  `Estado` y escribe `Registro`, que son la región de quien implementa — y en este momento del ciclo,
+  `Estado` y escribe `Registro` y `Pendientes`, que son la región de quien implementa — y en este momento del ciclo,
   quien implementa es esta sesión.
 - **No aprueba nada.** Si un documento del spec quedó sin aprobar, es un hallazgo para reportar, no
   algo que se asiente acá.
-- **No decide que la feature está bien.** Decide que el repo está sano con ella adentro, que es una
-  pregunta más chica y la única que este paso puede contestar.
+- **No decide que la feature está bien.** Decide que el repo está sano con ella adentro. Si se ve
+  como tenía que verse lo decide la persona, mirándola en el paso 2: este skill le da qué abrir y
+  contra qué compararlo, no el veredicto.
+- **No crea tareas.** Un hallazgo de la mirada que ningún criterio cubre va a `specify` y a
+  `planning-tasks`, no a una tarea inventada acá.
 
 ## Al terminar
 

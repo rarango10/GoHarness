@@ -23,6 +23,33 @@ proyecto: un mismo proyecto puede tener features con interfaz y features sin ell
 
 <borrá la opción que no aplica.>
 
+## Referencia visual
+
+<Solo para una feature navegable. ¿Tiene que parecerse a algo? La respuesta sale del brainstorming,
+no se decide acá, y la lee `close-feature` antes de cerrar. Es por feature, igual que la
+superficie: un mismo proyecto puede tener pantallas con mockup y pantallas sin él.>
+
+- **Ninguna** — no hay nada contra qué comparar. Antes de cerrar igual se mira la app.
+- **Orientativa** — inspira, no obliga. Decí cuál es y qué se toma de ella; no hace falta tabla.
+- **Normativa** — el resultado tiene que parecerse. Decí la fuente:
+  - **un skill de diseño** (su nombre): los pasos que la usan invocan el skill, no una copia que
+    viva en el repo, y la lista de chequeo del cierre es la del skill;
+  - **un archivo** (su ruta: imagen, HTML, export de Figma): la lista de chequeo del cierre es la
+    tabla de abajo.
+
+<borrá las opciones que no aplican. Si es normativa, la tabla es obligatoria:>
+
+| Pieza de la referencia | Decisión | Motivo |
+|---|---|---|
+| <componente, zona de la pantalla, interacción> | adoptar / adaptar / descartar | <por qué, si no es obvio> |
+
+<Lo que se adapta dice a qué se adapta y qué conserva. Lo que se descarta dice qué se pierde: un
+descarte sin costo declarado suele ser un olvido con buena letra. Y lo que no está en la tabla no se
+construye — por eso se recorre la referencia entera, no solo lo que se habló.>
+
+<La referencia cubre cómo se ve. Cómo se comporta —qué pasa al hacer clic, qué se muestra si algo
+falla— va en los criterios de `requirements.md`, como siempre.>
+
 ## Arquitectura
 
 <Las piezas que componen la feature y cómo se relacionan. Para cada una: qué hace, de qué

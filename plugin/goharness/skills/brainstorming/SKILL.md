@@ -35,6 +35,18 @@ Every brainstorm ends with the human partner approving the design before anythin
 
 If new complexity turns up mid-conversation that changes the scope significantly, say so and re-confirm the design rather than quietly expanding it.
 
+### When the feature has to look like something
+
+If the feature has a screen, ask whether there is a visual reference it has to match — a mockup, a prototype, a design skill, a brand. It is one of the decisions from step 3, and the answer ends up in the `## Referencia visual` section of `design.md`: **none**, **orientativa** (inspires, doesn't bind) or **normativa** (the result has to look like it), plus where it lives.
+
+If it is normativa:
+
+- **Go to the source.** If the reference comes from a skill, invoke the skill — don't read a copy or a summary that lives in the repo, even when `CLAUDE.md` points at the copy. Summaries lose exactly what nobody was looking at: that is how a whole layout went missing once.
+- **Walk the reference piece by piece and classify every part: `adoptar` / `adaptar` / `descartar`**, with the reason when it isn't obvious. This table is part of the design you present for approval. Whatever isn't named is dropped by omission, and nobody notices until the app is opened, two steps after the feature was closed.
+- **Watch for the question that eats the step.** One big technical decision — a dependency, whether to use JavaScript at all — can take the whole conversation and leave the table unwritten. A question being important doesn't make it the only one.
+
+The reference covers how it looks. How it behaves still goes through ordinary acceptance criteria.
+
 ### Label every decision with where it came from
 
 **Never attribute a decision to your human partner that they did not make.** Writing "the result only updates when Calculate is pressed, *as you asked*" about something they never asked for is the same class of failure as marking a task done without a verdict: inventing backing that does not exist.
