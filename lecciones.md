@@ -72,6 +72,7 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L45 | Las advertencias del `Registro` no tienen lector ni destinatario | `resuelto` | Lote 10 · `implement-task`, `tasks-template`, `task-writer`, `tasks-fanout.js` |
 | L46 | El ciclo asume que toda feature tiene interfaz | `resuelto` | Lote 9 · `design-template`, router, `harness-init`, `verify-e2e` |
 | L47 | Se siembra el config de Playwright y la dependencia no tiene dueño | `resuelto` | Lote 9 · `e2e-doctor.cjs` + `harness-init` |
+| L48 | Un tag empujado sin la rama publica la versión vieja, sin error | `resuelto` | `HARNESS.md` · «Publicar una versión» |
 
 ### Lo que queda
 
@@ -1868,6 +1869,36 @@ que esta necesita la introduce aquella.
 **Lo que este caso no es.** No es un fallo del ciclo: la precondición 4 hizo exactamente lo que dice,
 detectó la falta y no instaló nada sin permiso. Es que la pregunta llegó en el paso 7, donde cuesta
 una feature entera de espera, en vez de en el paso 0, donde cuesta una línea.
+
+---
+
+## L48 · Un tag empujado sin la rama publica la versión vieja, sin error · `resuelto`
+
+**Qué pasó.** Al publicar la 0.3.0 (2026-09-22) se siguió la receta de `HARNESS.md` —subir la
+versión, `claude plugin tag`, push del tag— y todo dio verde: el tag existía en GitHub
+(`git ls-remote --tags` lo mostraba) y `claude plugin marketplace update goharness` dijo
+«Successfully updated». Pero la instalación en una carpeta descartable trajo **0.2.0**.
+
+**La causa estaba río arriba.** Los siete commits de los tres lotes nunca se habían empujado: `main`
+en GitHub seguía en el commit anterior. `claude plugin tag --push` sube el tag y los objetos que
+necesita, no la rama, así que el tag apuntaba a un commit que existe en el remoto pero no cuelga de
+`main`. El marketplace lee la rama por defecto y no los tags, así que nadie lo veía.
+
+**Por qué importa: dos mensajes de éxito, ninguno falso, ninguno útil.** El tag se creó y el
+marketplace se actualizó, y las dos afirmaciones eran ciertas. Lo que no era cierto es lo que
+importaba —que quien instale reciba la 0.3.0—, y solo lo detectó instalar de verdad y mirar el
+`installPath`. Es la forma de [[L22]]: verificar contra el estado que interesa y no contra el
+relato de quien ejecutó el paso. Y de [[L33]]: un chequeo vale para lo que midió.
+
+**Qué se hizo.** La receta de «Publicar una versión» pasa a cuatro pasos: `git push origin main`
+**antes** que el tag, el tag con la ruta del plugin (su manifiesto no está en la raíz, y sin ella el
+comando falla con «No plugin manifest found»), y una verificación final que mira que la versión
+instalada sea la nueva. También queda escrito que `uninstall --scope local` se corre desde la
+carpeta de la prueba —el scope local es por proyecto— y que el marketplace registrado de antes no se
+quita.
+
+**Lo que este caso no es.** No es un fallo de Claude Code: cada comando hizo lo que dice. Es que la
+receta describía los pasos y no el resultado, y con un paso omitido no había ninguna señal.
 
 ---
 

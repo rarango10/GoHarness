@@ -62,7 +62,7 @@ claude plugin marketplace add rarango10/GoHarness --scope local
 claude plugin install goharness@goharness --scope local
 claude plugin list --json          # 7 skills, 7 agentes, el workflow y el router
 claude plugin uninstall goharness@goharness --scope local
-claude plugin marketplace remove goharness --scope local
+claude plugin marketplace remove goharness --scope local   # solo si lo agregó esta prueba
 ```
 
 **`check-rules-parity.cjs` cuida una duplicación que no se puede eliminar.** Las reglas del método
@@ -106,7 +106,17 @@ Está en el **índice de estado** al tope de [`lecciones.md`](lecciones.md). Los
 
 ## Publicar una versión
 
-1. Subir `version` en `plugin/goharness/.claude-plugin/plugin.json`.
-2. `claude plugin tag` — arma el tag `goharness--v{version}` y valida de paso que el manifiesto y la
-   entrada del marketplace coincidan.
-3. Push del tag. Del otro lado se actualiza con `claude plugin update goharness@goharness`.
+1. Subir `version` en `plugin/goharness/.claude-plugin/plugin.json` y commitear.
+2. **`git push origin main` — antes que el tag.** El marketplace lee la rama por defecto, no los
+   tags: un tag empujado sin `main` queda apuntando a un commit que el marketplace nunca ve, y quien
+   instale recibe la versión vieja sin ningún error.
+3. `claude plugin tag plugin/goharness --push` — arma el tag `goharness--v{version}`, valida de paso
+   que el manifiesto y la entrada del marketplace coincidan, y lo empuja. Lleva la ruta del plugin
+   porque su manifiesto no está en la raíz del repo; con `--dry-run` se ve el tag antes de crearlo.
+4. **Verificar con una instalación real** (la de la sección anterior), y mirar que `installPath`
+   termine en la versión nueva. `claude plugin marketplace update` dice «actualizado» aunque no haya
+   traído nada, así que su mensaje no prueba nada.
+
+Del otro lado se actualiza con `claude plugin update goharness@goharness`. Ojo con la prueba: `claude
+plugin uninstall --scope local` hay que correrlo **desde la carpeta descartable**, porque el scope
+local es por proyecto, y el marketplace registrado de antes no se quita: no es de la prueba.
