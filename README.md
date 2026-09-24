@@ -66,13 +66,23 @@ un job. Cuando sí la hay, `harness-init` instala Playwright junto con `playwrig
 paso 0, con el mismo sí — no recién en el paso 7, donde un paquete ausente cuesta la feature entera
 de espera.
 
+**Si la feature tiene que parecerse a algo, el ciclo lo sabe.** El mismo `design.md` declara su
+referencia visual —ninguna, orientativa o normativa, y si es normativa de dónde sale: un skill de
+diseño o un archivo—. El harness no nombra ningún skill en particular: un sistema de diseño de
+dashboards, una marca o un mockup en PNG entran por el mismo casillero. Con una referencia
+normativa, el brainstorming la clasifica pieza por pieza (adoptar / adaptar / descartar), `specify`
+baja lo adoptado a criterios, y el paso 8 pide que la persona mire la app al lado de la referencia
+antes de cerrar.
+
 **Entre el 5 y el 6 no hay compuerta, y es a propósito.** Una tarea implementada y sin verificar
 queda en un limbo indistinguible de «a medio hacer», así que implementar y verificar son el mismo
 acto: la aprobación va después del veredicto, y es **por tarea** — once tareas son once ciclos.
 
 Los tres últimos verifican cosas distintas y ninguno reemplaza a otro: `dod-checker` pregunta si
 *una tarea* cumple sus criterios; `verify-e2e`, si *la feature entera* camina; `close-feature`, si
-*todos los veredictos siguen siendo ciertos juntos* sobre el estado final.
+*todos los veredictos siguen siendo ciertos juntos* sobre el estado final. Y ninguno de los tres
+contesta si la pantalla se ve como tenía que verse: por eso, en una feature navegable, el paso 8
+arranca con la persona mirándola.
 
 ---
 
@@ -225,7 +235,7 @@ plugin/goharness/                 el plugin: esto es lo que se instala
 │   ├── planning-tasks/           verifica el spec y lanza el workflow. No planifica
 │   ├── implement-task/           una tarea, de punta a punta, hasta su veredicto
 │   ├── verify-e2e/               el ciclo end-to-end, en dos fases
-│   └── close-feature/            la higiene sobre el estado final y el commit de cierre
+│   └── close-feature/            la mirada, la higiene sobre el estado final y el commit de cierre
 ├── agents/
 │   ├── spec-scout.md             releva el spec y el repo de una pasada     [solo lectura]
 │   ├── task-reviewer.md          juzga UNA tarea del plan                   [solo lectura]
@@ -350,6 +360,11 @@ prohibición de escritura de `dod-checker` y `spec-scout` quedó escrita sobre l
 el efecto neto, después de que uno de los dos corriera `git stash` y `git stash pop` verificando una
 tarea real.
 
+**Resuelto en el lote 11 (2026-09-23).** Una feature puede declarar una referencia visual, y el
+ciclo la usa del brainstorming al cierre. Nació de un rediseño que cerró con todo en verde y muy
+lejos de su mockup: el mockup no era criterio, así que para el ciclo no existía. Todavía no corrió en
+una feature real.
+
 - **El ruteo del ciclo e2e nunca se ejercitó.** Corrió entero tres veces y las tres en verde, así que
   el camino del fallo —`causa: test` / `codigo` / `spec`— sigue con cero pruebas.
 - **No hay evidencia independiente del orden del TDD.** El commit por tarea prueba que la tarea fue
@@ -366,7 +381,7 @@ El harness se construyó en [`rarango10/10X-mis-finanzas`](https://github.com/ra
 hoy archivado: ahí están los 58 commits de su construcción. Se mudó acá porque una semilla se juzga
 por lo que muestra funcionando, y este es el repo donde el método se usó de verdad.
 
-`lecciones.md` viajó con él. Es la parte que no se puede reconstruir leyendo el código: 47 entradas
+`lecciones.md` viajó con él. Es la parte que no se puede reconstruir leyendo el código: 50 entradas
 de qué falló al usarlo, por qué, y qué se cambió — incluidas las que siguen abiertas.
 
 ## Licencia

@@ -103,6 +103,8 @@ tarea que debía leerla se implementó y se verificó sin ella.>
 - `[paso 8]` <algo que hay que revisar en el cierre, sobre el estado final del repo>
 - `[decidir ya]` <algo que necesita una decisión de la persona antes de seguir, no puede esperar
   a un paso futuro>
+- `[feature siguiente]` <algo que la persona decidió dejar fuera de esta feature — típicamente, lo
+  que apareció al mirar la app en el paso 8. Lo lee el brainstorming de la feature que lo tome>
 
 <!--
 Recordatorios al escribir:

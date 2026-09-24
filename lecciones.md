@@ -73,6 +73,8 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L46 | El ciclo asume que toda feature tiene interfaz | `resuelto` | Lote 9 · `design-template`, router, `harness-init`, `verify-e2e` |
 | L47 | Se siembra el config de Playwright y la dependencia no tiene dueño | `resuelto` | Lote 9 · `e2e-doctor.cjs` + `harness-init` |
 | L48 | Un tag empujado sin la rama publica la versión vieja, sin error | `resuelto` | `HARNESS.md` · «Publicar una versión» |
+| L49 | Un artefacto de referencia no existe para el ciclo | `resuelto` | Lote 11 · `close-feature`, `brainstorming`, `specify` + sus plantillas |
+| L50 | Un skill de dominio pedido no se invocó: el contrato apuntaba a su copia | `abierto` | se decide en la segunda iteración del dashboard |
 
 ### Lo que queda
 
@@ -84,8 +86,12 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 [`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md) para el orden en que
 se aplicaron y las secciones «Lote N aplicado» de más abajo para lo que apareció en cada una.
 
+**Aplicado sin probar todavía:** [[L49]] (Lote 11). Su prueba natural es la segunda iteración del
+rediseño del dashboard de OoklaWeb: la misma feature y el mismo mockup, con el cambio puesto.
+
 **Abiertos, en el orden en que conviene tomarlos:**
 
+- **[[L50]]** — se decide en esa misma segunda iteración, con evidencia.
 - **[[L12]]** — el commit por tarea le dejó el diff que le faltaba, y `dod-checker` ya tiene `Bash`
   con `git log` autorizado.
 - **[[L6]]** — cuando el ciclo e2e tenga un fallo real que diagnosticar.
@@ -1902,6 +1908,117 @@ receta describía los pasos y no el resultado, y con un paso omitido no había n
 
 ---
 
+## L49 · Un artefacto de referencia no existe para el ciclo · `resuelto` (Lote 11)
+
+**Qué pasó.** En OoklaWeb, la feature *rediseño del dashboard* (2026-09-20) corrió el ciclo
+completo en verde: spec aprobado, 10 tareas con `cumple`, 4 casos e2e en verde, higiene limpia. Y
+el resultado quedó muy lejos del mockup normativo del skill `network-kpi-dashboards`: se adoptaron
+los tokens de color y un solo componente. Faltaron la grilla de 12 columnas, la jerarquía del
+encabezado, las cabeceras de tarjeta y catorce componentes. La persona vio el dashboard por primera
+vez **después** de `close-feature`. El análisis completo está en el postmortem:
+`OoklaWeb/docs/2026-09-20-rediseno-dashboard/postmortem.md`.
+
+**Por qué importa.** El ciclo no falló: verificó lo que sabe verificar. Pero su trazabilidad es
+cerrada —criterio → tarea → test → veredicto— y **un mockup no es ninguno de los cuatro**, así que
+para el sistema no existe. El único criterio visual decía «con los tokens de color», y se cumplió.
+`dod-checker` devuelve `sin-evidencia` cuando un criterio escrito no tiene test, pero un requisito
+que nadie escribió no produce `sin-evidencia`: produce silencio, y el silencio se lee como `cumple`.
+
+Y nadie mira la pantalla en ningún paso. En el plugin, «visual», «mockup» y «referencia» aparecen
+cero veces. `dod-checker` no puede abrir un navegador; `e2e-test-writer` evita a propósito los
+selectores de maquetado; `e2e-triager` tiene prohibido juzgar por apariencia; `close-feature`
+cierra sobre «el repo está sano», no sobre «la feature está bien». Cada una de esas reglas es
+correcta para su pieza, y juntas dejan la apariencia sin dueño.
+
+**No es un problema de dashboards.** Pasa igual con una landing que tiene que respetar una marca,
+un formulario dibujado en Figma o el front de un agente. Por eso el arreglo **no nombra ningún
+skill ni ningún tipo de pantalla**: el harness pone el enchufe y la fuente de la referencia es lo
+que se enchufa.
+
+**Qué habría que hacer.** Cuatro cambios, del más barato al más caro:
+
+1. **`close-feature` — «mirá el resultado» antes de la higiene.** Solo si la superficie es
+   navegable. Abrir la app y mirarla; si hay referencia normativa, al lado de ella. Lo que aparezca
+   no se arregla ahí: vuelve al paso 5 como tarea, igual que un rojo de higiene. *(Corregido al
+   aplicarlo: `close-feature` no puede crear tareas. Ver «Lote 11 aplicado».)* Es el cambio que
+   solo ya habría atrapado este caso entero.
+2. **`brainstorming` — si hay referencia, clasificarla pieza por pieza.** Recorrer el artefacto y
+   anotar cada parte como **adoptar / adaptar / descartar**, con motivo cuando no es obvio. Lo que
+   no se nombra se descarta por omisión. Con un aviso: una decisión técnica grande (acá, si usar
+   JavaScript) puede comerse el paso entero y dejar la tabla sin escribir.
+3. **`design-template.md` — ranura `## Referencia visual`, al lado de `## Superficie`.** Se
+   declara **por feature**, igual que la superficie de [[L46]] y por la misma razón: un mismo
+   proyecto tiene features sin interfaz, con interfaz y sin mockup, y con mockup normativo. La
+   ranura dice cuánto obliga y de dónde sale:
+   - **Ninguna** — el ciclo sigue como hoy, salvo la mirada del punto 1.
+   - **Normativa, con un skill de fuente** (`network-kpi-dashboards`, `designing-zanna` para una
+     landing): el paso que la usa **invoca el skill**, y la lista de chequeo del cierre la trae el
+     skill.
+   - **Normativa, con un archivo de fuente** (imagen, HTML, export de Figma): la lista de chequeo
+     es la tabla del brainstorming.
+   - **Orientativa** — inspira, no obliga: se tiene en cuenta en el brainstorming, sin tabla
+     obligatoria ni comparación que frene el cierre.
+
+   Cuando es normativa, la tabla adoptar / adaptar / descartar queda escrita adentro.
+4. **`specify/references/ears-patterns.md` y `requirements-template.md` — criterios de
+   apariencia.** «Se ve como el mockup» no es verificable, igual que «rápido». Se baja a cuatro
+   formas comprobables: **inventario** (qué partes hay y en qué orden), **estructura** (cómo se
+   ubican), **componente** (con qué forma se muestra un dato) y **token** (qué colores se usan).
+   Cada criterio visual dice **quién lo mira y contra qué**.
+
+**El límite, dicho explícito.** La referencia cubre **cómo se ve**. Cómo se **comporta** —qué pasa
+al enviar un mensaje, qué se muestra si falla— sigue yendo por criterios EARS y e2e, como siempre.
+Importa sobre todo en pantallas vivas, como el front de un agente, donde un mockup muestra un
+momento y no un comportamiento.
+
+**Lo que se descarta por ahora.** Un agente nuevo con navegador que dé un veredicto de fidelidad
+(B7 del postmortem), y un caso e2e extra de fidelidad fuera del techo de tres (B8). Son caros, y la
+mirada del punto 1 alcanza para este caso. Quedan como segunda ronda si esa mirada resulta
+insuficiente.
+
+**Lo que este caso no es.** No es un fallo del skill de diseño: sus cambios (A1–A5 del
+postmortem) ya están aplicados en `~/.claude/skills/network-kpi-dashboards/`. Tampoco se arregla
+con un guion en `CLAUDE.md`: OoklaWeb tenía uno, y ningún paso lo leía (ver [[L50]]). Misma familia
+que [[L42]]: una regla que vive en un lado y nadie la aplica desde otro.
+
+---
+
+## L50 · Un skill de dominio pedido no se invocó: el contrato apuntaba a su copia · `abierto`
+
+**Qué pasó.** En la misma feature que [[L49]], la persona pidió en el primer mensaje usar el skill
+`network-kpi-dashboards`. Nunca se invocó. El `CLAUDE.md` de OoklaWeb decía que el trabajo visual
+toma como referencia `docs/reference/sistema-de-diseno/` y que **«ese último documento se lee antes
+de proponer cualquier cambio visual»**. Ese documento era un resumen hecho a mano, y al enumerar lo
+innegociable **se olvidó de `layout.md`**, justo la pieza que define la grilla y la composición. Con
+el skill se perdieron también su paso 4 (partir del dashboard de referencia) y su paso 5 (comparar
+con la checklist).
+
+**Por qué importa.** Dos cosas distintas:
+
+- **Una copia no reemplaza a la fuente.** Las copias se hacen resumiendo, y se pierde justo lo que
+  nadie estaba mirando. El skill ya lo corrigió de su lado: abre con «si el proyecto tiene una
+  copia de este material, la copia no reemplaza a esta skill».
+- **Una regla en `CLAUDE.md` que ningún paso consume es una regla huérfana.** La regla de OoklaWeb
+  era, en la práctica, el «guion para usar el skill solo cuando el proyecto lo necesita». Estaba
+  escrita y cargada, pero cada paso sigue sus propias instrucciones, y ninguna decía «buscá la
+  referencia y usala». Encima dirigía al resumen en vez de a la fuente.
+
+**Qué habría que hacer.** El rumbo está claro; falta un detalle:
+
+- Con la ranura de [[L49]], la feature dice de dónde sale su referencia. Si es un skill, los pasos
+  que la usan (brainstorming, specify, close-feature) **lo invocan**; no leen una copia.
+- En `harness-init`: si la persona nombra material de dominio, preguntar si es un skill o un
+  archivo. Si además hay una copia en el repo, la regla tiene que decir que **la fuente manda**.
+- **Lo que falta decidir:** si los skills de dominio se declaran también en `CLAUDE.md`, para que
+  valgan fuera de lo visual —OoklaWeb tiene otro caso, la documentación de la metodología de Ookla—
+  o solo en la ranura por feature. Se decide en la segunda iteración del dashboard, con evidencia.
+
+**Lo que este caso no es.** No es una razón para meter el skill de KPIs dentro del harness: la
+mayoría de los proyectos no tienen dashboards. El harness tiene que saber **cuándo** usar una
+referencia; qué es importante de cada diseño lo sabe cada skill.
+
+---
+
 ## Lote 1 aplicado — 2026-09-07
 
 L19, L20, L11 y L10 resueltas en los commits `2ca3589` (L19+L20) y el siguiente (L11+L10).
@@ -2465,6 +2582,67 @@ nombrándolo, y —el más caro de ejercitar— una segunda ronda real de L40, q
 `dod-checker` devuelve un veredicto menor que `cumple` de verdad. Sin esa corrida, L40 queda
 verificado por lectura, no por haberlo visto actuar; es el mismo hueco que ya quedó anotado en los
 Lotes 8 y 9 para sus propios arreglos de prosa.
+
+## Lote 11 aplicado — 2026-09-23
+
+[[L49]]: el enchufe genérico para una referencia visual. Ningún archivo del plugin nombra a
+`network-kpi-dashboards` ni a ningún tipo de pantalla. El skill de KPIs, un skill de marca o una
+imagen suelta entran por el mismo lugar.
+
+**`design-template.md` — ranura `## Referencia visual`, debajo de `## Superficie`.** Ninguna /
+orientativa / normativa. Si es normativa, dice la fuente (skill o archivo) y lleva la tabla
+adoptar / adaptar / descartar. Es el casillero que leen los otros tres cambios. `check_specs.py` no
+la exige, porque es opcional: una feature sin pantalla no la escribe.
+
+**`brainstorming` — «When the feature has to look like something».** Preguntar si hay referencia.
+Si es normativa: ir a la fuente y no a una copia (la mitad de [[L50]] que ya se podía aplicar),
+clasificar la referencia pieza por pieza, y el aviso de la pregunta que se come el paso. Va en
+inglés, como el resto del archivo.
+
+**`specify` — de la tabla a criterios.** `SKILL.md` pide que cada pieza `adoptar` o `adaptar` llegue
+a un criterio y que la tabla se copie al design. También suma la pregunta de suficiencia para lo
+visual («¿podés señalar la diferencia abriendo la pantalla al lado de la referencia?»).
+`ears-patterns.md` gana «Criterios de apariencia» (inventario, estructura, componente, token, y
+quién mira), y `requirements-template.md` remite ahí.
+
+**`close-feature` — paso 2 nuevo, antes de la higiene.** Si la feature es navegable, la persona la
+mira. La lista de chequeo depende de la fuente: la del skill, la tabla del design, o solo «¿se la
+mostrarías a quien la pidió?». Está antes de la higiene a propósito: si la mirada encuentra algo, no
+se gasta una corrida que después habría que repetir.
+
+### Lo que apareció al aplicarlo
+
+**La lección decía algo que el harness no permite.** «Lo que aparezca vuelve al paso 5 como una
+tarea»: pero `close-feature` no puede crear tareas, porque el plan lo escribe solo `tasks-fanout`. Y
+el caso que motivó todo es justo el que no tiene tarea: una pieza del mockup que nunca llegó a ser
+criterio. Se separó en dos rutas:
+
+- **El hallazgo contradice un criterio que una tarea cubre** → es un rojo común, y la tarea baja a
+  `en curso`.
+- **No lo cubre ningún criterio** → es un hueco del spec: se nombran `specify` y `planning-tasks`, y
+  el paso se detiene. «No crea tareas» quedó escrito en «Lo que este paso no hace».
+
+**`Pendientes` no tenía etiqueta para «queda para otra feature».** Las cuatro etiquetas de [[L45]]
+apuntan todas dentro de la feature. Se sumó `[feature siguiente]` a `tasks-template.md`, donde vive
+la lista, en vez de inventarla solo en `close-feature`: una etiqueta que una sola pieza conoce es la
+familia de [[L42]]. Y la lista de regiones que escribe `close-feature` ahora incluye `Pendientes`,
+para que no se contradiga consigo mismo como le pasó a `implement-task` en L45.
+
+**`close-feature` tenía dos frases que dejaron de ser ciertas:** «esta es la única razón por la que
+este paso existe» y «no decide que la feature está bien». Se reescribieron: la tabla del principio
+suma una fila, *la persona · ¿se ve como tenía que verse?*, y el veredicto visual queda en manos de
+la persona, no del skill.
+
+**Lo que no se tocó, a propósito.** Las tablas del ciclo del router y de `CLAUDE.template.md` siguen
+diciendo «corrida de higiene + commit de cierre» para el paso 8. Nombrar la mirada ahí la haría más
+visible, pero son dos lugares con chequeo de paridad, y conviene esperar a ver si el paso 2 alcanza
+tal como está.
+
+**Lo que este lote no ejercitó.** Las cinco verificaciones dieron verde (las dos de
+`claude plugin validate`, `lint-workflow-literals.cjs`, `check-rules-parity.cjs` y `sync-plugin.sh`
+sin deriva). No se probó nada en una corrida real: un brainstorming que arme la tabla, un `specify`
+que la baje a criterios y un cierre que pida la mirada. La segunda iteración del dashboard es esa
+prueba.
 
 ## Primera corrida con el harness nuevo — 2026-09-11
 
