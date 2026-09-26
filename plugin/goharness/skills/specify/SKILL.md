@@ -98,7 +98,7 @@ dueños distintos, y no se escriben a la vez. En ese Registro va también la lí
 **Verificación** con el veredicto de `dod-checker`: sin un `cumple` asentado ahí, la tarea no pasa
 a `hecho`.
 
-De lo que se anota, hay una categoría que no puede quedar en silencio: **el desvío respecto del design**. Si la implementación terminó haciendo algo distinto de lo diseñado, se registra en la tarea y se actualiza `design.md`. Un desvío sin registrar rompe la trazabilidad sin que se note, porque el documento sigue leyéndose como si describiera lo que existe.
+De lo que se anota, hay una categoría que no puede quedar en silencio: **el desvío respecto del design**. Si la implementación terminó haciendo algo distinto de lo diseñado, se registra en la tarea y `design.md` se enmienda con este skill (ver «Enmiendas»), no a mano desde la tarea. Un desvío sin registrar rompe la trazabilidad sin que se note, porque el documento sigue leyéndose como si describiera lo que existe.
 
 ## Después de la aprobación de las tasks
 
@@ -106,9 +106,23 @@ Pará ahí. Decí que el spec quedó completo —`requirements.md`, `design.md` 
 
 Una aprobación corta o informal ("dale", "va", "listo") aprueba el documento que presentaste, nada más. No la leas como permiso para encadenar la fase siguiente en el mismo mensaje: aprobar los requirements no es aprobar el design, aprobar el design no es aprobar las tasks, y aprobar las tasks no es pedir código.
 
-## Si los requisitos cambian después
+## Enmiendas: cuando el spec cambia después de aprobado
 
-Cuando aparece un cambio de requisitos y ya existen los documentos siguientes, actualizá todos los que queden afectados y decí explícitamente cuáles y en qué. Un criterio nuevo suele arrastrar una decisión de diseño y una tarea; uno que se elimina puede dejar una tarea sin propósito. Un documento que quedó describiendo requisitos viejos es peor que no tenerlo, porque se lee como si estuviera vigente.
+Llegás acá desde otro paso: `implement-task` encontró un criterio mal o un design que ya no describe lo que existe, `verify-e2e` ruteó `aSpecify`, `close-feature` encontró algo que ningún criterio cubre. Es el camino de vuelta del ciclo, y las clases que lo disparan están en el router, en «Cuando algo cambia a mitad de camino».
+
+**Escribís solo `requirements.md` y `design.md`.** Nunca `tasks.md`, aunque la enmienda deje una tarea sin propósito o pida una nueva: el plan lo rehace `planning-tasks`, y el `Estado` de una tarea lo mueve quien implementa. Un documento que quedó describiendo requisitos viejos es peor que no tenerlo, porque se lee como si estuviera vigente — por eso la enmienda nombra todo lo que queda afectado, aunque no lo toque.
+
+1. **Empezá por el documento más alto que toca.** Si cambia un criterio, es `requirements.md`, y después preguntás si arrastra al design. Si solo cambió el cómo —los criterios siguen igual—, es `design.md` y nada más.
+2. **Mismas reglas de numeración que en la fase 2:** los criterios nuevos van al final y nada se renumera. Un criterio que **cambia de sentido** no se reescribe en su lugar: se marca `(obsoleto — ver R3.5)` y nace con id nuevo. Corregir la redacción sin cambiar el comportamiento (una errata, una ambigüedad que no mueve ningún test) se hace en su lugar y se enmienda igual.
+3. **Asentá la enmienda en el documento.** Una línea en `## Enmiendas` —fecha, ids, qué cambió, de dónde salió (`T7`, paso 7, cierre)— y el encabezado pasa a `> Estado: aprobado (AAAA-MM-DD) · enmendado (AAAA-MM-DD): R3.2, R3.5`. Si ya tenía enmiendas, la lista de ids se acumula.
+4. **Presentá solo lo que cambió y esperá el sí.** Es una aprobación corta, no una re-aprobación del documento. Al pedirla, decí qué habilita: qué tareas `hecho` cubren los ids enmendados y van a volver a `en curso`, y si hace falta re-planificar (hace falta si se agregaron, quitaron o volvieron obsoletos criterios). Con el sí, **commiteá la enmienda aparte**: `Enmienda <feature>: R3.2, R3.5`.
+5. **Nombrá el paso siguiente y parate.** `planning-tasks` si el conjunto de criterios cambió; si no, `implement-task`, que al arrancar detecta las tareas a reabrir. No reabras tareas vos: `Estado` y `Registro` no son tu región.
+
+**Si la enmienda redefine la feature** —cambia el problema que resuelve, o deja sin propósito buena parte del plan—, no es una enmienda: decilo y nombrá `brainstorming`. La persona decide si esta feature cierra con lo que tiene y lo otro es una feature nueva.
+
+## Si la feature toma entradas del backlog
+
+Si el brainstorming acordó que esta feature resuelve entradas de `docs/pendientes.md` (o del tracker que nombre `CLAUDE.md`), nombralas en `## Alcance` de `requirements.md` por su id (`P2`), y al commitear la aprobación de `requirements.md` pasá su estado a `en <carpeta-de-la-feature>` en el backlog. Solo esa celda: el resto de la entrada es de quien la escribió. `close-feature` las pasa a `resuelto` al cerrar.
 
 ## Archivos de este skill
 

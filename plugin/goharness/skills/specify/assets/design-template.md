@@ -2,6 +2,7 @@
 
 > Requirements: [`./requirements.md`](./requirements.md)
 > Estado: pendiente de aprobación | aprobado (AAAA-MM-DD)
+<Después de aprobado, si el documento se enmienda: `aprobado (AAAA-MM-DD) · enmendado (AAAA-MM-DD): <sección o ids>`.>
 
 ## Resumen de la solución
 
@@ -117,3 +118,11 @@ primero el test que falla). Mapeá test ↔ criterio para que se vea qué queda 
 ## Riesgos y preguntas abiertas
 
 - <lo que podría complicarse en la implementación, o lo que sigue sin resolverse>
+
+## Enmiendas
+
+<Vacía hasta que el documento aprobado cambie. Una línea por enmienda, la escribe `specify`. Un
+desvío que apareció al implementar se asienta en el `Registro` de la tarea y se trae acá — no se
+edita el design a mano desde la tarea.>
+
+- <AAAA-MM-DD · sección o ids · qué cambió y por qué · de dónde salió (T7, paso 7, cierre)>

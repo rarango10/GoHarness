@@ -74,6 +74,60 @@ justo lo que hacía que llevar el harness a otro repo fuera trabajo manual.
    sobre el estado final y un rojo ahí reabre la tarea. La columna `Estado` es el registro durable
    de qué está terminado de verdad.
 
+## Cuando algo cambia a mitad de camino
+
+El ciclo de arriba va hacia adelante. Esta sección es el camino de vuelta: qué se hace cuando, a
+mitad de una feature, aparece algo que obliga a tocar el spec, el plan o lo ya implementado.
+
+**La regla, en una línea:** *un cambio entra por el documento más alto que toca, baja en cascada
+por sus productores, y todo veredicto que se apoyaba en lo cambiado deja de valer.*
+
+**1. Parar y clasificar.** Quien lo detecta —`implement-task`, `dod-checker`, `e2e-triager`,
+`close-feature`— no lo arregla donde lo encontró. Lo asienta en el `Registro` de la tarea en curso
+(o en el reporte de su paso), lo pone en una clase y nombra el camino:
+
+| Clase | Pregunta que la distingue | Camino |
+|---|---|---|
+| Bug en la tarea en curso | ¿Lo rompe o le falta a lo que estoy haciendo? | TDD de la misma tarea |
+| Bug en otra tarea `hecho` de esta feature | ¿Contradice el `cumple` de otra tarea? | Esa tarea baja a `en curso`, con el sí, y vuelve a `implement-task` |
+| Cambió el *cómo*, no el *qué* | ¿Los criterios siguen igual y `design.md` ya no describe lo que existe? | Enmienda de `design.md` con `specify` |
+| Cambió el *qué* | ¿Hay que corregir, agregar o volver obsoleto un criterio? | Enmienda de `requirements.md` con `specify`, y cascada |
+| El plan está mal, el spec no | ¿Falta una tarea, sobra, o un `Cubre` está mal? | `planning-tasks` |
+| Hace falta una decisión ya | ¿No se puede seguir sin que la persona elija? | `[decidir ya]` en `Pendientes` |
+| Le corresponde a otra feature | ¿Es código de otra feature, o algo transversal: toolchain, runner, dependencias? | `[backlog]` en `Pendientes`, y `close-feature` lo mueve al backlog del proyecto |
+| Cambió la feature misma | ¿Cambió el problema que resuelve, o la enmienda deja sin propósito buena parte del plan? | `brainstorming`; la persona decide si esta feature cierra con lo que tiene |
+
+Ante la duda entre dos clases, **la más alta**: tratar un criterio mal como un bug lo tapa con
+código; tratar un bug como un criterio mal cuesta una enmienda corta.
+
+**Un salto mayor del runner o del toolchain es siempre de otra feature.** Invalida todos los
+veredictos existentes a la vez, y su verificación es otra: que la suite completa siga en verde con
+la herramienta nueva. Hecho a mitad de una feature, la contamina.
+
+**2. La enmienda.** La hace `specify`, sobre un documento ya aprobado: se presenta **solo lo que
+cambió**, se espera el sí y se commitea aparte. El encabezado queda `aprobado (…) · enmendado (…):
+<ids>` y el documento suma una línea en `## Enmiendas`. No se renumera nada: un criterio que cambia
+de sentido se marca obsoleto y nace con id nuevo.
+
+**3. Lo que deja de valer.** Un `cumple` vale para el estado del código en que se tomó, y también
+para el texto del criterio que verificó. Una tarea `hecho` cuyo `Cubre` tiene un id enmendado
+**después** de su verificación deja de estar verificada: vuelve a `en curso`, con el sí de la
+persona, y la baja quien implementa, porque `Estado` y `Registro` son su región. Lo detectan el
+arranque de `implement-task` y, como red de seguridad, `close-feature`.
+
+**4. El re-plan.** Si la enmienda agregó, quitó o volvió obsoletos criterios, el plan se rehace con
+`planning-tasks`; sus revisores ven `## Enmiendas`. Un plan que cambia vuelve a pedir aprobación.
+
+**5. Reanudar** con `implement-task`. Mientras una enmienda o un re-plan están abiertos, no se
+implementa: es la misma razón por la que no se implementa con `tasks-fanout` en vuelo.
+
+**El backlog del proyecto** es `docs/pendientes.md`, salvo que el `CLAUDE.md` nombre otro lugar (un
+tracker). Lo que le corresponde a otra feature vive ahí, con id `P<n>` que no se reusa. Lo escribe
+`close-feature` al cerrar cada feature (mueve las líneas `[backlog]` y resuelve las que la feature
+tomó), lo marca `specify` cuando una feature toma una entrada, y lo lee `brainstorming` antes de
+explorar una idea nueva. `dod-checker` no lo lee a propósito: un verificador con una lista de
+«fallas conocidas» aprende a descartar rojos.
+
 ## Requisito de entorno
 
 El paso 4 usa un workflow dinámico. Si el tool `Workflow` no existe, hay que activar

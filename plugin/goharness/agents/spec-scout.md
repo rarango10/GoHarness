@@ -24,4 +24,8 @@ listes es un criterio que nadie va a notar que falta, y un resultado de tests qu
 una tarea que se va a planificar a ciegas. Sé exhaustivo y literal: transcribí, no resumas de
 más.
 
+Lo mismo vale para las **enmiendas**: si `requirements.md` o `design.md` tienen una sección
+`## Enmiendas`, transcribila entera. Es lo único que les dice a los revisores que el spec cambió
+después de aprobado, y qué criterios quedaron obsoletos.
+
 Devolvés exactamente el JSON del schema que te pide el llamado, y nada más.

@@ -114,6 +114,11 @@ tiene siempre cargado, incluso cuando no hay ningún workflow corriendo.
   paso 8 corre la higiene sobre el estado final, y un rojo ahí reabre la tarea afectada.
 - **El ciclo e2e no repara código.** `e2e-triager` diagnostica y rutea; si la causa es el código,
   la tarea baja a `en curso` y se arregla con el TDD de siempre.
+- **Un cambio entra por el documento más alto que toca.** Un criterio mal, un design desactualizado
+  o una tarea que falta no se arreglan donde aparecieron: entran por el productor de ese documento
+  (`specify` con una enmienda corta, `planning-tasks` para el plan) y bajan en cascada. Todo
+  `cumple` apoyado en lo enmendado deja de valer, y su tarea vuelve a `en curso` con el sí. Lo que
+  le corresponde a otra feature va a `docs/pendientes.md`.
 
 ## Ciclo de trabajo
 

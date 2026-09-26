@@ -140,8 +140,16 @@ const SCOUT_SCHEMA = {
       items: {
         type: 'object',
         required: ['id', 'summary'],
-        properties: { id: { type: 'string' }, summary: { type: 'string' } },
+        properties: {
+          id: { type: 'string' },
+          summary: { type: 'string' },
+          obsolete: { type: 'boolean', description: 'true si requirements.md lo marca obsoleto por una enmienda' },
+        },
       },
+    },
+    amendments: {
+      type: 'string',
+      description: 'Contenido LITERAL de las secciones "## Enmiendas" de requirements.md y de design.md, cada una con su titulo. Cadena vacia si ninguno de los dos tiene enmiendas.',
     },
     tasksExist: { type: 'boolean' },
     maxIdIssued: {
@@ -249,7 +257,8 @@ const coverageGaps = (criteria, tasks, unassigned) => {
   const covered = new Set()
   for (const t of tasks) for (const c of t.covers || []) covered.add(String(c).trim())
   const excused = new Set((unassigned || []).map((u) => String(u.id).trim()))
-  return criteria.map((c) => c.id).filter((id) => !covered.has(id) && !excused.has(id))
+  // L56 — un criterio obsoleto por una enmienda no necesita tarea: se reemplazo por otro id.
+  return criteria.filter((c) => !c.obsolete).map((c) => c.id).filter((id) => !covered.has(id) && !excused.has(id))
 }
 
 const orphanTasks = (tasks) =>
@@ -283,10 +292,14 @@ Relevá el estado completo del spec y del proyecto. Es la única vez que alguien
 todos los revisores que vienen después trabajan con lo que devuelvas vos.
 
 1. Leé requirements.md y design.md. Reportá el estado literal del encabezado de cada uno
-   ("aprobado" / "pendiente de aprobación"), o "ausente" si el archivo no existe.
+   ("aprobado" / "pendiente de aprobación"), o "ausente" si el archivo no existe. Un encabezado
+   "aprobado (fecha) · enmendado (fecha): <ids>" es "aprobado": la enmienda ya tuvo su sí.
+   Transcribí en amendments el contenido LITERAL de la sección "## Enmiendas" de cada documento,
+   con su título; cadena vacía si ninguno tiene.
 2. Extraé TODOS los criterios de aceptación de requirements.md con su id (R<n>.<m>) y un resumen
    de una línea. Que no falte ninguno: el chequeo de cobertura de todo el workflow se hace contra
-   esta lista, y un criterio que no listes es un criterio que nadie va a notar que falta.
+   esta lista, y un criterio que no listes es un criterio que nadie va a notar que falta. Los que
+   requirements.md marca obsoletos van igual, con obsolete = true.
 3. Si existe tasks.md, transcribí su tabla de Plan completa, y para cada tarea traé también,
    desde su sección de Bitácora: Objetivo, Primer test, y —si están— las líneas
    "Por qué no cubre criterios:" (va en coversNote) y "Nota:" (va en note). Esos dos campos son
@@ -339,8 +352,12 @@ log(`Spec: ${specDir} — ${scout.criteria.length} criterios, ${scout.tasks.leng
 const SHARED = `Carpeta del spec: ${specDir} (requirements.md, design.md, tasks.md).
 
 Criterios de aceptación de requirements.md:
-${scout.criteria.map((c) => `- ${c.id}: ${c.summary}`).join('\n')}
-
+${scout.criteria.map((c) => `- ${c.id}: ${c.summary}${c.obsolete ? ' (OBSOLETO: ninguna tarea tiene que cubrirlo; una que lo cubra está desactualizada)' : ''}`).join('\n')}
+${scout.amendments ? `
+Enmiendas del spec (el spec cambió después de aprobado; una tarea cuyo Cubre toca estos ids puede
+haber quedado desalineada con el criterio vigente):
+${scout.amendments}
+` : ''}
 Estado real del proyecto (ya relevado, no lo vuelvas a correr):
 ${scout.projectState}`
 

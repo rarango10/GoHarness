@@ -61,8 +61,9 @@ El resto se completa mientras se trabaja: es el registro de lo que realmente pas
   archivo: dentro de un mes nadie se acuerda por qué se eligió así, y el código solo
   muestra el resultado, nunca la alternativa descartada.>
 - <Desvíos respecto del design: si la implementación terminó haciendo algo distinto de lo
-  diseñado, decilo acá y actualizá `design.md`. Un desvío sin registrar rompe la
-  trazabilidad en silencio — el documento sigue describiendo algo que ya no existe.>
+  diseñado, decilo acá y pedí la enmienda de `design.md` con `specify` — no se edita a mano desde
+  la tarea. Un desvío sin registrar rompe la trazabilidad en silencio: el documento sigue
+  describiendo algo que ya no existe.>
 - <Lo que apareció y no esperabas: un caso borde nuevo, un supuesto que resultó falso, algo
   que costó el triple de lo previsto.>
 
@@ -103,8 +104,10 @@ tarea que debía leerla se implementó y se verificó sin ella.>
 - `[paso 8]` <algo que hay que revisar en el cierre, sobre el estado final del repo>
 - `[decidir ya]` <algo que necesita una decisión de la persona antes de seguir, no puede esperar
   a un paso futuro>
-- `[feature siguiente]` <algo que la persona decidió dejar fuera de esta feature — típicamente, lo
-  que apareció al mirar la app en el paso 8. Lo lee el brainstorming de la feature que lo tome>
+- `[backlog]` <algo que le corresponde a otra feature: código de una feature ya cerrada, algo
+  transversal (toolchain, runner, dependencias), o lo que la persona decidió dejar afuera al mirar
+  la app en el paso 8. Al cerrar, `close-feature` lo mueve al backlog del proyecto y deja acá el id
+  `P<n>` al que se movió; desde ahí lo lee el brainstorming de la feature que lo tome>
 
 <!--
 Recordatorios al escribir:

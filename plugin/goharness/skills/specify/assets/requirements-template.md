@@ -1,6 +1,8 @@
 # Requirements — <Nombre de la feature>
 
 > Estado: pendiente de aprobación | aprobado (AAAA-MM-DD)
+<Después de aprobado, si el documento se enmienda: `aprobado (AAAA-MM-DD) · enmendado (AAAA-MM-DD): R3.2, R3.5`.
+Los ids enmendados se acumulan; es lo que `implement-task` lee para saber qué tareas `hecho` reabrir.>
 
 ## Introducción
 
@@ -49,11 +51,18 @@ cuando está funcionando. Escribí el problema, no la solución — el "cómo" v
 
 - <lo que quedó sin decidir, con quién lo tiene que decidir y qué bloquea si no se decide>
 
+## Enmiendas
+
+<Vacía hasta que el documento aprobado cambie. Una línea por enmienda, la escribe `specify`:>
+
+- <AAAA-MM-DD · R3.2, R3.5 · qué cambió y por qué · de dónde salió (T7, paso 7, cierre)>
+
 <!--
 Recordatorios al escribir:
 
 - Numeración: los criterios se citan como R1.1, R1.2 desde design.md y desde los tests.
-  Si insertás un requisito nuevo en el medio, revisá qué referencias quedan desfasadas.
+  Lo nuevo va al final y nada se renumera, ni antes ni después de aprobar: un criterio que
+  cambia de sentido se marca obsoleto y nace con id nuevo.
 - Un criterio, un comportamiento. Si tiene un "y", un "y también" o un "además", casi seguro son
   dos criterios — partilo. La fase 1 tiene un paso dedicado a releer buscando conjunciones, y
   existe porque esta regla se saltea sola: el criterio compuesto se lee natural al escribirlo y el
