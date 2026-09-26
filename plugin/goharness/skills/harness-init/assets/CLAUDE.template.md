@@ -28,6 +28,13 @@ entero está sano con todo esto adentro?». Acá sí van lint, formato, build y 
 repetí los de corrección y decilo — la ranura existe igual y se llena cuando aparezcan.>
 ```
 
+**Auditor de dependencias** — lo corre el paso 8 para ver qué vulnerabilidades trajo la feature.
+Es informativo, no es parte de la higiene: bloquea solo lo que la feature introdujo.
+
+```bash
+<comando del auditor del ecosistema (npm audit, pip-audit…), o «ninguno»: preguntá antes de completar>
+```
+
 **Por qué separadas, en las dos direcciones.** Con lint, build o e2e adentro del comando de
 corrección, una queja de formato o un browser que falta hace fallar la verificación de una tarea por
 una razón que no tiene nada que ver con su criterio. Y al revés: si la única corrida es la de
@@ -106,7 +113,9 @@ sigue — solo lo nombra.
   lo enmendado deja de valer, y su tarea vuelve a `en curso` con el sí. Lo que le corresponde a otra
   feature va al backlog del proyecto. Las clases y sus caminos están en el router `goharness`.
 - <reglas propias de este proyecto: opcional, y solo las que valen para **toda** feature. Ej. «la
-  lógica va en funciones puras, separada de la UI». Si no hay ninguna todavía, borrá esta línea.>
+  lógica va en funciones puras, separada de la UI». Escribilas como norma —qué se hace, qué no—,
+  nunca como estado —qué hay—: el estado lo cambia la próxima feature y la regla queda mintiendo.
+  Si no hay ninguna todavía, borrá esta línea.>
 
 <!--
 Qué NO va en este archivo, y por qué importa:

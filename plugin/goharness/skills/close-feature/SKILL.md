@@ -105,7 +105,8 @@ nada — cada tarea ya tiene su commit con su id, así que el trabajo hecho est�
    dependencia sin instalar— decilo explícitamente en vez de dejarla correr y contar el fallo como
    hallazgo. Un rojo de andamiaje ausente no reabre ninguna tarea.
 
-4. **Verde → backlog y commit de cierre.** Secciones de abajo, en ese orden.
+4. **Verde → contrato, dependencias, backlog y commit de cierre.** Secciones de abajo, en ese
+   orden.
 
 5. **Rojo → ruteo.** Sección de abajo. **Presentá el rojo y qué pensás hacer con él antes de tocar
    `tasks.md`**: bajar una tarea de `hecho` muta el único registro durable de qué está terminado, y
@@ -142,6 +143,35 @@ el nombre del test o el archivo, no por el aire de familia.
 
 4. **Cuando vuelva, este paso se rehace entero.** No alcanza con que el rojo puntual se ponga verde:
    la corrida de higiene se corre de nuevo, completa, porque el arreglo cambió el estado otra vez.
+
+## El contrato, releído
+
+`CLAUDE.md` se escribió antes de esta feature, y la feature pudo volver falsa alguna de sus frases
+sin tocarlo: pasó con un «el repo no tiene una copia del sistema» que se volvió mentira el día que
+una tarea portó el sistema al código, y nadie lo vio, porque ninguna tarea toca el contrato y ningún
+verificador lee su prosa. Una frase falsa ahí es peor que una ausente: la leen todos los agentes.
+
+Releé las frases **de estado** —el Stack, las reglas propias del proyecto, las fuentes que nombra—
+contra el repo final. No las del método, que no dependen de la feature. Si alguna quedó falsa, **no
+la arregles acá**: nombrá `harness-init` en modo revisión, que es su productor, y parate hasta que
+vuelva. Si todas siguen siendo ciertas, decilo en una línea y seguí.
+
+## Las dependencias
+
+Si `CLAUDE.md` declara un auditor de dependencias, corrélo sobre el estado final. **Es informativo,
+y bloquea solo lo que esta feature trajo.** Para distinguirlo, mirá el diff del manifiesto desde
+antes del primer commit de la feature (`git log --oneline -- <manifiesto>` y `git diff`, solo
+lectura):
+
+- **Una vulnerabilidad en un paquete que la feature agregó o subió** es de la feature. Es un rojo:
+  la tarea que trajo ese paquete baja a `en curso`, con el ruteo de «Qué hacer con un rojo».
+- **Una vulnerabilidad heredada** —el paquete ya estaba, con esa versión, antes de la feature— se
+  informa y no bloquea. Si no está en el backlog, va como entrada nueva en el paso siguiente.
+  Casi siempre su arreglo es un salto de versión del toolchain, y eso es una feature propia: hecho
+  acá, invalidaría todos los veredictos de esta.
+
+Si el contrato dice «ninguno» o no tiene la ranura, decilo en una línea y seguí: la ranura faltante
+es un hallazgo para `harness-init`, no un rojo de esta feature.
 
 ## El backlog
 
@@ -191,6 +221,8 @@ verde y no había nada pendiente de commitear».
   `planning-tasks`, no a una tarea inventada acá.
 - **No arregla lo que está en el backlog.** Lo registra y lo reconoce; lo resuelve la feature que
   lo elija.
+- **No edita `CLAUDE.md`.** Si el contrato quedó mintiendo, lo arregla `harness-init` en modo
+  revisión.
 
 ## Al terminar
 
