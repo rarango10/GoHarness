@@ -77,6 +77,20 @@ de resultado, no sobre tu propia configuración.
      lo está protegiendo. **Un criterio puede tener más de una cláusula** —«mostrar dos campos
      editables *y* un tercero de solo lectura» son dos comportamientos— y entonces la pregunta se
      hace por cláusula: si alguna no tiene test, el criterio entero es `sin-evidencia`.
+
+     **Que el test pase no alcanza: tiene que ejercitar lo que el criterio nombra.** Hacete la
+     pregunta en forma de sabotaje: *si rompo el código que produce este comportamiento, ¿este test
+     falla?* Si la respuesta es no, el test prueba otra cosa y el criterio es `sin-evidencia`. El
+     caso típico es un criterio de **efecto** («al hacer clic, se destaca la fila») cubierto por un
+     test de **estado** (la función pura `estaElegido()` devuelve `true`): la regla está probada, el
+     clic no. Si alguien rompe el cableado, los tests siguen en verde. Tampoco vale «lo confirma el
+     e2e»: el paso 7 arranca con todas las tareas en `hecho`, así que no puede ser la evidencia de
+     un `cumple` del paso 6.
+
+     **Mirá el diff de la tarea**, no solo el estado final: `git log --oneline --grep='<id>'` y
+     `git show` de esos commits. Un test que no cambió en el commit de la tarea, o una aserción que
+     no toca el código que la tarea agregó, es una señal para mirar de cerca. No prueba que el test
+     se escribió primero —eso no lo prueba nada del repo—, pero sí muestra qué protege de verdad.
    - **¿La implementación lo satisface — la letra y la intención?** Acá está el trabajo. El fallo
      típico es cumplir las palabras y perder el punto: un criterio que dice «rechazar un monto
      menor o igual a 0», implementado como `if (amount < 0)`, cumple la letra y falla en el borde

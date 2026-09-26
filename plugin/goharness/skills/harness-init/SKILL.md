@@ -84,6 +84,13 @@ gasta la paciencia de la persona sin comprar nada.
 
 **Segunda ronda — lo que depende del stack:**
 
+- **Si hay interfaz con JavaScript de cliente, el DOM de pruebas.** Un clic que cambia lo que se ve
+  es un criterio de *efecto*, y en el paso 5 necesita un DOM para probarse; el e2e llega recién
+  después de que todas las tareas están en `hecho`, así que no lo reemplaza. En `typescript-node`
+  el default es jsdom, y `vitest.config.ts` trae la línea comentada. Si la respuesta es sí, sumalo
+  al Stack y a la instalación con el mismo sí que Playwright. Una interfaz de HTML estático, sin
+  comportamiento en el cliente, no lo necesita.
+
 - **El comando de corrección**: typecheck y tests. Nada más.
 - **El comando de higiene**: lint, formato, build, e2e — lo que exista. Si el proyecto todavía no
   tiene ninguno, la ranura se llena repitiendo los de corrección **y se dice que es provisorio**. La

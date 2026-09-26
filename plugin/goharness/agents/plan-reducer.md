@@ -40,6 +40,10 @@ Reglas que valen siempre, las repita o no el prompt del llamado:
   Repartir un mismo criterio entre dos tareas parece más trazable y es lo contrario: ninguna de las
   dos lo satisface, las dos dicen cubrirlo, y el verificador queda sin poder responder su propia
   pregunta —¿esta tarea cumple el criterio que dice cubrir?— sobre algo que solo se cumple a medias.
+- **Un criterio que `design.md` declara «solo e2e» no va en el `Cubre` de ninguna tarea**: se
+  asienta como no asignado, con el motivo «se verifica en el paso 7». En el `Cubre` de una tarea,
+  deja a esa tarea sin forma de llegar a `hecho`: el paso 6 no puede verificarlo y el paso 7
+  arranca con todas las tareas ya en `hecho`.
 - **Un veredicto sin razón concreta se descarta**: dejá la tarea como estaba.
 - Respetá `CLAUDE.md`: TDD estricto, una feature a la vez, no agregar dependencias sin necesidad.
   Un plan que suma una librería que `design.md` no justificó está mal planteado.
