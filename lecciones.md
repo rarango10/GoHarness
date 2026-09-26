@@ -75,6 +75,11 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L48 | Un tag empujado sin la rama publica la versión vieja, sin error | `resuelto` | `HARNESS.md` · «Publicar una versión» |
 | L49 | Un artefacto de referencia no existe para el ciclo | `resuelto` | Lote 11 · `close-feature`, `brainstorming`, `specify` + sus plantillas |
 | L50 | Un skill de dominio pedido no se invocó: el contrato apuntaba a su copia | `abierto` | se decide en la segunda iteración del dashboard |
+| L51 | El paso 6 no puede cerrar criterios de DOM si el runner de unidad no tiene DOM | `abierto` | se decide al terminar OoklaWeb2 · dashboard |
+| L52 | El contrato envejece con la feature y nadie lo relee al cerrarla | `abierto` | `close-feature` + `harness-init` |
+| L53 | La seguridad de las dependencias no tiene paso: se vio por accidente | `abierto` | `harness-init` + `close-feature` |
+| L54 | Los hallazgos que le corresponden a otra feature no tienen dónde vivir | `abierto` | propuesta escrita · primer caso en OoklaWeb2 |
+| L55 | Se precarga un skill entero, con su mandato, a agentes que solo necesitan su formato | `abierto` | frontmatter de los agentes + `specify` |
 
 ### Lo que queda
 
@@ -92,6 +97,15 @@ rediseño del dashboard de OoklaWeb: la misma feature y el mismo mockup, con el 
 **Abiertos, en el orden en que conviene tomarlos:**
 
 - **[[L50]]** — se decide en esa misma segunda iteración, con evidencia.
+- **[[L51]]** — antes de la próxima feature con interfaz y JavaScript de cliente: decide si el
+  design declara un DOM de pruebas y cuál es el default.
+- **[[L52]]** — junto con [[L51]]: los dos salieron de la misma corrida y tocan `close-feature`.
+- **[[L53]]** — también de esa corrida; se decide junto con [[L52]], porque los dos agregan un
+  chequeo al paso 8.
+- **[[L54]]** — define cómo se trabajan los bugs e issues que aparecen en la implementación.
+  [[L53]] la necesita: sus «heredadas» van al backlog que propone esta.
+- **[[L55]]** — chica y mecánica: revisar qué skill precarga cada agente. Conviene antes de que un
+  agente, en vez de avisar, obedezca.
 - **[[L12]]** — el commit por tarea le dejó el diff que le faltaba, y `dod-checker` ya tiene `Bash`
   con `git log` autorizado.
 - **[[L6]]** — cuando el ciclo e2e tenga un fallo real que diagnosticar.
@@ -2016,6 +2030,341 @@ con la checklist).
 **Lo que este caso no es.** No es una razón para meter el skill de KPIs dentro del harness: la
 mayoría de los proyectos no tienen dashboards. El harness tiene que saber **cuándo** usar una
 referencia; qué es importante de cada diseño lo sabe cada skill.
+
+---
+
+## L51 · El paso 6 no puede cerrar criterios de DOM si el runner de unidad no tiene DOM · `abierto`
+
+**Qué pasó.** OoklaWeb2, feature `2026-09-24-dashboard`, 2026-09-25, en `--modo corrido`. El
+dashboard es un HTML estático generado por código, y un cliente chico (`cliente.ts`) alterna qué
+fragmento pre-renderizado se ve al hacer clic. El design decidió **no** sumar un DOM de pruebas
+(jsdom): «pre-renderizado, casi todos los criterios se prueban como funciones puras». Mandó al e2e
+del paso 7 solo una parte de los criterios interactivos.
+
+T16 (selección de día y métrica) chocó dos veces con `dod-checker`:
+
+- **Ronda 1, `cumple-parcial`:** R9.9 («destacar la fila del día seleccionado») sin evidencia. El
+  código estaba y funcionaba en Chrome, probado a mano, pero ningún test lo ejercitaba.
+- **Ronda 2, `cumple-parcial`:** la persona eligió «regla pura + e2e». Se extrajo `estaElegido()`
+  con su test y el design declaró para el e2e todo el cableado. Un `dod-checker` más estricto bajó a
+  `sin-evidencia` **seis** criterios (R2.4, R2.5, R3.3, R5.5, R9.9, R9.10). Tenía razón: una función
+  pura probada muestra que la *regla* está bien, no que el clic cambie lo que se ve. Si alguien rompe
+  `montar()`, `npm test` sigue en verde.
+
+La salida que se había propuesto («lo confirma el e2e») **es un círculo**: el paso 7 arranca con
+todas las tareas en `hecho`, y una tarea no llega a `hecho` sin el `cumple` del paso 6. T17 y T18
+(selección de corrida por clic y flechas, tema recordado, interruptor) iban a chocar igual.
+
+**Por qué importa.** Tres cosas:
+
+- **Criterios de estado y criterios de efecto no se prueban igual.** En la misma tarea, R2.3, R3.2 y
+  R6.13 («al abrir, queda seleccionado…») cerraron con lógica pura, porque hablan del *estado*. Los
+  otros seis hablan del *efecto en pantalla* y necesitan un DOM. La frontera no es «cliente o
+  servidor», es «estado o efecto», y ningún paso del ciclo la nombra.
+- **El e2e no puede ser el único verificador de un criterio del `Cubre` de una tarea.** La secuencia
+  6 → 7 lo impide por construcción. Un design que difiere un criterio al paso 7 deja sin salida a la
+  tarea que lo cubre. Esto no es de un proyecto: vale para cualquier feature con interfaz y
+  JavaScript de cliente.
+- **El descarte del DOM de pruebas se tomó en el design sin ver esa consecuencia.** El argumento
+  («pre-renderizado, casi nada queda en el navegador») era correcto para los números y subestimó que
+  la interacción misma es un requisito. Nadie lo discutió en la aprobación, porque la consecuencia
+  aparece recién en el paso 6, dos pasos después.
+
+**Qué habría que hacer.** A decidir al terminar la corrida de OoklaWeb2:
+
+- **`specify`, fase 2 (design):** si la feature declara superficie navegable **con JavaScript de
+  cliente**, la estrategia de testing tiene que decir con qué DOM se prueban en el paso 5 los
+  criterios de efecto. «Los confirma el e2e» no es una respuesta válida para un criterio que está en
+  el `Cubre` de una tarea. Si se descarta el DOM de pruebas, esos criterios no pueden estar en el
+  `Cubre` del paso 5, y `planning-tasks` tiene que saberlo.
+- **`plan-reducer` / `task-reviewer`:** marcar como problema una tarea cuyo `Cubre` tenga un criterio
+  que el design declara verificable solo en el paso 7.
+- **`harness-init`:** en proyectos web, preguntar por el DOM de pruebas junto con el stack, igual que
+  pregunta por el runner de e2e. Con vitest es una línea de config o un comentario por archivo
+  (`// @vitest-environment jsdom`), y convive con el runner de Node para el resto.
+- **Qué recomendar como default.** Las dos opciones que existen para Node son jsdom y happy-dom:
+
+  | | jsdom | happy-dom |
+  |---|---|---|
+  | Qué es | La implementación más usada y más fiel a los estándares web; la que asumen Testing Library y la mayoría de la documentación | Una implementación más nueva, pensada para velocidad |
+  | Fidelidad | Alta: cubre más APIs y casos borde | Suficiente para lo común (`querySelector`, `dataset`, `classList`, `hidden`, eventos), con más huecos en APIs raras |
+  | Velocidad y peso | Más lento para arrancar y más pesado de instalar | Más rápido y liviano |
+  | Scripts del HTML | No ejecuta los `<script>` de un documento cargado salvo que se pida (`runScripts`) | Tuvo un aviso de seguridad por ejecución de código desde `<script>` en versiones viejas. **Verificar la versión y el aviso antes de fijarlo; es de memoria** |
+  | En vitest | `environment: 'jsdom'` | `environment: 'happy-dom'` |
+
+  **Recomendación para el harness: jsdom como default**, happy-dom como alternativa si la suite se
+  vuelve lenta. La razón es la fidelidad, no la velocidad: el paso 6 existe para que un `cumple`
+  signifique algo, y un DOM que se parece menos al navegador dice menos. Además, un proyecto que
+  genera HTML —como este— carga documentos con `<script>` adentro, y el default más conservador es
+  que no se ejecuten solos.
+
+**Lo que este caso no es.** No es una razón para que toda feature con interfaz sume un DOM de
+pruebas. Si la interfaz no tiene JavaScript de cliente (HTML estático puro), no hay cableado que
+probar y el paso 7 alcanza. La regla es condicional: **cliente con comportamiento → DOM de pruebas
+declarado en el design**.
+
+---
+
+## L52 · El contrato envejece con la feature y nadie lo relee al cerrarla · `abierto`
+
+**Qué pasó.** OoklaWeb2, 2026-09-25, con las 19 tareas del dashboard en `hecho` y antes del paso 7.
+Entre los pendientes del cierre estaba «agregar jsdom al Stack de `CLAUDE.md`». La persona eligió
+hacerlo con `harness-init` en modo revisión y no con una edición directa, para respetar la regla del
+productor único. La revisión encontró **dos** afirmaciones del contrato que la feature había vuelto
+falsas, no una:
+
+- **El Stack** decía «vitest para unidad y Playwright para e2e». Desde T16 hay jsdom. Esta sí se
+  había detectado, pero por un camino lateral: `dod-checker` resta las dependencias contra el Stack
+  ([[L24]]) y la marcó como desvío en T17, T18 y T19.
+- **La regla de referencia visual** decía «**el repo no tiene una copia del sistema**, a propósito».
+  Desde T3, la hoja de estilos del dashboard es el reference del skill copiado tal cual, con todos
+  sus tokens. No es un resumen: es el port que el propio skill pide («partir del reference como
+  código base»), y la regla nació en [[L50]] para prohibir **resúmenes**. Pero escrita como estado
+  («no tiene una copia»), la volvió falsa el primer commit que hizo lo que el skill manda. **Nadie la
+  detectó**: ninguna tarea toca `CLAUDE.md`, ningún `dod-checker` compara prosa del contrato contra
+  el repo, y ningún paso relee el contrato al cerrar una feature. Apareció solo porque se corrió la
+  revisión por otro motivo.
+
+Se arreglaron las dos con el sí de la persona. La regla quedó así: «lo que el repo tiene del sistema
+es código, no documentación: el port del reference… Ese port se actualiza desde el skill, nunca al
+revés. El repo no tiene un resumen del sistema, a propósito…».
+
+**Por qué importa.** Tres cosas:
+
+- **Un contrato escrito en estado envejece con cada feature.** `harness-init` ya pide escribir las
+  frases de estado en condicional ([[L39]]), pero esa pauta se aplica al *escribir*, y el contrato de
+  OoklaWeb2 se escribió antes de que existiera el dashboard. Lo que nadie hace es **releerlo después
+  de que el repo cambió**. Es el mismo defecto que [[L33]] resolvió para los veredictos («un `cumple`
+  vale para el estado en que se tomó»), aplicado al documento que leen todos los agentes.
+- **Una afirmación falsa en el contrato es peor que una ausente**, como dice el propio
+  `harness-init`. «El repo no tiene una copia» le dice al próximo agente que la hoja de estilos del
+  dashboard no debería existir. El agente, o la borra, o la trata como algo que no es.
+- **Hoy la detección del drift es accidental.** El caso del Stack se vio porque justo hay un chequeo
+  de dependencias. Para cualquier otra frase del contrato (reglas propias, fuentes de referencia,
+  qué es el proyecto), no hay ningún paso que la contraste contra el repo.
+
+**Qué habría que hacer.** Dos cambios chicos, a aplicar cuando no haya corridas en vuelo:
+
+- **`close-feature`: releer el contrato antes del commit de cierre.** Contrastar cada frase de
+  estado de `CLAUDE.md` (Stack, reglas propias, fuentes nombradas) contra el repo final, con el
+  mismo criterio que `harness-init` en revisión. Si algo quedó falso, el paso 8 no lo arregla:
+  **nombra a `harness-init` en modo revisión** y espera, igual que un rojo de higiene devuelve la
+  tarea a `implement-task`. Así el drift se detecta en cada feature, no cuando alguien se acuerda.
+- **`harness-init`, al escribir reglas propias: normativa en vez de estado.** «No se mantiene un
+  resumen del sistema» sobrevive a un port; «el repo no tiene una copia» no. Vale como ejemplo en
+  la plantilla, junto a la pauta del condicional de [[L39]]: **una regla del proyecto dice qué se
+  hace o qué no se hace, no qué hay**.
+- **Para [[L50]], la distinción que faltaba:** port en código ≠ resumen en documentos. El skill pide
+  el primero y la regla prohíbe el segundo. Si la regla de referencia visual se generaliza al
+  harness (la pregunta abierta de L50), tiene que nacer con esta distinción escrita.
+
+**Lo que este caso no es.** No es un defecto de la regla del productor único: fue esa regla la que
+hizo correr la revisión completa en vez de editar una línea, y por eso apareció el segundo hallazgo.
+Es evidencia a favor de pasar por el productor aunque el cambio parezca de una línea.
+
+---
+
+## L53 · La seguridad de las dependencias no tiene paso: se vio por accidente · `abierto`
+
+**Qué pasó.** OoklaWeb2, feature `2026-09-24-dashboard`, 2026-09-25. En la tercera ronda de T16 se
+instaló jsdom, y `npm install` imprimió al final «5 vulnerabilities (3 moderate, 1 high, 1
+critical)». Así se supo, **por accidente**: si la feature no hubiera instalado nada, nadie lo habría
+visto. Al revisarlo:
+
+- Las cinco son de la cadena de **vitest 2** (vitest, vite, vite-node, esbuild, @vitest/mocker),
+  **anteriores a la feature**: el lockfile del motor, importado de OoklaWeb, ya las tenía. jsdom no
+  agregó ninguna. Para saberlo hubo que auditar a mano el lockfile de `HEAD` en una carpeta aparte.
+- Todas afectan al **dev server de vite** o a la **UI de vitest**, y el proyecto no levanta ninguno
+  de los dos (`vitest run`, HTML estático). El riesgo práctico es bajo, pero no es cero.
+- La corrección es `vitest@5`, **tres versiones mayores**. La persona decidió no tocarlo en la
+  feature: cambiar el runner durante el cierre invalida los 19 veredictos de `dod-checker`, que se
+  tomaron con vitest 2. Quedó como feature propia.
+
+**Por qué importa.** Tres cosas:
+
+- **Ningún paso del ciclo mira la seguridad de las dependencias.** Ni `harness-init` al sembrar, ni
+  `dod-checker` (que resta dependencias contra el Stack, [[L24]], pero no audita), ni el comando de
+  higiene, ni `close-feature`. En todo el plugin no aparece `npm audit` ni la palabra
+  «vulnerabilidad».
+- **Sin una línea de base, no se distingue «trajo esta feature» de «ya estaba».** Es la pregunta que
+  decide qué hacer: una vulnerabilidad nueva es responsabilidad de la feature que la introdujo, y una
+  heredada no debería frenar un cierre. Acá se respondió a mano, auditando el lockfile de `HEAD` en
+  otra carpeta. Ningún paso lo haría solo.
+- **La corrección típica cambia el runner, y eso choca con el modelo de veredictos.** Un salto mayor
+  de vitest es la definición de «un veredicto vale para el estado en que se tomó» ([[L33]]): todos
+  los `cumple` quedan en duda a la vez. Hacerlo dentro de una feature la contamina. Hace falta que el
+  ciclo diga que eso va aparte.
+
+**Qué habría que hacer.** A decidir junto con [[L52]]:
+
+- **`close-feature`: comparar la auditoría contra la línea de base.** Correr la auditoría del
+  ecosistema (`npm audit`, `pip-audit`, lo que corresponda al stack) sobre el lockfile de la rama
+  base y sobre el final, y reportar **la diferencia**. Una vulnerabilidad **nueva** baja la tarea que
+  trajo la dependencia a `en curso`, igual que un rojo de higiene. Las **heredadas** se informan y no
+  bloquean: se anotan como pendiente con destinatario fuera de la feature. Es informativo por
+  defecto, y bloqueante solo para lo que la feature introdujo.
+- **`harness-init`: una línea en el contrato sobre qué auditor usa el proyecto**, en la ranura del
+  stack o junto a los comandos de higiene. Así `close-feature` sabe qué correr sin adivinar el
+  ecosistema. Si no hay auditor para el stack, se dice y la ranura queda explícita.
+- **Regla del ciclo: un cambio mayor del runner o del toolchain es una feature propia**, nunca un
+  arreglo a mitad de otra. Invalida todos los veredictos existentes, y su verificación es otra: que
+  la suite completa siga en verde con el runner nuevo.
+
+**Lo que este caso no es.** No es un pedido de bloquear cualquier cierre con `npm audit` en rojo. La
+mayoría de los avisos de un proyecto típico están en dependencias de desarrollo y en código que no
+llega al producto, como acá. Un chequeo que bloquea siempre se aprende a ignorar. Lo que hace falta
+es **ver la diferencia** que trae cada feature y **decidir** sobre lo heredado, no un semáforo.
+
+---
+
+## L54 · Los hallazgos que le corresponden a otra feature no tienen dónde vivir · `abierto`
+
+**Qué pasó.** OoklaWeb2, feature `2026-09-24-dashboard`, 2026-09-24 y 25. Durante la implementación
+aparecieron cosas que **no eran de la feature en curso**:
+
+- **Cinco tests distintos del motor** (`medirUrl`), de una feature ya cerrada, fallaron cada uno una
+  sola vez con la suite completa y pasaron al reintentar. Se anotaron **cinco veces**, como cinco
+  líneas `[paso 8]` en el `tasks.md` del dashboard, desde T3, T11, T13, T16 y T19. Cada tarea
+  redescubrió el problema y le agregó una línea.
+- **Una actualización de toolchain** (vitest 2 → 5, por `npm audit`, [[L53]]) que se decidió no
+  hacer dentro de la feature.
+
+Al cerrar, la pregunta «¿dónde queda registrado el bug del motor?» **no tenía respuesta**. No hay
+issue tracker (el repo no tiene remoto). El `tasks.md` del dashboard se deja de leer cuando la
+feature cierra, y el bug no es del dashboard. El `tasks.md` del motor es de una feature cerrada. Y
+un archivo de backlog no tiene productor en la tabla del ciclo. La persona eligió el backlog
+(`docs/pendientes.md`, con entradas P1 y P2), declarado **provisorio** en su encabezado hasta que
+esta lección defina cómo se trabaja.
+
+**Por qué importa.**
+
+- **`Pendientes` resuelve el destinatario dentro de la feature, no fuera.** [[L45]] le dio a cada
+  advertencia un lector (`[T<n>]`, `[paso 7]`, `[paso 8]`, `[decidir ya]`), pero **todos los
+  destinatarios viven dentro de la misma feature**. Lo que le toca a otra, o a una que todavía no
+  existe, no tiene etiqueta ni lugar, y termina como `[paso 8]` porque es lo más lejano disponible.
+- **Sin un lugar, cada tarea redescubre lo mismo.** Las cinco líneas del motor son el mismo hallazgo
+  visto cinco veces, y cada `dod-checker` tuvo que decidir de nuevo si ese rojo era suyo. Con una
+  entrada conocida, la segunda vez se reconoce en vez de investigarse.
+- **El ciclo ya trata bien tres clases de hallazgos y no la cuarta.** Un bug en la tarea en curso
+  vuelve al TDD. Un bug en otra tarea de la misma feature la baja a `en curso` (`close-feature`,
+  `e2e-triager`). Un criterio mal escrito va a `specify`. Pero un bug en **código de otra feature**, o
+  un cambio **transversal** (toolchain, dependencias, infraestructura de tests), no tiene camino, y
+  sin camino o se mete a la fuerza en la feature en curso o se pierde.
+
+**Qué habría que hacer.** Una forma de trabajar en tres partes.
+
+**1. Clasificar al detectar.** Quien encuentra algo —`implement-task`, `dod-checker`, `e2e-triager`,
+`close-feature`— lo pone en una de cinco clases, cada una con su camino:
+
+| Clase | Ejemplo | Camino | Existe hoy |
+|---|---|---|---|
+| Bug en la tarea en curso | un test rojo propio | TDD de la misma tarea | sí |
+| Bug en otra tarea de esta feature | un `hecho` que la higiene rompe | esa tarea baja a `en curso` | sí |
+| El criterio está mal | ambigüedad, contradicción | `specify` | sí |
+| Necesita una decisión de la persona ya | qué denominador usa R5.4 | `[decidir ya]` en `Pendientes` | sí |
+| **Le corresponde a otra feature** | bug del motor, vitest 5, deuda transversal | **backlog del proyecto** | **no** |
+
+**2. Un backlog del proyecto con reglas de dueño,** igual que el resto de los documentos del ciclo:
+
+- **Dónde:** `docs/pendientes.md`, uno por proyecto. La plantilla viaja en `assets/` del skill que
+  lo crea, igual que las otras plantillas, y el archivo se crea la primera vez que hace falta.
+- **Quién escribe:** cualquier paso que detecte algo de la quinta clase **agrega** una entrada. Es
+  solo agregar, como `Pendientes`: nadie edita ni borra lo que escribió otro.
+- **Formato de la entrada:** id `P<n>` sin reusar, estado (`abierto` · `en <feature>` · `resuelto
+  <commit>` · `descartado`), de dónde salió (feature y tarea), evidencia, **lo que se sabe y lo que
+  no** (con las sospechas marcadas como tales), qué *no* hacer y destinatario.
+- **Quién cambia el estado:** la feature que lo toma lo pasa a `en <feature>` en su brainstorming, y
+  su `close-feature` lo pasa a `resuelto <commit>`. `descartado` lo decide la persona.
+- **Una etiqueta nueva en `Pendientes`: `[backlog]`.** Para lo que se detecta en una tarea y es de
+  la quinta clase. En el cierre, `close-feature` lo **mueve** al backlog (lo escribe ahí y deja en
+  `Pendientes` la línea con el `P<n>` al que se movió). Así el `tasks.md` queda limpio y el hallazgo
+  no se pierde con la feature.
+
+**3. Lectores explícitos,** porque un documento sin lector es una regla huérfana ([[L50]]):
+
+- **`brainstorming` (paso 1):** antes de explorar la idea, lee las entradas `abierto` del backlog.
+  Si la feature nueva toca el mismo código, las nombra, y la persona decide si entran. Así el
+  backlog llega a la conversación en el momento en que se elige qué construir.
+- **`close-feature` (paso 8):** si la higiene da rojo en un test que **coincide con una entrada
+  abierta**, se reintenta y se documenta; **no reabre tareas** de la feature, porque no es su
+  código. Si el test no está en el backlog, se trata como cualquier rojo: no se asume que es lo
+  conocido. Además, al cerrar, mueve las líneas `[backlog]` de `Pendientes`.
+- **`dod-checker`: no lo lee a propósito.** Un verificador que consulta una lista de «fallas
+  conocidas» aprende a descartar rojos. Es la misma contaminación de [[L22]]: la lista se convierte
+  en checklist de excusas. Reporta el rojo como lo ve, y quien implementa hace el cruce con el
+  backlog en el `Registro`.
+
+**La regla del ciclo que falta, en una línea:** *lo que se encuentra en una feature y le corresponde
+a otra no se arregla ahí ni se pierde ahí: se registra en el backlog del proyecto, y lo toma la
+feature que lo elija.*
+
+**Dónde tocaría.** La tabla del ciclo en la plantilla de `CLAUDE.md` (el backlog necesita una fila
+con su productor, o viola la regla del productor único); `implement-task` y `tasks-template` (la
+etiqueta `[backlog]`); `close-feature` (mover y reconocer); `brainstorming` (leer al empezar);
+`harness-init` (nombrar el backlog en el contrato, sin sembrarlo); el router (la quinta clase).
+
+**Primer caso real.** `OoklaWeb2/docs/pendientes.md`, creado el 2026-09-25 con P1 (tests del motor
+sensibles al tiempo) y P2 (vitest 2 → 5). Sirve de prueba de la convención: la próxima feature de
+OoklaWeb2 debería arrancar leyéndolo.
+
+**Lo que este caso no es.** No es un issue tracker ni lo reemplaza. Si el proyecto tiene uno
+(GitHub Issues, Jira), el backlog se reduce a enlaces, o directamente a nombrar el tracker en el
+contrato: lo que importa es que **haya un lugar con dueño, lector y ciclo de vida**, no que sea un
+archivo. Tampoco es un lugar para diferir lo incómodo de la feature en curso: si es de esta
+feature, va a su `tasks.md` y se resuelve acá.
+
+---
+
+## L55 · Se precarga un skill entero, con su mandato, a agentes que solo necesitan su formato · `abierto`
+
+**Qué pasó.** OoklaWeb2, paso 7 del dashboard, 2026-09-25. `e2e-test-writer` y `e2e-triager`,
+invocados por separado, abrieron su reporte con la **misma advertencia**, cada uno por su cuenta:
+
+- *writer:* «Al arrancar se cargó el skill `specify`, que no tiene que ver con esta tarea. No lo
+  seguí: no toqué ni `requirements.md` ni `design.md`.»
+- *triager:* «el prompt de esta invocación traía cargado el skill `specify` (probablemente un
+  artefacto de configuración) […] Seguí esas instrucciones de tarea, no el skill `specify`.»
+
+No es un artefacto: es el diseño. **Seis de los siete agentes** declaran `skills: [specify]` en su
+frontmatter (todos menos `spec-scout`). [[L2]] comprobó que esa precarga resuelve dentro del plugin,
+y el propio `specify` explica para qué está: «sus agentes tienen este skill precargado y las leen
+desde `assets/tasks-template.md`». La intención es darles **el formato** de los documentos.
+
+**Por qué importa.**
+
+- **Lo que se precarga es el skill entero, y el skill es un mandato.** `specify` abre con «Convertir
+  una idea ya clarificada en un spec ejecutable» y sigue con dos fases de escritura. A un agente cuyo
+  rol es *escribir tests* o *diagnosticar una corrida*, eso le llega como una segunda instrucción que
+  compite con la de su tarea. Esta vez los dos agentes lo reconocieron y lo dejaron de lado. **No
+  hay nada que garantice que el próximo lo haga**: un agente con `Write` (`e2e-test-writer`,
+  `task-writer`, `e2e-triager`) que obedeciera la instrucción equivocada podría escribir en
+  documentos que no son suyos, rompiendo la regla del productor único desde adentro.
+- **A algunos no les sirve ni el formato.** Los dos agentes e2e trabajan con
+  `e2e-tests-plan-template.md` y con el reporte, que viajan en `verify-e2e`, no en `specify`. Para
+  ellos la precarga es solo ruido y riesgo. `dod-checker` sí necesita saber qué es un criterio EARS
+  y cómo es la bitácora de una tarea, y `task-writer`, `task-reviewer` y `plan-reducer` necesitan
+  `tasks-template.md`. Pero ninguno necesita las fases de escritura.
+- **Es el mismo problema que [[L50]], del lado del harness.** Allá una copia resumida perdió lo
+  importante; acá una carga completa arrastra lo que no corresponde. En los dos casos, lo que llega
+  al agente no es lo que necesita.
+
+**Qué habría que hacer.** Dos opciones; la segunda es la de fondo.
+
+- **Mínima: ajustar los frontmatter.** Sacarles `skills: [specify]` a `e2e-test-writer` y
+  `e2e-triager`, que no usan sus formatos, y darles lo suyo (`verify-e2e`, si su cuerpo no es
+  también un mandato ajeno, o nada). Rápida, pero deja el mismo problema para los otros cuatro.
+- **De fondo: separar el formato del mandato.** Un skill solo de referencia, sin instrucciones de
+  proceso (por ejemplo `formatos-del-spec`), con las plantillas de `requirements.md`, `design.md` y
+  `tasks.md` y los patrones EARS. Se precarga **eso**. `specify` lo usa también, así las plantillas
+  siguen teniendo un solo dueño y no dos copias. Cada agente declara solo lo que lee. Una precarga
+  que dice «estos son los formatos» no compite con ningún rol.
+- **Cómo se comprueba después:** invocar cada agente con un prompt mínimo y ver si su primer mensaje
+  menciona un skill ajeno. Hoy, dos de dos lo hicieron.
+
+**Lo que este caso no es.** No es un fallo de [[L2]]: la precarga resuelve bien, y eso sigue siendo
+cierto. El problema es **qué** se precarga, no **si** llega. Tampoco es mala conducta de los
+agentes: lo reportaron y siguieron su rol, que es lo que un agente debería hacer ante una instrucción
+que no le corresponde.
 
 ---
 
