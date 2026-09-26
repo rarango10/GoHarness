@@ -146,7 +146,7 @@ que corresponde y parate.
    la mitad del asunto.
 
 6. **Asentá el veredicto y movés el `Estado`.** En el bloque `Registro` de esa tarea, siguiendo el
-   formato de `assets/tasks-template.md` del skill `specify`:
+   formato de `assets/tasks-template.md` del skill `formato-de-tareas`:
 
    - La línea `**Verificación:**` con el veredicto, los criterios y el resultado de los tests.
    - La línea del rojo del paso 2, con el mensaje literal.

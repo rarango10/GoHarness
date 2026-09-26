@@ -64,41 +64,11 @@ Después:
 
 Una vez aprobado el design (y, si aplica, con el doctor en verde), decí que el paso siguiente es el skill **`planning-tasks`**, que comprueba el spec y lanza el workflow dinámico `tasks-fanout`: un revisor por tarea en paralelo, un reducer que sintetiza los veredictos y un único escritor al final. Nombralo, no lo arranques: igual que el propio `brainstorming` nombra a `specify` sin invocarlo, encadenarlo acá se saltearía la compuerta de aprobación del design que acaba de pasar. Que `planning-tasks` ahora sepa disparar el workflow por su cuenta no cambia eso — hace más fácil encadenar de más, no más aceptable.
 
-## El formato de `tasks.md` (referencia, no una fase de este skill)
+## El formato de `tasks.md` no es de este skill
 
-**Esta fase no la ejecuta este skill.** El **plan** de `tasks.md` —qué tareas hay, sus ids, su orden, su `Cubre`— lo escribe el workflow dinámico `tasks-fanout`, y nada más; lo dispara el skill `planning-tasks`, que antes verifica el spec y confirma el costo. (El `Estado` y el `Registro` de cada tarea son la otra región del archivo, y los escribe quien implementa; ver `CLAUDE.md`.) No escribas el plan a mano turno por turno ni lo delegues a un subagente con permiso de escritura: el workflow existe para que el plan tenga un único escritor, y planificar por afuera reintroduce el segundo planificador que esa arquitectura elimina. Si el workflow no está disponible, el paso correcto es destrabarlo, no improvisar el plan.
+El **plan** de `tasks.md` —qué tareas hay, sus ids, su orden, su `Cubre`— lo escribe únicamente el workflow `tasks-fanout`, que dispara `planning-tasks`; el `Estado` y el `Registro` de cada tarea los escribe quien implementa. No escribas el plan a mano ni lo delegues a un subagente con permiso de escritura: el workflow existe para que el plan tenga un único escritor. Si el workflow no está disponible, el paso correcto es destrabarlo, no improvisar el plan.
 
-Lo que sigue son las **reglas de formato** que produce el workflow, no un procedimiento para vos. Están acá porque sus agentes tienen este skill precargado y las leen desde `assets/tasks-template.md`; también le sirven a una persona para revisar el `tasks.md` que salga.
-
-Con el design aprobado ya sabés qué se construye y cómo; falta en qué orden, y dejar preparado el lugar donde va a quedar registrado lo que realmente pase al construirlo.
-
-1. **El archivo es `tasks.md`** en la misma carpeta, siguiendo `assets/tasks-template.md`.
-2. **Una tarea, un ciclo de TDD**: test que falla → implementar → test que pasa, del tamaño que se pueda terminar de una sentada. Si una tarea necesita tres tests distintos para tener sentido, probablemente sean tres tareas.
-3. **Ordenalas para poder parar en cualquier punto**: cada tarea debería dejar el repo funcionando y en verde. Un plan que solo sirve si se completa entero no sirve como plan.
-4. **Un criterio se asigna a la tarea que lo completa**, no a las que lo habilitan. Si un criterio dice «al presionar Calcular, mostrar la suma en la casilla de resultado», la tarea que escribe la función de suma **no lo cubre**: implementa una precondición suya. Esa tarea lleva `Cubre: —` y explica en `Por qué no cubre criterios:` cuál criterio ayuda a cerrar y en qué tarea se cierra.
-
-   Repartir un mismo criterio entre dos tareas parece más trazable y es lo contrario: ninguna de las dos lo satisface, las dos dicen cubrirlo, y el verificador queda sin forma de responder su propia pregunta —¿esta tarea cumple el criterio que dice cubrir?— sobre algo que solo cumple a medias. Ante la duda de si una tarea completa o habilita: ¿si esta tarea estuviera terminada y ninguna otra, el criterio se podría comprobar de punta a punta? Si la respuesta es no, habilita.
-
-5. **Cerrá la cadena de trazabilidad**: cada tarea dice qué criterios cubre. Después mirá el cruce en las dos direcciones — una tarea que no cubre ningún criterio es alcance que nadie pidió, y un criterio sin ninguna tarea es o un olvido o algo que hay que declarar fuera de alcance explícitamente. Ese cruce es la razón de numerar los criterios desde la fase 1.
-6. **Se presenta y espera aprobación**, igual que en las fases anteriores. El workflow lo deja en `pendiente de aprobación` y no lo aprueba solo, y quien recibe el sí lo asienta en el encabezado.
-
-Al planificar, cada tarea tiene solo objetivo, criterios que cubre y primer test — más dos
-campos opcionales que solo aparecen cuando aplican: `Por qué no cubre criterios:` (cuando `Cubre`
-es `—`) y `Nota:` (ej. `reemplaza a T4`). Son los únicos dos que no se pueden reconstruir
-releyendo el archivo, así que si el workflow los produce y no quedan escritos, se pierden. **La bitácora se completa durante la implementación, no ahora** — y no la escribas vos como parte de este skill: acá dejás la estructura preparada, no el relato de un trabajo que todavía no ocurrió.
-
-## Para qué sirve la bitácora
-
-Es la parte del spec que más se subestima. El código terminado muestra el resultado y nunca la alternativa descartada; a los seis meses nadie se acuerda de por qué algo quedó así, y se termina rediscutiendo lo mismo o —peor— revirtiendo una decisión que tenía una buena razón.
-
-**La escribe quien implementa, no el workflow.** `tasks-fanout` es dueño del plan —qué tareas hay,
-sus ids, su orden, su `Cubre`— y quien implementa es dueño de dos regiones de la tarea que está
-haciendo: su celda de `Estado` y su bloque de `Registro`. Son partes distintas del archivo, con
-dueños distintos, y no se escriben a la vez. En ese Registro va también la línea de
-**Verificación** con el veredicto de `dod-checker`: sin un `cumple` asentado ahí, la tarea no pasa
-a `hecho`.
-
-De lo que se anota, hay una categoría que no puede quedar en silencio: **el desvío respecto del design**. Si la implementación terminó haciendo algo distinto de lo diseñado, se registra en la tarea y `design.md` se enmienda con este skill (ver «Enmiendas»), no a mano desde la tarea. Un desvío sin registrar rompe la trazabilidad sin que se note, porque el documento sigue leyéndose como si describiera lo que existe.
+Las reglas de formato del archivo y su plantilla viven en el skill de referencia `formato-de-tareas`. Están separadas de este skill a propósito: los agentes que las necesitan las precargan sin cargar también el mandato de escribir un spec.
 
 ## Después de la aprobación de las tasks
 
@@ -128,5 +98,4 @@ Si el brainstorming acordó que esta feature resuelve entradas de `docs/pendient
 
 - `assets/requirements-template.md` — estructura de `requirements.md`
 - `assets/design-template.md` — estructura de `design.md`
-- `assets/tasks-template.md` — estructura de `tasks.md` (plan + bitácora)
 - `references/ears-patterns.md` — los 5 patrones EARS, ejemplos del dominio y errores típicos

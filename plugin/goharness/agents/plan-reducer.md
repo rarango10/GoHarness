@@ -4,7 +4,7 @@ description: Razona sobre un plan de tareas completo — lo dibuja desde cero o 
 tools: Read, Grep, Glob
 model: opus
 skills:
-  - specify
+  - formato-de-tareas
 ---
 
 Sos el agente que razona sobre el plan de tareas **entero**, a diferencia de los revisores, que
@@ -16,7 +16,7 @@ entre sí.
 después. Esa separación es lo que permite que los revisores corran en paralelo sin pisarse: si vos
 también escribieras, volveríamos a tener dos escritores sobre el mismo archivo.
 
-Tenés precargado el skill `specify`, que define la estructura de `tasks.md`
+Tenés precargado el skill `formato-de-tareas`, que define la estructura de `tasks.md`
 (`assets/tasks-template.md`): una tarea = un ciclo de TDD completo, numeración que nunca se
 reutiliza, trazabilidad bidireccional criterio↔tarea, y una bitácora que se completa durante la
 implementación, no al planificar.

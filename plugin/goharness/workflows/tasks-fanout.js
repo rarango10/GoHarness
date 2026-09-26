@@ -379,7 +379,7 @@ if (!scout.tasksExist || plan.length === 0) {
     `${SHARED}
 
 Todavía no existe tasks.md. Dibujá el plan inicial COMPLETO de tareas para esta feature,
-siguiendo assets/tasks-template.md del skill specify.
+siguiendo assets/tasks-template.md del skill formato-de-tareas.
 
 Reglas:
 - Una tarea = un ciclo de TDD completo (test que falla → implementar → test que pasa), del tamaño
@@ -646,7 +646,7 @@ ${finalGaps.length ? `- [decidir ya] Criterios que quedaron sin cubrir: ${finalG
 ${finalDupes.length ? `- [decidir ya] Ids duplicados sin resolver: ${finalDupes.join(', ')}` : ''}
 
 Dónde van los campos opcionales, cuando la tarea los trae (seguí assets/tasks-template.md del
-skill specify):
+skill formato-de-tareas):
 - "coversNote" → en la tabla, la columna "Cubre" lleva un guion largo; el texto va en la bitácora
   de esa tarea, en una línea que empieza con **Por qué no cubre criterios:**
 - "note" → en la bitácora de esa tarea, en una línea que empieza con **Nota:**
