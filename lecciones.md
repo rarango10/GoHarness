@@ -80,6 +80,7 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L53 | La seguridad de las dependencias no tiene paso: se vio por accidente | `abierto` | `harness-init` + `close-feature` |
 | L54 | Los hallazgos que le corresponden a otra feature no tienen dónde vivir | `abierto` | propuesta escrita · primer caso en OoklaWeb2 |
 | L55 | Se precarga un skill entero, con su mandato, a agentes que solo necesitan su formato | `abierto` | frontmatter de los agentes + `specify` |
+| L56 | El ciclo va hacia adelante y no tiene camino de vuelta | `abierto` | plan de los lotes 12 a 15 |
 
 ### Lo que queda
 
@@ -2365,6 +2366,61 @@ desde `assets/tasks-template.md`». La intención es darles **el formato** de lo
 cierto. El problema es **qué** se precarga, no **si** llega. Tampoco es mala conducta de los
 agentes: lo reportaron y siguieron su rol, que es lo que un agente debería hacer ante una instrucción
 que no le corresponde.
+
+---
+
+## L56 · El ciclo va hacia adelante y no tiene camino de vuelta · `abierto`
+
+**Qué pasó.** 2026-09-26, al evaluar las lecciones abiertas. La persona preguntó qué se hace si, a
+mitad de un ciclo, aparece algo que obliga a tocar el spec, el plan o lo ya implementado, y no hubo
+una respuesta única. Al revisar el plugin aparecen **caminos sueltos, sin protocolo**:
+
+| Situación | Qué dice el harness | Hueco |
+|---|---|---|
+| Criterio mal, visto en el paso 5 | `implement-task`: «es un hallazgo para `specify`» | No dice qué pasa después: con la aprobación, con las tareas `hecho`, con el plan |
+| Criterio mal, visto en el paso 7 | `verify-e2e`: `aSpecify` → «nombrá `specify` y pará» | Idem |
+| Desvío del design | «se registra y se lleva al documento» | No dice **quién** edita `design.md`, que tiene productor |
+| Requisitos que cambian | `specify`: «actualizá todos los documentos afectados» | **Contradice el productor único**: incluye `tasks.md` |
+| Bug en una tarea `hecho` | solo lo manejan `close-feature` y `verify-e2e` | En el paso 5 nadie puede: `implement-task` solo toca su tarea |
+| Algo de otra feature | nada | Es [[L54]] |
+
+**Por qué importa.** Tres cosas:
+
+- **Cada paso sabe ir hacia adelante, y ninguno sabe volver.** El ciclo nombra el paso siguiente
+  con cuidado ([[L18]]); cuando lo que falla es un paso anterior, cada skill improvisa su salida, y
+  la salida típica es «nombrá a X y pará». Eso detiene el ciclo, pero no dice cómo se retoma.
+- **Un `cumple` vale para un estado del código ([[L33]]), y también para un texto del criterio.**
+  Si R3.2 se corrige después de que T4 lo verificó, el `hecho` de T4 es sobre un criterio que ya no
+  existe. Ni `tasks-fanout` (sus revisores solo miran si el código existe) ni `close-feature` (la
+  higiene prueba el código, no el texto) lo detectan. Es la misma familia que [[L33]] y [[L52]]:
+  una afirmación vieja que se sigue leyendo como vigente.
+- **La contradicción de `specify` es la que un modelo va a elegir.** «Actualizá todos los
+  documentos afectados» es la instrucción más directa que hay para el caso, y lleva a editar
+  `tasks.md` a mano, que es justo lo que la regla del productor único prohíbe.
+
+**Qué habría que hacer.** Un protocolo, con una regla de una línea: *un cambio entra por el
+documento más alto que toca, baja en cascada por sus productores, y todo veredicto que se apoyaba en
+lo cambiado deja de valer.*
+
+1. **Parar y clasificar** en ocho clases (bug de la tarea en curso · bug de otra tarea `hecho` ·
+   cambió el cómo · cambió el qué · el plan está mal · hace falta decidir ya · es de otra feature ·
+   cambió la feature misma), cada una con su camino.
+2. **Enmienda corta en `specify`**: encabezado `aprobado (…) · enmendado (…): <ids>`, sección
+   `## Enmiendas`, sí sobre lo que cambió y no sobre todo el documento, commit propio.
+3. **Invalidación**: una tarea `hecho` cuyo `Cubre` tiene un id enmendado después de su `cumple`
+   vuelve a `en curso`, con el sí. La detectan el arranque de `implement-task` y `close-feature`.
+4. **Re-plan** con `planning-tasks` si cambió el conjunto de criterios, con `## Enmiendas` a la
+   vista de los revisores.
+5. **Reanudar** con `implement-task`; mientras una enmienda o un re-plan están abiertos, no se
+   implementa.
+
+Plan de aplicación: [`docs/2026-09-26-lotes-12-a-15/plan.md`](docs/2026-09-26-lotes-12-a-15/plan.md).
+
+**Lo que este caso no es.** No es una razón para volver a aprobar el spec entero ante cada ajuste:
+la persona eligió la enmienda corta, porque una re-aprobación completa desalienta justo los ajustes
+chicos que conviene hacer temprano. Tampoco es un permiso para que quien implementa edite el spec
+«porque es una línea»: [[L52]] mostró que pasar por el productor es lo que destapa el segundo
+hallazgo.
 
 ---
 
