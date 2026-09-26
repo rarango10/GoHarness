@@ -9,6 +9,7 @@ lectura, botones de operación y uno para limpiar.
 
 ## Stack
 
+<!-- ranura: stack -->
 | Pieza | Elección |
 |---|---|
 | Build / dev server | Vite |
@@ -16,7 +17,7 @@ lectura, botones de operación y uno para limpiar.
 | Tests unitarios y de componente | Vitest + Testing Library (`@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`), entorno `jsdom` |
 | Tests end to end | Playwright |
 | Lint y formato | Biome |
-| Gestor de paquetes | npm (hay npm 10.9.4 y Node 22.22.0; **no** hay pnpm ni yarn instalados) |
+| Gestor de paquetes | npm. No uses pnpm ni yarn: el proyecto guarda sus versiones en `package-lock.json`, que es de npm. |
 
 No agregues dependencias fuera de esta lista sin acordarlo antes. En particular: sin librería de
 componentes, sin framework de estilos y sin manejador de estado global — alcanza con CSS plano y
@@ -24,12 +25,13 @@ componentes, sin framework de estilos y sin manejador de estado global — alcan
 
 ## Comandos de verificación
 
-De acá sacan qué correr `spec-scout`, `dod-checker`, `task-reviewer` y `e2e-triager`.
+De acá sacan qué correr los skills y subagentes del ciclo.
 
 | Propósito | Comando |
 |---|---|
 | **Verificación de una tarea** (tipos + tests) | `npm run check` |
-| Higiene previa al commit | `npm run verify` |
+| Previo al commit de cada tarea | `npm run verify` |
+| **Higiene del cierre de la feature** (paso 8) | `npm run verify && npm run e2e` |
 | Chequeo de tipos | `npm run typecheck` (`tsc --noEmit`) |
 | Tests unitarios | `npm test` (`vitest run`) |
 | Tests unitarios en watch | `npm run test:watch` |
@@ -45,12 +47,23 @@ De acá sacan qué correr `spec-scout`, `dod-checker`, `task-reviewer` y `e2e-tr
 
 ### Cuál correr en cada paso
 
+<!-- ranura: correccion -->
 - **Verificación por tarea (paso 6, `dod-checker`)**: `npm run check`, y solo ese. Es
   deliberado que no corra `lint` ni `build`: una queja de formato de Biome no dice nada sobre si
   la tarea cumple su criterio de aceptación, y hacerla fallar por eso reporta un incumplimiento
   falso. El formato se arregla con `npm run format`, no bloqueando la verificación.
-- **Antes de un commit**: `npm run verify`. Ahí sí corresponde exigir lint y build en verde.
+
+- **Antes del commit de cada tarea**: `npm run verify`. Ahí sí corresponde exigir lint y build en verde.
 - **Verificación de la feature (paso 7, `verify-e2e`)**: `npm run e2e`.
+
+<!-- ranura: higiene -->
+- **Cierre de la feature (paso 8, `close-feature`)**: `npm run verify && npm run e2e`. Acá sí
+  entran lint, build y el e2e, sobre el estado final: el verde del paso 7 vale para el repo como
+  estaba entonces, no para lo que se tocó después.
+
+<!-- ranura: auditor -->
+- **Auditor de dependencias (paso 8, `close-feature`)**: `npm audit`. Es informativo y no va
+  dentro de `npm run verify`: frena solo lo que la feature trajo; lo heredado va al backlog.
 
 ### Notas de entorno
 
@@ -63,8 +76,8 @@ De acá sacan qué correr `spec-scout`, `dod-checker`, `task-reviewer` y `e2e-tr
 
 ## Reglas del proyecto
 
-1. **La lógica va separada de la UI.** Las operaciones viven en `src/calc.ts` como funciones
-   puras, sin tocar el DOM ni React. La UI las llama; los casos borde se prueban ahí, no a
+1. **La lógica va separada de la UI.** Las operaciones viven en un módulo propio, como
+   funciones puras, sin tocar el DOM ni React. La UI las llama; los casos borde se prueban ahí, no a
    través del componente.
 2. **TypeScript estricto, sin `any`.** Si un tipo no cierra, arreglá el modelo — no lo silencies
    con un cast.
@@ -129,3 +142,7 @@ El ruteo de qué skill produce cada documento lo define el propio plugin — inv
 `goharness` para verlo. Este archivo no duplica la tabla de ruteo.
 
 Todo el papeleo de una feature vive en `docs/AAAA-MM-DD-<feature>/`.
+
+<!-- ranura: backlog -->
+**Backlog del proyecto:** `docs/pendientes.md` (se crea la primera vez que hace falta). Es el lugar
+de lo que aparece en una feature y le corresponde a otra.

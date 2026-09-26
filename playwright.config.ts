@@ -14,5 +14,10 @@ export default defineConfig({
   },
   use: {
     baseURL: 'http://localhost:5173',
+    // 'retain-on-failure' y no 'on-first-retry': con retries: 0 arriba, un reintento nunca ocurre,
+    // así que 'on-first-retry' nunca graba nada — el triager termina diagnosticando sin trace. Acá
+    // se graba en el primer y único intento si falla.
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
   },
 })
