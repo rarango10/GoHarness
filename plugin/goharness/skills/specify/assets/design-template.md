@@ -109,6 +109,18 @@ primero el test que falla). Mapeá test ↔ criterio para que se vea qué queda 
 
 <Anotá también los casos borde que vale la pena cubrir aunque no tengan un criterio propio.>
 
+<**Criterios de estado y criterios de efecto no se prueban igual.** Uno de estado («al abrir, queda
+seleccionado el último día») se prueba con una función pura. Uno de efecto («al hacer clic, se
+destaca la fila») necesita el código que produce el efecto corriendo: si la feature tiene
+JavaScript de cliente, declará acá **con qué DOM de pruebas** se prueban esos criterios en el paso
+5 (en el stack `typescript-node`, jsdom por defecto).>
+
+<**«Lo confirma el e2e» no es una respuesta** para un criterio que va a estar en el `Cubre` de una
+tarea: el paso 7 arranca con todas las tareas ya en `hecho`, y una tarea no llega a `hecho` sin un
+`cumple` del paso 6. Si un criterio de efecto de verdad solo se puede probar navegando, decilo acá
+explícitamente —«R9.9: solo e2e»—: `planning-tasks` lo va a dejar fuera del `Cubre` de las tareas
+y lo va a asentar como criterio sin tarea, verificado en el paso 7.>
+
 ## Decisiones y alternativas descartadas
 
 | Decisión | Alternativa considerada | Por qué se descartó |

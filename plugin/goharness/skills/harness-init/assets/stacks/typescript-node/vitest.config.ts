@@ -10,5 +10,13 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     exclude: ['**/node_modules/**', '**/dist/**', 'end2end/**'],
+    // DOM de pruebas. Si el proyecto tiene JavaScript de cliente con comportamiento —un clic que
+    // cambia lo que se ve—, los criterios de *efecto* necesitan un DOM en el paso 5: una función
+    // pura probada muestra que la regla está bien, no que el clic haga algo. Default: jsdom (el
+    // más fiel a los estándares; el que asume Testing Library). Se instala con `npm i -D jsdom`.
+    // Para activarlo en todo el proyecto, descomentá la línea de abajo; para un solo archivo,
+    // alcanza con `// @vitest-environment jsdom` en su primera línea. Sin JavaScript de cliente,
+    // no hace falta.
+    // environment: 'jsdom',
   },
 })
