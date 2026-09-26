@@ -30,13 +30,13 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L3 | `plugin details` miente por omisión | `resuelto` | Lote 7 · `README.md` |
 | L4 | Los workflows de un plugin van namespaceados | `resuelto` | previo · `planning-tasks` |
 | L5 | Para workflows no hay shadowing | `resuelto` | Lote 7 · `README.md` |
-| L6 | El MCP de Playwright elegiría mejores selectores | `abierto` | segunda ronda |
+| L6 | El MCP de Playwright elegiría mejores selectores | `en observación` | fuera del plugin: espera un fallo `causa: test` real |
 | L7 | El ciclo e2e nunca había corrido entero | `resuelto` | corrió en el demo · README en Lote 7 |
 | L8 | Las compuertas son instrucciones, no mecanismos | **`límite asumido`** | análisis cerrado |
 | L9 | Solo-lectura: ¿conducta o impedimento? | `resuelto` | Lote 8 · `dod-checker` + `spec-scout` |
 | L10 | Re-planificar desaprobaba un plan intacto | `resuelto` | Lote 1 · `task-writer` |
 | L11 | El próximo id libre se podía reutilizar | `resuelto` | Lote 1 · `tasks-fanout.js` + `spec-scout` |
-| L12 | Un test que pasa no prueba lo que dice probar | `abierto` | segunda ronda — **L29 le dejó el lever** |
+| L12 | Un test que pasa no prueba lo que dice probar | **`resuelto parcialmente`** | Lote 13 · `dod-checker` (sabotaje + diff). El orden rojo→verde sigue en L29 |
 | L13 | Corrección y estilo conflacionados | `resuelto` | Lote 5b · `CLAUDE.md` + Lote 6 · plantilla |
 | L14 | `CLAUDE.md` invadió territorio del `design.md` | `resuelto` | Lote 6 · plantilla sin «Estructura» |
 | L15 | Decidió el stack sin preguntar | `resuelto` | Lote 4 · vía L16 y L17 |
@@ -74,13 +74,13 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L47 | Se siembra el config de Playwright y la dependencia no tiene dueño | `resuelto` | Lote 9 · `e2e-doctor.cjs` + `harness-init` |
 | L48 | Un tag empujado sin la rama publica la versión vieja, sin error | `resuelto` | `HARNESS.md` · «Publicar una versión» |
 | L49 | Un artefacto de referencia no existe para el ciclo | `resuelto` | Lote 11 · `close-feature`, `brainstorming`, `specify` + sus plantillas |
-| L50 | Un skill de dominio pedido no se invocó: el contrato apuntaba a su copia | `abierto` | se decide en la segunda iteración del dashboard |
-| L51 | El paso 6 no puede cerrar criterios de DOM si el runner de unidad no tiene DOM | `abierto` | se decide al terminar OoklaWeb2 · dashboard |
-| L52 | El contrato envejece con la feature y nadie lo relee al cerrarla | `abierto` | `close-feature` + `harness-init` |
-| L53 | La seguridad de las dependencias no tiene paso: se vio por accidente | `abierto` | `harness-init` + `close-feature` |
-| L54 | Los hallazgos que le corresponden a otra feature no tienen dónde vivir | `abierto` | propuesta escrita · primer caso en OoklaWeb2 |
-| L55 | Se precarga un skill entero, con su mandato, a agentes que solo necesitan su formato | `abierto` | frontmatter de los agentes + `specify` |
-| L56 | El ciclo va hacia adelante y no tiene camino de vuelta | `abierto` | plan de los lotes 12 a 15 |
+| L50 | Un skill de dominio pedido no se invocó: el contrato apuntaba a su copia | `abierto` | fuera del harness por ahora: lo genérico ya está en L49; se decide con la 2.ª iteración del dashboard |
+| L51 | El paso 6 no puede cerrar criterios de DOM si el runner de unidad no tiene DOM | `resuelto` | Lote 13 · `design-template`, `specify`, `task-reviewer`, `plan-reducer`, `harness-init`, `vitest.config.ts` |
+| L52 | El contrato envejece con la feature y nadie lo relee al cerrarla | `resuelto` | Lote 14 · `close-feature` + `harness-init` + plantilla |
+| L53 | La seguridad de las dependencias no tiene paso: se vio por accidente | **`resuelto parcialmente`** | Lote 14 · `close-feature` + ranura en la plantilla. La línea de base mira el manifiesto, no el árbol transitivo |
+| L54 | Los hallazgos que le corresponden a otra feature no tienen dónde vivir | `resuelto` | Lote 12 · router, `close-feature` + plantilla, `implement-task`, `brainstorming`, `specify` |
+| L55 | Se precarga un skill entero, con su mandato, a agentes que solo necesitan su formato | `resuelto` | Lote 15 · skill `formato-de-tareas` + frontmatter de los agentes |
+| L56 | El ciclo va hacia adelante y no tiene camino de vuelta | `resuelto` | Lote 12 · router, regla en `CLAUDE.md` + plantilla, `specify`, `implement-task`, `close-feature`, `tasks-fanout` |
 
 ### Lo que queda
 
@@ -92,29 +92,36 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 [`docs/2026-09-19-lotes-8-a-10/plan.md`](docs/2026-09-19-lotes-8-a-10/plan.md) para el orden en que
 se aplicaron y las secciones «Lote N aplicado» de más abajo para lo que apareció en cada una.
 
-**Aplicado sin probar todavía:** [[L49]] (Lote 11). Su prueba natural es la segunda iteración del
-rediseño del dashboard de OoklaWeb: la misma feature y el mismo mockup, con el cambio puesto.
+**Evaluación de las abiertas (2026-09-26)** —qué se volvió harness y qué quedó afuera, con el
+porqué—: [`docs/2026-09-26-lotes-12-a-15/plan.md`](docs/2026-09-26-lotes-12-a-15/plan.md). Los lotes
+12 a 15 están aplicados.
 
-**Abiertos, en el orden en que conviene tomarlos:**
+**Aplicado sin probar todavía:**
 
-- **[[L50]]** — se decide en esa misma segunda iteración, con evidencia.
-- **[[L51]]** — antes de la próxima feature con interfaz y JavaScript de cliente: decide si el
-  design declara un DOM de pruebas y cuál es el default.
-- **[[L52]]** — junto con [[L51]]: los dos salieron de la misma corrida y tocan `close-feature`.
-- **[[L53]]** — también de esa corrida; se decide junto con [[L52]], porque los dos agregan un
-  chequeo al paso 8.
-- **[[L54]]** — define cómo se trabajan los bugs e issues que aparecen en la implementación.
-  [[L53]] la necesita: sus «heredadas» van al backlog que propone esta.
-- **[[L55]]** — chica y mecánica: revisar qué skill precarga cada agente. Conviene antes de que un
-  agente, en vez de avisar, obedezca.
-- **[[L12]]** — el commit por tarea le dejó el diff que le faltaba, y `dod-checker` ya tiene `Bash`
-  con `git log` autorizado.
-- **[[L6]]** — cuando el ciclo e2e tenga un fallo real que diagnosticar.
-- **[[L8]]** — cerrada, con el matiz que le agregó [[L36]]: los hooks sí mapean sobre bordes de
-  tool-call; lo que no tiene borde es la aprobación.
+- [[L49]] (Lote 11) — su prueba natural es la segunda iteración del rediseño del dashboard de
+  OoklaWeb.
+- [[L56]] y [[L54]] (Lote 12) — el protocolo de cambios y el backlog. Prueba natural: una feature
+  chica del demo en la que, a mitad del paso 5, se enmiende un criterio que ya cubre una tarea
+  `hecho`. Tiene que pasar por `specify`, dejar el encabezado `enmendado` y `## Enmiendas`, y
+  `implement-task` tiene que detectar la tarea a reabrir al arrancar y reabrirla solo con el sí. La
+  prueba del backlog es la próxima feature de OoklaWeb2: tiene que arrancar leyendo
+  `docs/pendientes.md`.
+- [[L51]] y [[L12]] (Lote 13) — la próxima feature con JavaScript de cliente.
+- [[L52]] y [[L53]] (Lote 14) — el próximo cierre de cualquier feature.
+- [[L55]] (Lote 15) — en sesión nueva, invocar cada agente con un prompt mínimo: su primer mensaje
+  no puede mencionar un skill ajeno. Hoy, dos de dos lo hacían.
 
-**En observación:** [[L41]], que el Lote 10 va a cerrar con la regla *quien recibe el sí de un
-documento lo commitea*.
+**Abiertos, y por qué siguen afuera:**
+
+- **[[L50]]** — lo genérico (si la referencia es un skill, se invoca; la fuente manda sobre una
+  copia) ya lo aplicó [[L49]]. Qué skills de dominio usa un proyecto es contrato del proyecto, no
+  del harness; si hace falta una ranura en la plantilla se decide con la evidencia de la segunda
+  iteración del dashboard.
+- **[[L6]]** — `en observación`: nada que tocar hasta que el ciclo e2e tenga un fallo `causa: test`
+  real. El MCP va a nivel usuario, nunca como componente del plugin.
+- **[[L8]]** — `límite asumido`, con el matiz de [[L36]].
+- **[[L29]]** — el orden rojo→verde sigue sin prueba independiente; [[L12]] cubrió la otra mitad
+  (que el test ejercite lo que el criterio nombra).
 
 **Lo que ninguna corrida ejercitó todavía:** el ruteo del ciclo e2e (`causa: test` / `codigo` /
 `spec`), la resta de dependencias de [[L24]], la detección de un veredicto envejecido de [[L33]],
@@ -257,7 +264,7 @@ nombre namespaceado habiendo también uno local.
 
 ---
 
-## L6 · El MCP de Playwright podría elegir mejores selectores · `abierto`
+## L6 · El MCP de Playwright podría elegir mejores selectores · `en observación`
 
 **Qué pasó.** `e2e-test-writer` tiene instrucción de preferir selectores por rol y texto accesible
 (`getByRole`, `getByLabel`). Pero el rol y el nombre accesible se computan en runtime, sobre el DOM
@@ -423,7 +430,7 @@ contenido vivo. Es el mismo patrón que el `seq` del ledger de `split-de-gastos`
 
 ---
 
-## L12 · `dod-checker` confía en que un test que pasa prueba lo que dice probar · `abierto`
+## L12 · `dod-checker` confía en que un test que pasa prueba lo que dice probar · `resuelto parcialmente` (Lote 13)
 
 **Qué pasó.** Con una persona manejando el ciclo TDD alcanza: vio el rojo antes del verde. En modo
 autónomo se da vuelta — quien implementa queda con un incentivo directo a producir verde, y el
@@ -2034,7 +2041,7 @@ referencia; qué es importante de cada diseño lo sabe cada skill.
 
 ---
 
-## L51 · El paso 6 no puede cerrar criterios de DOM si el runner de unidad no tiene DOM · `abierto`
+## L51 · El paso 6 no puede cerrar criterios de DOM si el runner de unidad no tiene DOM · `resuelto` (Lote 13)
 
 **Qué pasó.** OoklaWeb2, feature `2026-09-24-dashboard`, 2026-09-25, en `--modo corrido`. El
 dashboard es un HTML estático generado por código, y un cliente chico (`cliente.ts`) alterna qué
@@ -2106,7 +2113,7 @@ declarado en el design**.
 
 ---
 
-## L52 · El contrato envejece con la feature y nadie lo relee al cerrarla · `abierto`
+## L52 · El contrato envejece con la feature y nadie lo relee al cerrarla · `resuelto` (Lote 14)
 
 **Qué pasó.** OoklaWeb2, 2026-09-25, con las 19 tareas del dashboard en `hecho` y antes del paso 7.
 Entre los pendientes del cierre estaba «agregar jsdom al Stack de `CLAUDE.md`». La persona eligió
@@ -2165,7 +2172,7 @@ Es evidencia a favor de pasar por el productor aunque el cambio parezca de una l
 
 ---
 
-## L53 · La seguridad de las dependencias no tiene paso: se vio por accidente · `abierto`
+## L53 · La seguridad de las dependencias no tiene paso: se vio por accidente · `resuelto parcialmente` (Lote 14)
 
 **Qué pasó.** OoklaWeb2, feature `2026-09-24-dashboard`, 2026-09-25. En la tercera ronda de T16 se
 instaló jsdom, y `npm install` imprimió al final «5 vulnerabilities (3 moderate, 1 high, 1
@@ -2218,7 +2225,7 @@ es **ver la diferencia** que trae cada feature y **decidir** sobre lo heredado, 
 
 ---
 
-## L54 · Los hallazgos que le corresponden a otra feature no tienen dónde vivir · `abierto`
+## L54 · Los hallazgos que le corresponden a otra feature no tienen dónde vivir · `resuelto` (Lote 12)
 
 **Qué pasó.** OoklaWeb2, feature `2026-09-24-dashboard`, 2026-09-24 y 25. Durante la implementación
 aparecieron cosas que **no eran de la feature en curso**:
@@ -2316,7 +2323,7 @@ feature, va a su `tasks.md` y se resuelve acá.
 
 ---
 
-## L55 · Se precarga un skill entero, con su mandato, a agentes que solo necesitan su formato · `abierto`
+## L55 · Se precarga un skill entero, con su mandato, a agentes que solo necesitan su formato · `resuelto` (Lote 15)
 
 **Qué pasó.** OoklaWeb2, paso 7 del dashboard, 2026-09-25. `e2e-test-writer` y `e2e-triager`,
 invocados por separado, abrieron su reporte con la **misma advertencia**, cada uno por su cuenta:
@@ -2369,7 +2376,7 @@ que no le corresponde.
 
 ---
 
-## L56 · El ciclo va hacia adelante y no tiene camino de vuelta · `abierto`
+## L56 · El ciclo va hacia adelante y no tiene camino de vuelta · `resuelto` (Lote 12)
 
 **Qué pasó.** 2026-09-26, al evaluar las lecciones abiertas. La persona preguntó qué se hace si, a
 mitad de un ciclo, aparece algo que obliga a tocar el spec, el plan o lo ya implementado, y no hubo
@@ -3048,6 +3055,71 @@ tal como está.
 sin deriva). No se probó nada en una corrida real: un brainstorming que arme la tabla, un `specify`
 que la baje a criterios y un cierre que pida la mirada. La segunda iteración del dashboard es esa
 prueba.
+
+## Lotes 12 a 15 aplicados — 2026-09-26
+
+Plan: [`docs/2026-09-26-lotes-12-a-15/plan.md`](docs/2026-09-26-lotes-12-a-15/plan.md). Las cinco
+verificaciones de `HARNESS.md` en verde después de cada lote.
+
+**Lote 12 — protocolo de cambios ([[L56]]) y backlog ([[L54]]).** El router gana «Cuando algo
+cambia a mitad de camino»: ocho clases con su pregunta y su camino, la enmienda, la invalidación de
+veredictos, el re-plan y cómo se reanuda. Regla nueva, en `CLAUDE.md` y en la plantilla: **un
+cambio entra por el documento más alto que toca**. `specify` gana el modo enmienda (encabezado
+`enmendado (…): <ids>`, sección `## Enmiendas`, sí corto, commit propio) y pierde el «actualizá
+todos los documentos afectados». `implement-task` chequea al arrancar si una enmienda dejó viejo un
+`hecho`, puede reabrir otra tarea con el sí, y suma el destinatario `[backlog]`, que reemplaza a
+`[feature siguiente]`. `close-feature` mueve las `[backlog]` a `docs/pendientes.md` (plantilla
+nueva en sus `assets/`), reconoce un rojo que ya está en el backlog, y es la red de seguridad de las
+enmiendas. `brainstorming` lee el backlog antes de explorar. El scout del workflow transcribe
+`## Enmiendas` y marca los criterios obsoletos, que dejan de contar como hueco de cobertura.
+
+**Lote 13 — calidad de la evidencia ([[L51]], [[L12]]).** El design separa criterios de estado y
+de efecto, y con JavaScript de cliente declara el DOM de pruebas; «lo confirma el e2e» deja de ser
+respuesta para un criterio que está en un `Cubre`. `task-reviewer` y `plan-reducer` sacan del
+`Cubre` los criterios «solo e2e». `dod-checker` gana la pregunta de sabotaje —*si rompo lo que
+produce esto, ¿el test falla?*— y mira el diff del commit de la tarea. `harness-init` pregunta por
+el DOM de pruebas; `vitest.config.ts` trae jsdom comentado como default del stack.
+
+**Lote 14 — el cierre ([[L52]], [[L53]]).** `close-feature` relee las frases de estado de
+`CLAUDE.md` contra el repo final y remite a `harness-init` si alguna quedó falsa. Corre el auditor
+declarado y bloquea solo lo que la feature agregó o subió; lo heredado va al backlog.
+`harness-init` y la plantilla: las reglas propias se escriben como norma, no como estado, y hay una
+ranura «Auditor de dependencias», fuera de la higiene.
+
+**Lote 15 — formato separado del mandato ([[L55]]).** Skill nuevo `formato-de-tareas`, solo
+referencia, con `user-invocable: false` y la plantilla de `tasks.md` movida desde `specify`. Lo
+precargan `dod-checker`, `task-writer`, `task-reviewer` y `plan-reducer`; los dos agentes e2e
+dejan de precargar nada. `specify` conserva las plantillas que sí produce.
+
+### Lo que apareció al aplicarlo
+
+**La guarda de paridad lee cualquier tabla con números.** `check-rules-parity.cjs` reconoce como
+fila del ciclo toda fila que empiece con `| <número> |`, en cualquier parte del router. La tabla de
+clases del protocolo se escribió sin columna numerada por eso; con ella, la guarda habría mezclado
+«clase 1» con «paso 1». Queda anotado para quien sume otra tabla al router.
+
+**Dos contradicciones más, del mismo tipo que la de `specify`.** El recordatorio de
+`requirements-template.md` decía «si insertás un requisito en el medio, revisá las referencias»,
+cuando `specify` prohíbe renumerar. Y tres lugares (`dod-checker`, `tasks-template`, `specify`)
+decían «actualizá `design.md`» sin decir quién: con el productor único, eso invitaba a editarlo
+desde la tarea. Los tres dicen ahora «enmienda con `specify`».
+
+**`disable-model-invocation` habría roto la precarga.** La idea obvia para un skill «solo
+referencia» era ocultarlo del modelo. La documentación de subagentes dice que un skill con
+`disable-model-invocation: true` no se puede precargar, porque la precarga sale del mismo conjunto
+que el modelo puede invocar. `user-invocable: false` lo saca del menú de la persona y deja la
+precarga en pie. Se consultó antes de escribir; sin eso, los cuatro agentes habrían perdido el
+formato en silencio.
+
+**El formato de `tasks.md` nunca fue de `specify`.** Al separar formato de mandato apareció que la
+pertenencia estaba mal desde antes: `tasks.md` lo escriben `tasks-fanout` y quien implementa, y su
+plantilla vivía en el skill del paso anterior. `requirements` y `design` sí son de `specify`, así
+que esas plantillas se quedan donde están.
+
+**El `CLAUDE.md` del demo no tiene todavía las ranuras nuevas** (backlog, auditor). No se tocó a
+mano: su productor es `harness-init` en modo revisión, y es la primera prueba natural del Lote 14.
+
+---
 
 ## Primera corrida con el harness nuevo — 2026-09-11
 

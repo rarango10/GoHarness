@@ -78,6 +78,14 @@ antes de cerrar.
 queda en un limbo indistinguible de «a medio hacer», así que implementar y verificar son el mismo
 acto: la aprobación va después del veredicto, y es **por tarea** — once tareas son once ciclos.
 
+**Cuando algo obliga a volver atrás, el ciclo tiene camino de vuelta.** Un criterio mal escrito,
+un design que ya no describe lo que existe o una tarea que falta no se arreglan donde aparecieron:
+entran por el productor del documento más alto que tocan —`specify` con una enmienda corta,
+`planning-tasks` para el plan— y bajan en cascada. Todo `cumple` que se apoyaba en lo enmendado
+deja de valer, y su tarea vuelve a `en curso` con el sí. Lo que le corresponde a otra feature va al
+backlog del proyecto, `docs/pendientes.md`, que el brainstorming siguiente lee. Las ocho clases y
+sus caminos están en el router, en «Cuando algo cambia a mitad de camino».
+
 Los tres últimos verifican cosas distintas y ninguno reemplaza a otro: `dod-checker` pregunta si
 *una tarea* cumple sus criterios; `verify-e2e`, si *la feature entera* camina; `close-feature`, si
 *todos los veredictos siguen siendo ciertos juntos* sobre el estado final. Y ninguno de los tres
