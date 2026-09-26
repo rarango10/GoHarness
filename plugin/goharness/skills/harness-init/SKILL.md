@@ -46,8 +46,12 @@ que una ausente: la leen todos los agentes y la tratan como cierta. **Antes de p
 releé tu propio texto con el mismo criterio** — una frase nueva puede ser falsa desde el día en que
 se escribe. Y cuando una frase de estado haga falta, escribila en condicional («si no están
 instalados, `npx playwright install chromium` los instala»): una afirmación de estado envejece, una
-condicional no. Las cuatro comprobaciones de abajo son lo mínimo que el harness necesita, no la
-lista completa de lo que puede estar mal.
+condicional no. **Lo mismo vale para las reglas propias del proyecto: una regla dice qué se hace o
+qué no se hace, no qué hay.** «No se mantiene un resumen del sistema de diseño en el repo» sobrevive
+a que una feature porte el código del sistema; «el repo no tiene una copia del sistema» se vuelve
+falsa con el primer commit que hace lo que el skill de diseño manda, y nadie lo nota. Las cuatro
+comprobaciones de abajo son lo mínimo que el harness necesita, no la lista completa de lo que puede
+estar mal.
 
 Mirá cuatro cosas:
 
@@ -90,11 +94,15 @@ gasta la paciencia de la persona sin comprar nada.
   el default es jsdom, y `vitest.config.ts` trae la línea comentada. Si la respuesta es sí, sumalo
   al Stack y a la instalación con el mismo sí que Playwright. Una interfaz de HTML estático, sin
   comportamiento en el cliente, no lo necesita.
-
 - **El comando de corrección**: typecheck y tests. Nada más.
 - **El comando de higiene**: lint, formato, build, e2e — lo que exista. Si el proyecto todavía no
   tiene ninguno, la ranura se llena repitiendo los de corrección **y se dice que es provisorio**. La
   ranura vacía no se borra: existe porque el paso 8 la va a buscar.
+- **El auditor de dependencias**: el del ecosistema (`npm audit`, `pip-audit`, `govulncheck`…) o
+  «ninguno», dicho explícitamente. `close-feature` lo corre para ver qué vulnerabilidades **trajo**
+  cada feature; sin la ranura, tendría que adivinar el ecosistema. No va adentro de la higiene: un
+  aviso heredado de una dependencia de desarrollo no puede bloquear el cierre de una feature que
+  no lo trajo.
 
 Si el repo ya declara scripts, **proponelos en vez de preguntar en abstracto**: «saqué estos de tu
 `package.json`, ¿los confirmás?». Es más rápido y deja el origen a la vista.
