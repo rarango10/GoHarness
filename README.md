@@ -4,7 +4,7 @@ Un **ciclo de desarrollo asistido por agentes** para Claude Code, empaquetado co
 instalable — y una app chiquita construida enteramente con él, con todo su rastro documental a la
 vista.
 
-1. **El harness** (`goharness`): nueve pasos, siete skills, siete subagentes y un workflow dinámico.
+1. **El harness** (`goharness`): nueve pasos, siete skills de paso y uno de referencia, siete subagentes y un workflow dinámico.
    Cada paso produce un artefacto, se detiene y espera aprobación humana.
 2. **La calculadora de `src/`**: el ejemplo. No es el punto — es la prueba de que el método produce
    algo, y el lugar donde se puede leer cómo quedó cada documento del ciclo.

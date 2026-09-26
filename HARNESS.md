@@ -15,7 +15,7 @@ mantenimiento del producto, no el método.
 plugin/goharness/                 EL PLUGIN. Esto es lo que se instala
 ├── .claude-plugin/plugin.json    nombre, versión, licencia
 ├── SKILL.md                      el router: explica el ciclo y enruta al paso que toca
-├── skills/                       los 7 skills, uno por paso con dueño
+├── skills/                       los 7 skills de paso, más formato-de-tareas (referencia)
 ├── agents/                       los 7 subagentes
 ├── workflows/tasks-fanout.js     el único escritor de tasks.md
 └── checks/                       el linter de literales, la guarda de paridad y el sync
@@ -60,7 +60,7 @@ que va a ver otra persona:
 cd $(mktemp -d)
 claude plugin marketplace add rarango10/GoHarness --scope local
 claude plugin install goharness@goharness --scope local
-claude plugin list --json          # 7 skills, 7 agentes, el workflow y el router
+claude plugin list --json          # 8 skills (7 de paso + 1 de referencia), 7 agentes, el workflow y el router
 claude plugin uninstall goharness@goharness --scope local
 claude plugin marketplace remove goharness --scope local   # solo si lo agregó esta prueba
 ```
