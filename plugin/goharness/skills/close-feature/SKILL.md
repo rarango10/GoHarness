@@ -52,6 +52,13 @@ nada — cada tarea ya tiene su commit con su id, así que el trabajo hecho est�
 1. **Mirá el estado antes de correr nada.** La tabla de `tasks.md`, y el `e2e-test-report.md` si
    existe. Decí en una línea qué vas a cerrar y cuántas tareas trae.
 
+   **Y mirá si algún `hecho` quedó viejo por una enmienda.** Si `requirements.md` o `design.md`
+   dicen `enmendado (…): <ids>`, cruzá esos ids con el `Cubre` de cada tarea `hecho` y con la fecha
+   de su `**Verificación:**`. Un `cumple` anterior a la enmienda de un criterio que la tarea cubre se
+   tomó sobre un texto que ya no es el vigente: se trata como un rojo, con el mismo ruteo de «Qué
+   hacer con un rojo». `implement-task` lo chequea al arrancar; esto es la red para cuando la
+   enmienda llegó después de la última tarea.
+
 2. **Si la feature es navegable, que la persona la mire antes de la higiene.** Leé `## Superficie` y
    `## Referencia visual` de `design.md`. Si la superficie es navegable, este paso no es opcional:
    **es el único punto del ciclo donde alguien ve lo que se construyó**. `dod-checker` verifica
@@ -79,9 +86,9 @@ nada — cada tarea ya tiene su commit con su id, así que el trabajo hecho est�
      a `en curso`. Ver «Qué hacer con un rojo».
    - **No lo cubre ningún criterio** —el caso típico: una pieza de la referencia que nunca llegó al
      spec— → no hay tarea que reabrir, y este paso no crea tareas. Es un hueco del spec. Nombrá
-     `specify` para sumar el criterio y `planning-tasks` para el plan, y parate. Si la persona
-     decide dejarlo para otra feature, anotalo en `## Pendientes` de `tasks.md` con destinatario
-     `[feature siguiente]` y seguí.
+     `specify` para sumar el criterio (una enmienda) y `planning-tasks` para el plan, y parate. Si
+     la persona decide dejarlo para otra feature, anotalo en `## Pendientes` de `tasks.md` con
+     destinatario `[backlog]` y seguí: el paso «El backlog», más abajo, lo mueve al cerrar.
 
    Una feature no navegable saltea este paso.
 
@@ -98,7 +105,7 @@ nada — cada tarea ya tiene su commit con su id, así que el trabajo hecho est�
    dependencia sin instalar— decilo explícitamente en vez de dejarla correr y contar el fallo como
    hallazgo. Un rojo de andamiaje ausente no reabre ninguna tarea.
 
-4. **Verde → commit de cierre.** Sección de abajo.
+4. **Verde → backlog y commit de cierre.** Secciones de abajo, en ese orden.
 
 5. **Rojo → ruteo.** Sección de abajo. **Presentá el rojo y qué pensás hacer con él antes de tocar
    `tasks.md`**: bajar una tarea de `hecho` muta el único registro durable de qué está terminado, y
@@ -109,6 +116,13 @@ nada — cada tarea ya tiene su commit con su id, así que el trabajo hecho est�
 **No lo arregles acá.** Por la misma razón por la que el ciclo e2e no repara código: sería un segundo
 escritor de `src/`, saltearía el TDD que el proyecto fija como regla, y puede cerrar el síntoma
 dejando la causa. Este paso diagnostica y rutea.
+
+**Antes de buscar la tarea, mirá si el rojo ya es conocido.** Si falla un test que **coincide con
+una entrada abierta del backlog** —`docs/pendientes.md`, o una línea `[backlog]` de esta feature—,
+no es de esta feature: reintentá esa pata una vez, asentá el resultado literal en la entrada
+existente (no en una nueva), y no reabras ninguna tarea. Si el test no está en el backlog, es un
+rojo como cualquier otro: **no asumas que es lo conocido** porque se parece. La coincidencia es por
+el nombre del test o el archivo, no por el aire de familia.
 
 1. **Identificá la tarea afectada.** El fallo apunta a un criterio, a un archivo o a un comando; la
    tarea es la que lo cubre. Si el rojo no es de ninguna tarea en particular —configuración del
@@ -129,11 +143,32 @@ dejando la causa. Este paso diagnostica y rutea.
 4. **Cuando vuelva, este paso se rehace entero.** No alcanza con que el rojo puntual se ponga verde:
    la corrida de higiene se corre de nuevo, completa, porque el arreglo cambió el estado otra vez.
 
+## El backlog
+
+Lo que esta feature encontró y le corresponde a otra no se pierde con ella. Con la higiene en verde
+y antes del commit de cierre:
+
+1. **Mové cada línea `[backlog]` de `## Pendientes`** al backlog del proyecto —`docs/pendientes.md`,
+   salvo que `CLAUDE.md` nombre otro lugar—. Si el archivo no existe, crealo desde
+   `assets/pendientes-template.md`. Cada entrada nueva toma el próximo `P<n>`, que no se reusa
+   nunca, y lleva lo que dice la plantilla: de dónde salió, la evidencia, lo que se sabe y lo que
+   no, y qué **no** hacer. En `Pendientes` la línea queda, con el id al que se movió al final:
+   `→ P4`. No la borres: es la región de quien la escribió.
+2. **Si la feature tomó entradas del backlog** (las nombra `## Alcance` de `requirements.md`), pasá
+   su estado a `resuelto` con la fecha. El hash del commit de cierre no existe todavía: se completa
+   con la carpeta de la feature, que alcanza para encontrarlo.
+3. **Si el proyecto usa un tracker en vez del archivo**, no lo escribas vos: listá las entradas a
+   crear, con su texto listo, y que la persona las cargue. Publicar en un servicio externo no se
+   hace sin su sí.
+
+En el backlog escribís solo **entradas nuevas** y el **estado** de las que esta feature tomó. El
+resto de cada entrada es de quien la escribió, igual que en `Pendientes`.
+
 ## El commit de cierre
 
 Trae lo que las tareas no commitearon: los documentos del paso 7 (`e2e-tests-plan.md`,
-`e2e-test-report.md`), los specs de `end2end/`, y los ajustes de configuración que hayan salido de
-este paso. **No reemplaza ni aplasta los commits por tarea** — cada uno tiene su id y su diff, y ese
+`e2e-test-report.md`), los specs de `end2end/`, `docs/pendientes.md` si lo tocaste, y los ajustes
+de configuración que hayan salido de este paso. **No reemplaza ni aplasta los commits por tarea** — cada uno tiene su id y su diff, y ese
 escalonamiento es lo que hace que `git log` sirva de registro. El mensaje de este nombra la feature,
 no una tarea.
 
@@ -154,9 +189,17 @@ verde y no había nada pendiente de commitear».
   contra qué compararlo, no el veredicto.
 - **No crea tareas.** Un hallazgo de la mirada que ningún criterio cubre va a `specify` y a
   `planning-tasks`, no a una tarea inventada acá.
+- **No arregla lo que está en el backlog.** Lo registra y lo reconoce; lo resuelve la feature que
+  lo elija.
 
 ## Al terminar
 
 Con el commit hecho —o con la constancia de que no hacía falta— la feature está cerrada. Decilo,
-nombrá lo que quedó en `Pendientes` de `tasks.md` si hay algo, y parate. La feature siguiente
+nombrá lo que quedó en `Pendientes` de `tasks.md` y las entradas `P<n>` que se sumaron al backlog,
+si hay algo, y parate. La feature siguiente
 arranca por el paso 1, con `brainstorming`.
+
+## Archivos de este skill
+
+- `assets/pendientes-template.md` — estructura del backlog del proyecto, con sus reglas de dueño y
+  lector. Se copia a `docs/pendientes.md` la primera vez que una feature deja algo para otra.

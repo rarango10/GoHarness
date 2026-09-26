@@ -88,8 +88,8 @@ de resultado, no sobre tu propia configuración.
    Contestalo aparte, en `objectiveMet`.
 
 5. **Desvíos del design.** Si la implementación resuelve el criterio de una forma distinta de la
-   que fija `design.md`, **eso no es un fallo**: es un desvío, y `specify` manda registrarlo en la
-   bitácora y actualizar `design.md`. Va en `designDeviations`, no en el veredicto. Mezclarlos
+   que fija `design.md`, **eso no es un fallo**: es un desvío, que se registra en la bitácora y se
+   lleva a `design.md` como una enmienda de `specify`. Va en `designDeviations`, no en el veredicto. Mezclarlos
    hace que un desvío legítimo y bien resuelto se lea como una tarea incumplida.
 
 6. **Restá las dependencias.** Leé el manifiesto del proyecto (`package.json`, `pyproject.toml`,

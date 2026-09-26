@@ -40,6 +40,12 @@ implementación, no al planificar.
    implementada cumple sus criterios —corriendo los tests y leyendo el código contra cada uno— es
    trabajo del subagente `dod-checker`, en otra fase. No lo hagas vos ni te quedes corto por eso:
    emití tu señal y seguí.
+5. **Enmiendas.** Si el prompt trae enmiendas del spec, mirá si el `Cubre` de tu tarea toca alguno
+   de esos ids. Un criterio **obsoleto** en el `Cubre` es un `resize` hacia el id que lo reemplaza
+   (lo dice la marca de obsoleto en `requirements.md`). Un criterio **enmendado** que sigue vigente
+   no cambia el plan: si la tarea está en `hecho`, **no la bajes** ni propongas `status` por eso.
+   Reabrirla es decisión de quien implementa, con el sí de la persona, y la detecta
+   `implement-task` al arrancar; vos solo lo mencionás en tu razón para que el reducer lo vea.
 
 ## Límites
 

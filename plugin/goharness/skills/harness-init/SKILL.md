@@ -95,6 +95,10 @@ Si el repo ya declara scripts, **proponelos en vez de preguntar en abstracto**: 
 **Reglas propias del proyecto:** preguntá si hay alguna que valga para *toda* feature. Si no hay,
 la línea se borra en vez de inventarse una.
 
+**El backlog:** ¿el proyecto ya usa un tracker (GitHub Issues, Jira)? Si sí, el contrato lo nombra;
+si no, queda el default, `docs/pendientes.md`. Es donde va lo que aparece en una feature y le
+corresponde a otra, y el router lo necesita escrito para que ese hallazgo tenga adónde ir.
+
 **Etiquetá el origen de cada cosa que quede escrita**: «lo pediste» · «lo decidí yo, decime si va» ·
 «lo asumí porque X». Un supuesto declarado es honesto; uno silencioso se convierte en regla del
 contrato y de ahí en más nadie lo vuelve a cuestionar.
@@ -171,6 +175,8 @@ pedía.
   usan, y varios agentes las conocen por precarga. Copiarlas al proyecto crea dos copias y la
   pregunta de cuál gana, que es la misma trampa de tener el mismo workflow en dos lugares.
 - **La carpeta `docs/`.** La crea `specify` cuando la necesita.
+- **`docs/pendientes.md`.** Lo crea `close-feature` la primera vez que una feature deja algo para
+  otra. Un backlog vacío sembrado de antemano es un archivo sin contenido que todos leen.
 - **Código, scaffolding o una app de ejemplo.** Este paso escribe el contrato, no el proyecto.
 
 ## Al terminar

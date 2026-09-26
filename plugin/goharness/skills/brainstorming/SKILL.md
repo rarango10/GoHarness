@@ -26,7 +26,7 @@ Every brainstorm ends with the human partner approving the design before anythin
 
 ## The Process
 
-1. **Explore project context** — check relevant files, docs, and recent commits before asking anything. Don't make the human repeat what's already visible in the repo.
+1. **Explore project context** — check relevant files, docs, and recent commits before asking anything. Don't make the human repeat what's already visible in the repo. **Read the project backlog too**: `docs/pendientes.md`, or whatever tracker `CLAUDE.md` names. If an entry in state `abierto` touches the same code as the new idea, name it by its id (`P2`) and ask whether this feature takes it. A backlog nobody reads at the moment a feature is chosen is a place where findings go to be forgotten. If the answer is yes, the entry becomes part of the approved design, and `specify` names it in `## Alcance`.
 2. **Ask clarifying questions, one at a time** — focus on purpose, constraints, and success criteria. Prefer multiple choice when a question has a natural small set of answers; open-ended is fine otherwise. One question per message — if a topic needs more exploration, split it into several questions rather than stacking them.
 3. **Know when to stop asking.** "One at a time" sets the *rate*; this sets the *exit condition*, and without it the rate is all you have. Before you move on, **list the behavioural decisions the request leaves open** — what happens on empty or malformed input, whether something recalculates automatically or only on demand, what a "clear" action clears, which fields are editable. Move on only when that list is empty, or when what remains is written down explicitly as an assumption. A stated assumption is honest; a silent one turns into a numbered acceptance criterion two steps later, and from then on nobody questions it.
 4. **Propose approaches** — once the shape of the idea is clear, offer 1-3 approaches with trade-offs. Lead with the one you'd recommend and say why. Cut anything not needed for the actual request (YAGNI) — a smaller design is easier to approve and easier to build.
@@ -34,6 +34,10 @@ Every brainstorm ends with the human partner approving the design before anythin
 6. **Get explicit approval** — stop and wait for a clear yes. Presenting the design and moving on in the same breath skips the gate. **Say what the yes unlocks**: if they approve, the next step is the `specify` skill, which turns this design into `requirements.md` with numbered acceptance criteria. Naming it when you ask — not after they answer — is what lets them weigh what they are approving toward. A chain you only learn about in hindsight is one you authorised before you could see it.
 
 If new complexity turns up mid-conversation that changes the scope significantly, say so and re-confirm the design rather than quietly expanding it.
+
+### When you arrive in the middle of a feature
+
+Sometimes this skill is named from inside a feature that is already being built: a finding changed the problem the feature solves, or an amendment would leave much of the plan without a purpose (see «Cuando algo cambia a mitad de camino» in the `goharness` router). Don't start from zero, and don't quietly reshape the feature. Read what exists — the spec, the plan, what is already `hecho` — and put the choice in front of the person: **close this feature with what it has** (and the new shape becomes a new feature, with its own folder), or **reshape it** (and what is already built gets re-examined against the new design). Either way the approved design, not the code already written, decides what comes next.
 
 ### When the feature has to look like something
 

@@ -56,6 +56,10 @@ el camino para ese tipo de feature.
 Todo el papeleo de una feature vive en `docs/AAAA-MM-DD-<feature>/`, salvo los specs de Playwright,
 que van en `end2end/` en la raíz porque son código y los tiene que ver `playwright.config.ts`.
 
+**Backlog del proyecto:** <`docs/pendientes.md` —el default, se crea la primera vez que hace
+falta— o el tracker que ya use el proyecto (GitHub Issues, Jira): preguntá antes de completar>. Es
+el lugar de lo que aparece en una feature y le corresponde a otra.
+
 Los pasos 6, 7 y 8 verifican cosas distintas y ninguno reemplaza a otro: `dod-checker` pregunta si
 *una tarea* cumple los criterios que dice cubrir; `verify-e2e` pregunta si *la feature entera*
 funciona; `close-feature` pregunta si *todos los veredictos siguen siendo ciertos juntos*, sobre el
@@ -95,6 +99,12 @@ sigue — solo lo nombra.
   corre la higiene sobre el estado final, y un rojo ahí reabre la tarea afectada.
 - **El ciclo e2e no repara código.** `e2e-triager` diagnostica y rutea; si la causa es el código, la
   tarea baja a `en curso` y se arregla con el TDD de siempre.
+- **Un cambio entra por el documento más alto que toca.** Lo que a mitad de camino obliga a volver
+  atrás —un criterio mal, un design que ya no describe lo que existe, una tarea que falta— no se
+  arregla donde apareció: se clasifica y entra por el productor de ese documento (`specify` con una
+  enmienda corta, `planning-tasks` para el plan), y baja en cascada. Todo `cumple` que se apoyaba en
+  lo enmendado deja de valer, y su tarea vuelve a `en curso` con el sí. Lo que le corresponde a otra
+  feature va al backlog del proyecto. Las clases y sus caminos están en el router `goharness`.
 - <reglas propias de este proyecto: opcional, y solo las que valen para **toda** feature. Ej. «la
   lógica va en funciones puras, separada de la UI». Si no hay ninguna todavía, borrá esta línea.>
 

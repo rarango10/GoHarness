@@ -55,7 +55,7 @@ La carpeta del spec es `docs/AAAA-MM-DD-<feature>/`. Si hay varias y no está cl
 Leé `tasks.md`, `requirements.md`, `design.md` y el `CLAUDE.md` del proyecto — de ahí salen los
 comandos, que son los del proyecto en el que estés y no una lista fija.
 
-Cuatro comprobaciones, antes de la primera tarea:
+Cinco comprobaciones, antes de la primera tarea:
 
 1. **El encabezado de `tasks.md` dice `aprobado`.** Si dice `pendiente de aprobación`, el plan puede
    estar aprobado igual y sin asentar: `task-writer` tiene prohibido tocar ese encabezado, así que
@@ -73,10 +73,21 @@ Cuatro comprobaciones, antes de la primera tarea:
    no escribe quien implementa. Pasó — un proyecto entero se hizo sin repo porque nadie lo corrió y
    nada en el método lo pedía.
 
-3. **No hay una corrida de `tasks-fanout` en vuelo.** Es lo único que este paso tiene prohibido
-   hacer en paralelo: entre que el scout lee y el escritor guarda, tu `hecho` se pierde.
+3. **No hay una corrida de `tasks-fanout` en vuelo, ni una enmienda o un re-plan abiertos.** Es lo
+   único que este paso tiene prohibido hacer en paralelo: entre que el scout lee y el escritor
+   guarda, tu `hecho` se pierde; y con una enmienda a medio aprobar, implementás contra un criterio
+   que puede no existir mañana.
 
-4. **Cuál es la tarea.** La que te nombren; si no te nombran ninguna, la primera en `pendiente`
+4. **Ningún `hecho` quedó viejo por una enmienda.** Si el encabezado de `requirements.md` o de
+   `design.md` dice `enmendado (…): <ids>`, cruzá esos ids con el `Cubre` de las tareas en `hecho`
+   y con la fecha de su línea `**Verificación:**`. Una tarea cuyo `cumple` es **anterior** a la
+   enmienda de un id que cubre verificó un criterio que ya no dice lo mismo: su `hecho` dejó de
+   valer. Nombrala y **preguntá antes de bajarla**: con el sí, `en curso` en su `Estado`, y en su
+   `Registro` la verificación vieja pasa a `**Verificación previa (superada):** enmienda R3.2
+   (AAAA-MM-DD)`. Es la misma regla que el paso 8 aplica a un rojo de higiene: un veredicto que
+   envejeció no estuvo mal, se tomó sobre otra cosa.
+
+5. **Cuál es la tarea.** La que te nombren; si no te nombran ninguna, la primera en `pendiente`
    siguiendo el orden de la tabla. Ese orden no es decorativo: cada tarea debería dejar el repo
    funcionando y en verde, y saltearse una rompe esa propiedad. Si querés hacer otra, decí por qué.
 
@@ -113,9 +124,15 @@ que corresponde y parate.
    **Toda línea que agregues en `Pendientes` lleva destinatario, entre corchetes y al principio:**
    `[T<n>]` si es para una tarea futura ya numerada, `[paso 7]` si importa recién al generar los
    e2e —solo tiene sentido si `design.md` declara superficie navegable—, `[paso 8]` si es para el
-   cierre, `[decidir ya]` si necesita una decisión de la persona antes de seguir. Una línea sin
-   destinatario es una entrada de diario que nadie vuelve a abrir: es lo que le pasó a la advertencia
-   de T9 del párrafo de arriba.
+   cierre, `[decidir ya]` si necesita una decisión de la persona antes de seguir, y `[backlog]` si
+   le corresponde a **otra feature**: código de una feature ya cerrada, o algo transversal
+   (toolchain, runner, dependencias). Una línea sin destinatario es una entrada de diario que nadie
+   vuelve a abrir: es lo que le pasó a la advertencia de T9 del párrafo de arriba.
+
+   **Antes de escribir una `[backlog]`, mirá si ya está.** En `Pendientes` de esta feature o en el
+   backlog del proyecto (`docs/pendientes.md`, o lo que nombre `CLAUDE.md`). Si está, citá su id o
+   su línea en el `Registro` en vez de agregar otra: el mismo test inestable anotado cinco veces,
+   desde cinco tareas, es cinco redescubrimientos de lo mismo.
 
 4. **Corré el comando de corrección** que declara `CLAUDE.md` — typecheck y tests. **No el de
    higiene** (lint, formato, build): ese es del paso 8, antes del commit final del conjunto. Meter
@@ -201,9 +218,29 @@ que sobra, o que un `Cubre` está mal, **no lo arregles**: anotalo, decilo, y qu
 `planning-tasks`. Retocar el plan desde acá reintroduce el segundo escritor que toda esa arquitectura
 existe para eliminar.
 
-Tampoco tocás `requirements.md`. Si un criterio resulta estar mal, es un hallazgo para `specify`, no
-una edición al paso. Un desvío respecto del `design.md` sí se registra en la bitácora y se lleva al
-documento, que es lo que dice el template: un desvío sin registrar rompe la trazabilidad en silencio.
+Tampoco tocás `requirements.md` ni `design.md`. Si un criterio resulta estar mal, o la
+implementación se desvió de lo diseñado, se asienta en el `Registro` y es una **enmienda** para
+`specify`, no una edición al paso: un desvío sin registrar rompe la trazabilidad en silencio, y uno
+editado a mano desde la tarea saltea el sí de quien aprobó el documento.
+
+## Cuando algo cambia a mitad de camino
+
+Si lo que encontraste no es un bug de esta tarea, **pará la tarea antes de seguir implementando** y
+clasificalo con la tabla del router (`goharness`, «Cuando algo cambia a mitad de camino»). Asentá en
+el `Registro` qué encontraste y a qué clase lo asignaste, decilo, y nombrá el camino:
+
+- **Otra tarea `hecho` de esta feature está rota** (lo que estás haciendo contradice su `cumple`):
+  proponé bajarla a `en curso` y esperá el sí. Con el sí, esa tarea también pasa a ser tuya —su
+  `Estado` y su `Registro`— igual que cuando el paso 8 te devuelve una: verificación vieja marcada
+  `(superada)` con el motivo, y se repara con este mismo ciclo. Terminá o pausá antes la que tenías
+  abierta: dos tareas `en curso` a la vez no se verifican por separado.
+- **El criterio o el design están mal** → enmienda con `specify`. Esta tarea queda `en curso` hasta
+  que la enmienda vuelva.
+- **El plan está mal** → `planning-tasks`.
+- **Es de otra feature** → `[backlog]` en `Pendientes`, y seguís con lo tuyo si no te bloquea.
+- **Cambia la feature misma** → decilo y nombrá `brainstorming`.
+
+No arranques el camino que nombraste en el mismo mensaje: es otro paso, con su propia compuerta.
 
 ## Cuando todas las tareas están en `hecho`
 

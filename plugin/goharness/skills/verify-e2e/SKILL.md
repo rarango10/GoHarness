@@ -69,7 +69,7 @@ Escribí `e2e-tests-plan.md` en la carpeta del spec, siguiendo `assets/e2e-tests
 
 - **El happy path (`E1`)** es el recorrido completo que le da sentido a la feature, de la primera pantalla al resultado observable. Si tenés que elegir entre dos, quedate con el que cruza más criterios de aceptación.
 - **Los dos de fallo (`E2`, `E3`)** salen de los criterios que ya describen un rechazo o un error en `requirements.md` —los `IF ... THEN`— y se citan por id. **No los inventes.** Un caso de fallo inventado prueba una decisión de producto que nadie tomó, y cuando falla no se sabe si el bug está en el código o en el supuesto.
-- Si en `requirements.md` no hay dos criterios de error, decilo: es un hueco del spec, va a **Pendientes** del plan, y lo decide una persona. No lo tapes eligiendo cualquier cosa.
+- Si en `requirements.md` no hay dos criterios de error, decilo: es un hueco del spec, va a **Pendientes** del plan con destinatario `[decidir ya]`, y lo decide una persona. No lo tapes eligiendo cualquier cosa.
 
 Cada caso lleva id, título, criterios que cubre, precondiciones, pasos numerados en términos de lo que hace un usuario (no de selectores CSS: eso lo resuelve quien escribe el script) y resultado esperado observable.
 
@@ -95,7 +95,7 @@ El campo `ruteo` del veredicto tiene tres destinos, y cada uno es un camino dist
 
 - **`aFase2`** — el test estaba mal escrito. Volvé a la fase 2, corregí **solo esos casos** del plan, y rehacé el ciclo desde ahí. **Máximo dos rondas.** A la tercera, pará y subilo a la persona: un caso que no se estabiliza en dos intentos no es un test mal escrito, es una ambigüedad del spec disfrazada.
 - **`aTDD`** — el fallo es del código. La tarea nombrada vuelve a `en curso` en `tasks.md` y el fallo e2e queda asentado en su `Registro` como el punto de partida. Eso **lo escribís vos**, no el triager: `Estado` y `Registro` son la región de quien implementa, y en este ciclo quien implementa es esta sesión. A partir de ahí el arreglo es el TDD de siempre, con el skill `implement-task`, y la tarea vuelve a `hecho` solo cuando `dod-checker` devuelva `cumple`. El ciclo e2e termina acá; no arranques la reparación en el mismo mensaje.
-- **`aSpecify`** — el test y el código hacen lo que dicen, y lo que está mal es el criterio. Nombrá al skill `specify` y pará. No corrijas `requirements.md` vos.
+- **`aSpecify`** — el test y el código hacen lo que dicen, y lo que está mal es el criterio. Nombrá al skill `specify` para una **enmienda** y pará. No corrijas `requirements.md` vos. Lo que sigue a la enmienda —qué tareas `hecho` se reabren, si hace falta re-planificar— está en el router, «Cuando algo cambia a mitad de camino»; este ciclo e2e se vuelve a correr cuando las tareas afectadas vuelvan a `hecho`.
 
 Un caso en `indeterminado` no se rutea a ningún lado: se cuenta y se sube. Adivinar el destino de un fallo ambiguo cuesta más que preguntarlo.
 
