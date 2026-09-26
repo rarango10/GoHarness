@@ -49,7 +49,7 @@ Los cinco comandos, y ninguno es opcional antes de un commit al plugin:
 claude plugin validate . --strict                  # el marketplace
 claude plugin validate plugin/goharness --strict   # el plugin
 node plugin/goharness/checks/lint-workflow-literals.cjs plugin/goharness/workflows/tasks-fanout.js
-node plugin/goharness/checks/check-rules-parity.cjs # reglas y tabla del ciclo, sin deriva
+node plugin/goharness/checks/check-rules-parity.cjs # reglas, tabla del ciclo y casilleros, sin deriva
 bash plugin/goharness/checks/sync-plugin.sh        # tiene que decir "sin deriva"
 ```
 
@@ -72,6 +72,8 @@ son copias redundantes —una habla de este repo y la otra del proyecto que nace
 nombrar las mismas reglas y los mismos productores. Arreglar una regla de un solo lado no rompe
 nada visible: el próximo proyecto sembrado nace con la versión vieja. El chequeo compara los
 títulos en negrita de cada regla y el productor de cada paso, no la prosa, que difiere a propósito.
+Compara también los **casilleros** de la plantilla, por su marca `<!-- ranura: … -->`, contra el
+`CLAUDE.md` del repo (L57).
 
 El linter parece de más y no lo es: `tasks-fanout.js` es casi todo prompts entre backticks, y uno de
 más cierra el literal y abre otro. El archivo sigue siendo JavaScript válido y el prompt quedó
@@ -99,6 +101,11 @@ Está en el **índice de estado** al tope de [`lecciones.md`](lecciones.md). Los
   `goharness` desde el marketplace teniendo la copia de desarrollo en `~/.claude/skills/goharness`,
   esta última queda desactivada y solo se ve en `claude plugin list`. Mientras editás, no la
   instales.
+- **Un cambio a `CLAUDE.template.md` no termina en el plugin.** El `CLAUDE.md` de la raíz es el
+  contrato del ejemplo y lo carga toda sesión de mantenedor: si la plantilla suma un casillero, ese
+  contrato se pone al día con `harness-init` en modo revisión —en una sesión que ya cargue la
+  versión nueva— antes de publicar. No a mano: el `CLAUDE.md` tiene productor. La guarda de paridad
+  queda en rojo hasta que eso pase.
 - **El plan de un ciclo nuevo va en `docs/AAAA-MM-DD-<nombre>/`.** Los planes viejos no se reabren:
   quedan como registro de lo que se decidió y por qué.
 - **En `lecciones.md` no se borra nada.** Una lección que resultó falsa se marca `descartada` con la

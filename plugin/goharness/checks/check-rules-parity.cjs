@@ -9,6 +9,13 @@
  *
  *   - «Reglas del harness» del `CLAUDE.md` de este repo  ↔  «Reglas» de `CLAUDE.template.md`.
  *   - La tabla del ciclo del router (`SKILL.md`)         ↔  la tabla del ciclo de la plantilla.
+ *   - Los casilleros de la plantilla (`<!-- ranura: … -->`) ↔  los del `CLAUDE.md` de este repo (L57).
+ *
+ * El tercero existe porque el `CLAUDE.md` del repo cumple dos papeles: es el contrato del ejemplo y
+ * es lo que carga toda sesión de mantenedor. Cuando la plantilla suma un casillero (el auditor, el
+ * backlog), el del repo se queda atrás sin que nada lo note, y quien clona hereda un contrato más
+ * viejo que el método que el repo publica. Se compara por marca y no por redacción: el repo escribe
+ * sus comandos en una tabla y la plantilla en bloques, y los dos están bien.
  *
  * Una regla que se arregla en un lado y no en el otro no rompe nada visible: el repo sigue
  * funcionando, el plugin sigue validando, y el proyecto que se siembre mañana nace con la
@@ -18,7 +25,8 @@
  * habla de este repo y la otra del proyecto que se siembra—. Compara el *conjunto de reglas
  * que existen* y el *productor de cada paso del ciclo*.
  *
- * Uso: node plugin/goharness/checks/check-rules-parity.cjs
+ * Uso: node plugin/goharness/checks/check-rules-parity.cjs [ruta-del-CLAUDE.md]
+ * Sin argumento, compara el `CLAUDE.md` de la raíz del repo.
  * Sale 0 si hay paridad, 1 si no.
  */
 
@@ -30,7 +38,7 @@ const ROOT = path.resolve(__dirname, '..', '..', '..');
 const FUENTES = {
   repo: {
     rotulo: 'CLAUDE.md (este repo)',
-    archivo: path.join(ROOT, 'CLAUDE.md'),
+    archivo: process.argv[2] ? path.resolve(process.argv[2]) : path.join(ROOT, 'CLAUDE.md'),
     seccionReglas: 'Reglas del harness',
   },
   plantilla: {
@@ -46,6 +54,12 @@ const FUENTES = {
     archivo: path.join(ROOT, 'plugin/goharness/SKILL.md'),
   },
 };
+
+/** Los nombres de las marcas `<!-- ranura: nombre -->`, leídas del texto crudo, con comentarios. */
+function ranuras(fuente) {
+  const texto = fs.readFileSync(fuente.archivo, 'utf8');
+  return new Set([...texto.matchAll(/<!--\s*ranura:\s*([\w-]+)\s*-->/g)].map((m) => m[1]));
+}
 
 function leer(fuente) {
   if (!fs.existsSync(fuente.archivo)) {
@@ -183,6 +197,17 @@ function main() {
     }
   }
 
+  // --- Casilleros del contrato ---
+  const ranurasPlantilla = ranuras(FUENTES.plantilla);
+  const ranurasRepo = ranuras(FUENTES.repo);
+  for (const r of diferenciaDeConjuntos(ranurasPlantilla, ranurasRepo)) {
+    errores.push(
+      `Casillero «${r}» de la plantilla, sin su marca en ${FUENTES.repo.rotulo}.\n` +
+        '    No se agrega a mano: ponelo al día con `harness-init` en modo revisión, en una sesión\n' +
+        '    que ya cargue la versión nueva del plugin.',
+    );
+  }
+
   if (errores.length > 0) {
     console.error('Deriva entre el contrato del repo, la plantilla y el router:\n');
     for (const e of errores) console.error(`  - ${e}`);
@@ -193,7 +218,7 @@ function main() {
   }
 
   console.log(
-    `Paridad de reglas: sin deriva (${reglas.repo.size} reglas, ${pasos.size} pasos del ciclo).`,
+    `Paridad de reglas: sin deriva (${reglas.repo.size} reglas, ${pasos.size} pasos del ciclo, ${ranurasPlantilla.size} casilleros).`,
   );
 }
 

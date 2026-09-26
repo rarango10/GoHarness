@@ -46,6 +46,12 @@ explica el [`README.md`](README.md).
 
 > «Vengo a mejorar el harness. Leé `HARNESS.md` y después el índice de estado de `lecciones.md`.»
 
+**¿Y si querés el harness sin instalar el plugin?** Es el caso de quien forkea para publicar su
+propia versión o para usarla sin pasar por este marketplace: la receta está en
+[«Forkearlo y publicar el tuyo»](README.md#forkearlo-y-publicar-el-tuyo) del README. En cualquier
+caso, **no copies el `CLAUDE.md` de la raíz**: es el contrato de la calculadora, con las decisiones
+de ese proyecto. El de tu proyecto lo arma `harness-init` desde la plantilla, en el paso 0.
+
 ## La regla que cruza los dos modos
 
 **No se edita el harness mientras hay una corrida del ciclo en vuelo.** Cambiar un skill a mitad de

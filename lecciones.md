@@ -81,6 +81,7 @@ secciones **«Lote N aplicado»** del final cuentan qué se cambió y qué apare
 | L54 | Los hallazgos que le corresponden a otra feature no tienen dónde vivir | `resuelto` | Lote 12 · router, `close-feature` + plantilla, `implement-task`, `brainstorming`, `specify` |
 | L55 | Se precarga un skill entero, con su mandato, a agentes que solo necesitan su formato | `resuelto` | Lote 15 · skill `formato-de-tareas` + frontmatter de los agentes |
 | L56 | El ciclo va hacia adelante y no tiene camino de vuelta | `resuelto` | Lote 12 · router, regla en `CLAUDE.md` + plantilla, `specify`, `implement-task`, `close-feature`, `tasks-fanout` |
+| L57 | El contrato del ejemplo se queda atrás de la plantilla, y la guarda no lo ve | **`aplicado · falta la revisión`** | guarda de paridad + `harness-init` + `HARNESS.md` + `EMPEZAR-ACA.md`. La guarda queda en rojo hasta la revisión |
 
 ### Lo que queda
 
@@ -95,6 +96,12 @@ se aplicaron y las secciones «Lote N aplicado» de más abajo para lo que apare
 **Evaluación de las abiertas (2026-09-26)** —qué se volvió harness y qué quedó afuera, con el
 porqué—: [`docs/2026-09-26-lotes-12-a-15/plan.md`](docs/2026-09-26-lotes-12-a-15/plan.md). Los lotes
 12 a 15 están aplicados.
+
+**Lo primero de la próxima sesión — [[L57]]:** `claude plugin update goharness@goharness`, sesión
+nueva, y «revisemos el contrato». `harness-init` 0.5.0 en modo revisión propone, de a uno y con el
+sí, los casilleros que le faltan al `CLAUDE.md` del ejemplo (auditor: `npm audit`; backlog:
+`docs/pendientes.md`) y las marcas de los que ya tiene. Con eso la guarda de paridad vuelve a verde,
+se commitea y se publica 0.5.1. Hasta entonces la guarda está en rojo **a propósito**.
 
 **Aplicado sin probar todavía:**
 
@@ -2428,6 +2435,55 @@ la persona eligió la enmienda corta, porque una re-aprobación completa desalie
 chicos que conviene hacer temprano. Tampoco es un permiso para que quien implementa edite el spec
 «porque es una línea»: [[L52]] mostró que pasar por el productor es lo que destapa el segundo
 hallazgo.
+
+---
+
+## L57 · El contrato del ejemplo se queda atrás de la plantilla, y la guarda no lo ve · `aplicado · falta la revisión`
+
+**Qué pasó.** 2026-09-26, al cerrar los lotes 12 a 15. La plantilla del contrato
+(`CLAUDE.template.md`) sumó dos casilleros —**Auditor de dependencias** y **Backlog del
+proyecto**—, las cinco verificaciones dieron verde, se publicó 0.5.0, y el `CLAUDE.md` de la raíz
+quedó sin ninguno de los dos. Lo notó la persona al preguntar cómo encaja eso con
+[`EMPEZAR-ACA.md`](EMPEZAR-ACA.md): quien clone el repo, para mejorarlo o para replicarlo sin el
+plugin, se lleva un contrato de ejemplo más viejo que el método que el mismo repo publica.
+
+**Por qué importa.** Tres cosas:
+
+- **El `CLAUDE.md` de la raíz cumple dos papeles.** Es el contrato de la calculadora, y es lo que
+  carga toda sesión de mantenedor, que usa la calculadora como banco de pruebas (`HARNESS.md`, paso
+  4). Viejo, falla en los dos: el ejemplo muestra un contrato que el harness ya no siembra, y la
+  prueba de un cambio al paso 8 (como el auditor de [[L53]]) corre contra un contrato que no lo tiene.
+- **La guarda de paridad ([[L42]]) miraba reglas y productores, no casilleros.** Por eso dio verde.
+  Es el mismo tipo de punto ciego que [[L35]]: un chequeo que compara lo que conoce no ve lo que no
+  está en su lista.
+- **La salida obvia viola una regla.** Agregar las dos líneas a mano es rápido, y es justo lo que
+  prohíbe el productor único: el `CLAUDE.md` lo produce `harness-init`. Y en la sesión donde se notó,
+  el `harness-init` cargado era el 0.4.0, que no conoce los casilleros nuevos: la revisión correcta
+  necesita una sesión que ya cargue la versión publicada.
+
+**Qué se hizo.**
+
+- **Marcas en la plantilla:** cada casillero que leen los pasos lleva un comentario invisible,
+  `<!-- ranura: stack | correccion | higiene | auditor | backlog -->`. Se compara por marca y no por
+  redacción, porque el repo escribe los comandos en una tabla y la plantilla en bloques, y los dos
+  están bien.
+- **La guarda compara casilleros:** toda marca de la plantilla tiene que estar en el `CLAUDE.md` del
+  repo. Hoy da rojo en las cinco, a propósito: es el recordatorio que no se puede saltear. Acepta
+  la ruta del contrato como argumento, y así se probó el lado verde sobre una copia.
+- **`harness-init`, quinta comprobación del modo revisión:** cada marca de la plantilla existe en el
+  contrato; si falta el casillero se propone con su marca, y si está escrito de otra forma se propone
+  solo la marca. Al sembrar desde cero, las marcas se copian.
+- **`HARNESS.md`, regla del mantenedor:** un cambio a la plantilla no termina en el plugin; el
+  contrato del ejemplo se pone al día con `harness-init` antes de publicar.
+- **`EMPEZAR-ACA.md`:** para quien replica, el `CLAUDE.md` de la raíz no se copia: el de su proyecto
+  lo arma `harness-init` desde la plantilla.
+
+**Lo que falta:** la revisión misma, en la próxima sesión. Ver «Lo que queda».
+
+**Lo que este caso no es.** No es un problema del proyecto consumidor: un proyecto nuevo nace de la
+plantilla actual, y uno viejo se pone al día con el modo revisión, que ahora sabe buscar casilleros
+nuevos. Es un problema de **este** repo, que es a la vez fuente del método y ejemplo de su uso, y
+tiene que mantener las dos cosas alineadas.
 
 ---
 

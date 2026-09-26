@@ -4,6 +4,7 @@
 
 ## Stack
 
+<!-- ranura: stack -->
 - <stack: preguntá antes de completar. El lenguaje, el runner de tests y poco más. Las librerías
   concretas de cada feature se deciden en su `design.md`, no acá.>
 
@@ -12,6 +13,7 @@
 Son **dos ranuras con propósitos distintos**. Conflacionarlas ensucia el veredicto de cada tarea,
 que es el registro durable de qué está hecho.
 
+<!-- ranura: correccion -->
 **Corrección** — la del paso 5 al cerrar una tarea, y la que corre `dod-checker` en el paso 6.
 Contesta «¿el código cumple los criterios de aceptación?». Typecheck y tests; nada más.
 
@@ -20,6 +22,7 @@ Contesta «¿el código cumple los criterios de aceptación?». Typecheck y test
 <comando de tests: preguntá antes de completar>
 ```
 
+<!-- ranura: higiene -->
 **Higiene** — la del paso 8, una vez, sobre el estado final del repo. Contesta otra cosa: «¿el repo
 entero está sano con todo esto adentro?». Acá sí van lint, formato, build y el e2e.
 
@@ -28,6 +31,7 @@ entero está sano con todo esto adentro?». Acá sí van lint, formato, build y 
 repetí los de corrección y decilo — la ranura existe igual y se llena cuando aparezcan.>
 ```
 
+<!-- ranura: auditor -->
 **Auditor de dependencias** — lo corre el paso 8 para ver qué vulnerabilidades trajo la feature.
 Es informativo, no es parte de la higiene: bloquea solo lo que la feature introdujo.
 
@@ -63,6 +67,7 @@ el camino para ese tipo de feature.
 Todo el papeleo de una feature vive en `docs/AAAA-MM-DD-<feature>/`, salvo los specs de Playwright,
 que van en `end2end/` en la raíz porque son código y los tiene que ver `playwright.config.ts`.
 
+<!-- ranura: backlog -->
 **Backlog del proyecto:** <`docs/pendientes.md` —el default, se crea la primera vez que hace
 falta— o el tracker que ya use el proyecto (GitHub Issues, Jira): preguntá antes de completar>. Es
 el lugar de lo que aparece en una feature y le corresponde a otra.

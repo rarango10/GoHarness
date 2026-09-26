@@ -38,7 +38,7 @@ explícitamente en el prompt, y el archivo resultante no tenía forma de delatar
 es revisarlo contra lo que el harness necesita y **proponer** los arreglos, uno por uno, para que la
 persona decida.
 
-**Antes de las cuatro comprobaciones, leé el archivo entero buscando afirmaciones que el repo
+**Antes de las cinco comprobaciones, leé el archivo entero buscando afirmaciones que el repo
 contradiga — las que ya están y las que vas a proponer vos.** Toda frase sobre el estado del
 proyecto —qué existe, qué falta, qué funciona, cuántos pasos tiene el ciclo— se contrasta contra el
 repo real, no contra lo que el archivo dice de sí mismo. Una afirmación falsa en el contrato es peor
@@ -49,20 +49,27 @@ instalados, `npx playwright install chromium` los instala»): una afirmación de
 condicional no. **Lo mismo vale para las reglas propias del proyecto: una regla dice qué se hace o
 qué no se hace, no qué hay.** «No se mantiene un resumen del sistema de diseño en el repo» sobrevive
 a que una feature porte el código del sistema; «el repo no tiene una copia del sistema» se vuelve
-falsa con el primer commit que hace lo que el skill de diseño manda, y nadie lo nota. Las cuatro
+falsa con el primer commit que hace lo que el skill de diseño manda, y nadie lo nota. Las cinco
 comprobaciones de abajo son lo mínimo que el harness necesita, no la lista completa de lo que puede
 estar mal.
 
-Mirá cuatro cosas:
+Mirá cinco cosas:
 
 1. **Las dos ranuras de comandos** están rotuladas y separadas. Si hay una sola lista de comandos,
-   ese es el hallazgo más caro de los cuatro: sin la separación, `implement-task` y `close-feature`
+   ese es el hallazgo más caro de los cinco: sin la separación, `implement-task` y `close-feature`
    no tienen contra qué bindear, y un lint adentro del comando de corrección hace fallar la
    verificación de una tarea por una queja de formato.
 2. **No hay sección de estructura** ni nombres de archivos concretos.
 3. **La tabla del ciclo** nombra a los productores actuales de cada paso.
 4. **Los configs** de la sección «Qué sembrar» existen, dicen lo que tienen que decir, **y su
    dependencia está instalada** — corré el doctor de la sección de abajo, no lo inspecciones a ojo.
+5. **Cada casillero de la plantilla existe en el contrato, con su marca.** La plantilla marca los
+   casilleros que leen los pasos del ciclo con un comentario invisible, `<!-- ranura: auditor -->`.
+   Buscá cada marca de `assets/CLAUDE.template.md` en el `CLAUDE.md` del proyecto: si falta, ese
+   casillero no existe todavía —la plantilla lo sumó después de que se escribió el contrato— y se
+   propone, con su marca, como cualquier otro arreglo. Si el casillero está pero sin marca (escrito
+   con otra forma, por ejemplo una tabla), se propone solo la marca: la redacción del proyecto no se
+   toca.
 
 Un cambio al `CLAUDE.md` de un proyecto que ya trabaja es un cambio de contrato: se propone y se
 espera el sí. No lo apliques de corrido.
@@ -122,7 +129,9 @@ contrato y de ahí en más nadie lo vuelve a cuestionar.
 
 Copiá `assets/CLAUDE.template.md` a `CLAUDE.md` en la raíz del proyecto y completá las ranuras con
 lo que salió de la entrevista. La tabla del ciclo y las reglas del harness **vienen ya escritas**:
-son memoria del método, no decisiones del proyecto, y no se reabren en cada init.
+son memoria del método, no decisiones del proyecto, y no se reabren en cada init. **Las marcas
+`<!-- ranura: … -->` se quedan**: son invisibles al leer, y son lo que permite, en una revisión
+futura, saber qué casilleros sumó la plantilla después.
 
 **El chequeo antes de dar el paso por terminado**, y es mecánico a propósito:
 
