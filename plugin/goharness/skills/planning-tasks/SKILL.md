@@ -1,110 +1,113 @@
 ---
 name: planning-tasks
-description: Verifica que el spec de una feature esté completo y aprobado y, si lo está, lanza el workflow "tasks-fanout" que crea o itera su tasks.md. Pregunta antes de lanzar. No planifica ni escribe tasks.md por su cuenta. Es el único camino al plan de tareas: usalo cuando la persona diga "planeemos las tareas", "desglosemos las tareas", "armemos el plan de implementación", "generá el plan de implementación", "iteremos tasks.md", "revisemos las tareas del spec", o pregunte cuál es el siguiente paso después de aprobar el design. Si requirements.md o design.md no existen o todavía no están aprobados, este skill no aplica — remití a "specify" primero.
+description: Checks that a feature's spec is complete and approved and, if it is, launches the "tasks-fanout" workflow that creates or iterates its tasks.md. It asks before launching. It doesn't plan or write tasks.md on its own. It is the only path to the task plan; use it when the person says, in English or Spanish, "let's plan the tasks / planeemos las tareas", "let's break down the tasks / desglosemos las tareas", "let's build the implementation plan / armemos el plan de implementación", "generate the implementation plan / generá el plan de implementación", "let's iterate tasks.md / iteremos tasks.md", "let's review the spec's tasks / revisemos las tareas del spec", or asks what the next step is after approving the design. If requirements.md or design.md don't exist or aren't approved yet, this skill doesn't apply — send them to "specify" first.
 ---
 
 # Planning Tasks
 
-Verificar los insumos, preguntar, lanzar. El plan de tareas lo arma el workflow `tasks-fanout`;
-este skill solo comprueba que pueda correr y lo dispara.
+Check the inputs, ask, launch. The task plan is built by the `tasks-fanout` workflow; this skill
+only checks that it can run and triggers it.
 
-## 1. Verificá los insumos
+## 1. Check the inputs
 
-La carpeta del spec es `docs/AAAA-MM-DD-<feature>/`. Si hay varias y no está claro cuál,
-preguntá. Ahí adentro:
+The spec folder is `docs/YYYY-MM-DD-<feature>/`. If there are several and it isn't clear which
+one, ask. Inside it:
 
-- `requirements.md` existe y su encabezado de estado dice `aprobado`.
-- `design.md` existe y su encabezado de estado dice `aprobado`.
+- `requirements.md` exists and its status header says `approved` (`aprobado`).
+- `design.md` exists and its status header says `approved` (`aprobado`).
 
-Si falta cualquiera de los dos, o están en `pendiente de aprobación`, **pará acá**: decíselo a la
-persona y remitila al skill `specify`. No lances igual ni completes vos lo que falte.
+If either one is missing, or they are in `pending approval` (`pendiente de aprobación`), **stop
+here**: tell the person and send them to the `specify` skill. Don't launch anyway or fill in what's
+missing yourself.
 
-## 2. Preguntá
+## 2. Ask
 
-Una línea con la carpeta y, si `tasks.md` ya existe, cuántas tareas tiene hoy — el workflow lanza
-un agente por tarea, así que ese número es lo que hace que la pregunta signifique algo.
+One line with the folder and, if `tasks.md` already exists, how many tasks it has today — the
+workflow launches one agent per task, so that number is what makes the question mean something.
 
-Esperá el sí. Una confirmación corta («dale», «va») alcanza.
+Wait for the yes. A short confirmation ("go", "ok" / "dale", "va") is enough.
 
-**La confirmación va en prosa, no con una pregunta estructurada.** Pedir un sí no es ofrecer una
-elección: acá hay un solo camino —lanzar— y `AskUserQuestion` exige dos opciones distintas, así
-que rechaza la llamada y la persona nunca ve la pregunta. Escribí la línea y esperá la respuesta.
+**The confirmation goes in prose, not as a structured question.** Asking for a yes is not offering
+a choice: here there is a single path —launching— and `AskUserQuestion` requires two different
+options, so it rejects the call and the person never sees the question. Write the line and wait
+for the answer.
 
-## 3. Lanzá
+## 3. Launch
 
-Llamá al tool `Workflow` con el workflow guardado `tasks-fanout` y `args` igual a la ruta de la
-carpeta del spec:
-
-```
-Workflow(tasks-fanout, args: "docs/AAAA-MM-DD-<feature>")
-```
-
-`args` también acepta un objeto, para acotar las rondas o forzar un spec sin aprobar:
-`{"specDir": "docs/AAAA-MM-DD-<feature>", "maxRounds": 2}`.
-
-**Al confirmar el lanzamiento, decí estas tres cosas y ninguna menos:**
-
-- Que quedó corriendo, con su `Task ID`.
-- **`/workflows` para ver el avance en vivo.** El fan-out lanza un agente por tarea y la corrida
-  puede tomar varios minutos; sin esta línea la persona espera a ciegas, y esperar a ciegas la
-  empuja a abrir el repo a mirar qué pasa — que sobre una corrida en vuelo da instantáneas, no
-  conclusiones. La salida del tool `Workflow` ya trae el puntero (`Use /workflows to watch live
-  progress.`): no lo descartes al resumir.
-- La forma del fan-out: 1 scout + 1 plan inicial + 1 revisor por tarea + 1 reducer por ronda con
-  cambios + 1 escritor. **El número exacto no se puede anticipar en la primera corrida** —el plan
-  lo dibuja el propio workflow— pero la forma sí, y alcanza para dimensionar la espera.
-
-**Al llegar la notificación de fin**, antes de resumir, leé
-`~/.claude/projects/<proyecto>/<sesión>/workflows/wf_<runId>.json` y reportá `agentCount`, la
-duración y los `logs` de la corrida. Es el mismo dato que `/workflows` mostraba en vivo: si el
-puntero se perdió al lanzar, acá llega igual.
-
-**El nombre puede venir con prefijo.** Si el harness está empaquetado como plugin, el workflow se
-registra como `<nombre-del-plugin>:tasks-fanout` y el nombre pelado no resuelve. Lanzá el pelado
-igual: si no existe, el error lista los nombres disponibles y de ahí sacás el correcto — está
-explicado abajo. No inventes el prefijo antes de tener esa lista.
-
-### Si algo falla al lanzar
-
-Son dos fallas distintas y se arreglan distinto — y la segunda tiene, a su vez, dos causas.
-
-**El tool `Workflow` no existe.** Los workflows dinámicos son opt-in en el plan Pro: si
-`enableWorkflows` no está en `~/.claude/settings.json`, el tool ni se ofrece. Pedile que lo
-active (`/config` → Dynamic workflows, o la clave a mano) y que abra una **sesión nueva** — el
-toolset se arma al arrancar.
-
-**El tool existe pero dice `Workflow "tasks-fanout" not found`.** Ese error trae consigo la
-solución: termina con `Available: <lista de nombres>`. **Leé esa lista antes de hacer nada más**,
-porque distingue las dos causas posibles.
-
-*El workflow está, con otro nombre.* Si en `Available` aparece una entrada que **termina en
-`:tasks-fanout`** —por ejemplo `mi-harness:tasks-fanout`—, el workflow se cargó desde un plugin.
-Los plugins registran sus workflows namespaceados con el nombre del plugin, así que el nombre
-pelado no resuelve. Relanzá con el nombre completo tal como figura en la lista:
+Call the `Workflow` tool with the saved workflow `tasks-fanout` and `args` equal to the path of the
+spec folder:
 
 ```
-Workflow(<lo-que-figura-en-Available>, args: "docs/AAAA-MM-DD-<feature>")
+Workflow(tasks-fanout, args: "docs/YYYY-MM-DD-<feature>")
 ```
 
-No hardcodees el prefijo ni lo adivines: tomalo de la lista. El nombre del plugin cambia según
-cómo esté instalado, y una copia local del workflow convive con la del plugin bajo nombres
-distintos —para workflows no hay shadowing—, así que la lista es la única fuente confiable de
-cuál existe de verdad.
+`args` also accepts an object, to limit the rounds or force an unapproved spec:
+`{"specDir": "docs/YYYY-MM-DD-<feature>", "maxRounds": 2}`.
 
-*El workflow no está en ninguna forma.* Si no aparece ninguna entrada que termine en
-`:tasks-fanout`, el registro no lo tiene. Se arma al arrancar la sesión, así que un workflow
-creado o editado a mitad de sesión se cae de ahí. No ofrezcas `/tasks-fanout`: ese comando sale
-del mismo registro y tampoco va a existir. Lanzalo por ruta, que no depende del registro:
+**When confirming the launch, say these three things and not one less:**
+
+- That it is running, with its `Task ID`.
+- **`/workflows` to watch the progress live.** The fan-out launches one agent per task and the run
+  can take several minutes; without this line the person waits blind, and waiting blind pushes them
+  to open the repo to see what's happening — which, on a run in flight, gives snapshots, not
+  conclusions. The `Workflow` tool's output already brings the pointer (`Use /workflows to watch
+  live progress.`): don't drop it when summarizing.
+- The shape of the fan-out: 1 scout + 1 initial plan + 1 reviewer per task + 1 reducer per round
+  with changes + 1 writer. **The exact number can't be anticipated on the first run** —the
+  workflow itself draws the plan— but the shape can, and it's enough to size the wait.
+
+**When the end notification arrives**, before summarizing, read
+`~/.claude/projects/<project>/<session>/workflows/wf_<runId>.json` and report `agentCount`, the
+duration and the run's `logs`. It is the same data `/workflows` showed live: if the pointer got
+lost at launch, it arrives here anyway.
+
+**The name may come with a prefix.** If the harness is packaged as a plugin, the workflow is
+registered as `<plugin-name>:tasks-fanout` and the bare name doesn't resolve. Launch the bare one
+anyway: if it doesn't exist, the error lists the available names and you take the right one from
+there — it's explained below. Don't invent the prefix before having that list.
+
+### If something fails at launch
+
+They are two different failures and they are fixed differently — and the second one has, in turn,
+two causes.
+
+**The `Workflow` tool doesn't exist.** Dynamic workflows are opt-in on the Pro plan: if
+`enableWorkflows` isn't in `~/.claude/settings.json`, the tool isn't even offered. Ask the person to
+turn it on (`/config` → Dynamic workflows, or the key by hand) and to open a **new session** — the
+toolset is built at startup.
+
+**The tool exists but says `Workflow "tasks-fanout" not found`.** That error brings the solution
+with it: it ends with `Available: <list of names>`. **Read that list before doing anything else**,
+because it tells the two possible causes apart.
+
+*The workflow is there, under another name.* If `Available` shows an entry that **ends in
+`:tasks-fanout`** —for example `my-harness:tasks-fanout`—, the workflow was loaded from a plugin.
+Plugins register their workflows namespaced with the plugin's name, so the bare name doesn't
+resolve. Relaunch with the full name exactly as it appears in the list:
 
 ```
-Workflow(scriptPath: "<ruta absoluta de tasks-fanout.js>",
-         args: "docs/AAAA-MM-DD-<feature>")
+Workflow(<what-appears-in-Available>, args: "docs/YYYY-MM-DD-<feature>")
 ```
 
-La ruta es `plugin/goharness/workflows/tasks-fanout.js` dentro del repo semilla si el harness vive ahí,
-o `workflows/tasks-fanout.js` dentro del directorio del plugin si vino empaquetado. Si no sabés
-cuál, buscalo con `Glob` en vez de suponer.
+Don't hardcode the prefix or guess it: take it from the list. The plugin's name changes depending
+on how it's installed, and a local copy of the workflow coexists with the plugin's under different
+names —there is no shadowing for workflows—, so the list is the only reliable source for which one
+really exists.
 
-Lo que nunca hagas, pase lo que pase, es armar el plan por afuera: el workflow existe para que la
-tabla de tareas tenga un único escritor. (El `Estado` y el `Registro` de cada tarea son otra
-región, y los escribe quien implementa — eso no es planificar.)
+*The workflow isn't there in any form.* If no entry ends in `:tasks-fanout`, the registry doesn't
+have it. It's built when the session starts, so a workflow created or edited mid-session falls out
+of it. Don't offer `/tasks-fanout`: that command comes from the same registry and won't exist
+either. Launch it by path, which doesn't depend on the registry:
+
+```
+Workflow(scriptPath: "<absolute path of tasks-fanout.js>",
+         args: "docs/YYYY-MM-DD-<feature>")
+```
+
+The path is `plugin/goharness/workflows/tasks-fanout.js` inside the harness's own repo if the
+harness lives there, or `workflows/tasks-fanout.js` inside the plugin's directory if it came
+packaged. If you don't know which, look for it with `Glob` instead of guessing.
+
+What you never do, whatever happens, is build the plan from outside: the workflow exists so the task
+table has a single writer. (Each task's `Status` and `Log` are another region, and whoever
+implements writes them — that isn't planning.)
