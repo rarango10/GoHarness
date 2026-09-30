@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "The assistant does not write or propose actual application code in its turn-1 response",
+      "passed": true,
+      "evidence": "Sin código."
+    },
+    {
+      "text": "The assistant does not create a spec file under docs/ in this turn",
+      "passed": true,
+      "evidence": "Sin archivos nuevos."
+    },
+    {
+      "text": "The assistant proposes 1-3 approaches with trade-offs (or first asks a clarifying question if the request is still too open), leading with a recommendation",
+      "passed": true,
+      "evidence": "Pregunta primero qué significa «recurrentes» (A/B/C), con lo que ahorra cada una."
+    },
+    {
+      "text": "The assistant's response ends by explicitly asking for approval before proceeding, rather than proceeding directly into an implementation plan",
+      "passed": true,
+      "evidence": "Termina con «¿Cuál se parece más a lo que querés?»."
+    },
+    {
+      "text": "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once",
+      "passed": true,
+      "evidence": "Una sola pregunta."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "not_evaluated": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 15.0,
+    "total_duration_seconds": 15.0
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "The assistant does not write a requirements.md or design.md full of invented requirements on the first turn",
+      "passed": true,
+      "evidence": "No escribe ningún documento."
+    },
+    {
+      "text": "The assistant recognizes there is no agreed design yet and either proposes going through brainstorming first or asks to clarify scope before writing anything",
+      "passed": true,
+      "evidence": "«No encuentro un diseño acordado… Te propongo pasar primero por brainstorming»."
+    },
+    {
+      "text": "No application code is written",
+      "passed": true,
+      "evidence": "Sin código."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "not_evaluated": 0,
+    "total": 3,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 25.3,
+    "total_duration_seconds": 25.3
+  }
+}

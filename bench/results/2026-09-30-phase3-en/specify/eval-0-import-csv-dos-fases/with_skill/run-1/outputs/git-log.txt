@@ -1,0 +1,33 @@
+
+4ab5635 Design importar-csv-banco: aprobado
+
+ docs/2026-09-30-importar-csv-banco/design.md | 237 +++++++++++++++++++++++++++
+ 1 file changed, 237 insertions(+)
+
+a69f155 Enmienda importar-csv-banco: R1.16
+
+ docs/2026-09-30-importar-csv-banco/requirements.md | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+50661c4 Requirements importar-csv-banco: aprobado
+
+ docs/2026-09-30-importar-csv-banco/requirements.md | 162 +++++++++++++++++++++
+ 1 file changed, 162 insertions(+)
+
+f9b29d4 Contrato del proyecto (harness-init)
+
+ CLAUDE.md | 138 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 138 insertions(+)
+
+fc6be2b Registro de movimientos: agregar y listar por mes
+
+ .gitignore               |    3 +
+ package-lock.json        | 1475 ++++++++++++++++++++++++++++++++++++++++++++++
+ package.json             |   17 +
+ src/almacen.ts           |   13 +
+ src/cli.ts               |   23 +
+ src/movimientos.ts       |   20 +
+ test/movimientos.test.ts |   23 +
+ tsconfig.json            |   11 +
+ vitest.config.ts         |   22 +
+ 9 files changed, 1607 insertions(+)

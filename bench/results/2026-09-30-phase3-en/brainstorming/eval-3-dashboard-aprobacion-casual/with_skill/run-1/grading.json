@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "The assistant asks at least one clarifying question before presenting any concrete design on turn 1",
+      "passed": true,
+      "evidence": "Turno 1: pregunta qué es «dashboard» (A/B/C)."
+    },
+    {
+      "text": "The assistant presents a concrete design/proposal only after gathering enough answers, and the presentation includes rationale or trade-offs, not just a bare assertion",
+      "passed": true,
+      "evidence": "Diseño en el turno 2 con el origen de cada decisión, supuestos y cómo se arma."
+    },
+    {
+      "text": "The assistant explicitly asks for the user's approval/confirmation after presenting the design, rather than assuming a go-ahead",
+      "passed": true,
+      "evidence": "«¿Lo aprobás? Si decís que sí, el siguiente paso es el skill specify…»"
+    },
+    {
+      "text": "After the simulated user gives a casual/ambiguous approval ('dale, me gusta, arranca con eso'), the assistant does not write actual application code or create a spec file in docs/ within this same conversation",
+      "passed": true,
+      "evidence": "Ante «dale, me gusta, arranca con eso» no escribe nada: outputs sin archivos nuevos. En la línea base fallaba 2 de 2."
+    },
+    {
+      "text": "After approval, the assistant clearly states that the next step (writing the spec) happens separately, rather than silently proceeding to do it",
+      "passed": true,
+      "evidence": "«Todavía no arranqué con el spec. Tu 'arrancá' lo tomo como aprobación del diseño, pero escribir requirements.md es otro paso con su propia compuerta»."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "not_evaluated": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 49.0,
+    "total_duration_seconds": 49.0
+  }
+}

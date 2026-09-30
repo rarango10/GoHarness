@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+      "passed": true,
+      "evidence": "docs/2026-09-30-importar-csv-banco/ (fecha de hoy)."
+    },
+    {
+      "text": "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+      "passed": true,
+      "evidence": "R1–R4, 4 user stories, criterios numerados."
+    },
+    {
+      "text": "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+      "passed": true,
+      "evidence": "28/28 abren con keyword EARS en inglés, prosa en español. check_specs marca R1.16 y R3.2 como compuestos: R3.2 es una «y» dentro de la condición; R1.16 («mostrar el uso y terminar con código ≠ 0») es el mismo patrón que R2.14 de la línea base, calificado igual."
+    },
+    {
+      "text": "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) — those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+      "passed": true,
+      "evidence": "check_specs: sin filtraciones de implementación."
+    },
+    {
+      "text": "The assistant stops after requirements.md and explicitly asks for approval before writing design.md — it does not produce both documents in one turn",
+      "passed": true,
+      "evidence": "Se detiene después de requirements.md y pide aprobación («¿Lo aprobás…?»)."
+    },
+    {
+      "text": "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping",
+      "passed": true,
+      "evidence": "design.md con todas las secciones, 28 ids referenciados y mapa test→criterio. Pidió el sí antes de agregar R1.16 en la revisión previa al diseño y lo commiteó aparte."
+    },
+    {
+      "text": "No application code, test files, or task list is written at any point",
+      "passed": true,
+      "evidence": "Solo docs/: 0 archivos de código, sin tasks.md."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "not_evaluated": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 230.6,
+    "total_duration_seconds": 230.6
+  }
+}

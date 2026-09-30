@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+      "passed": true,
+      "evidence": "docs/2026-09-30-dashboard-presupuesto/."
+    },
+    {
+      "text": "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+      "passed": true,
+      "evidence": "R1–R4, 4 user stories."
+    },
+    {
+      "text": "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+      "passed": true,
+      "evidence": "22/22 con keyword EARS, prosa en español. Los 5 «compuestos» de check_specs son «y» dentro de la condición WHEN/IF."
+    },
+    {
+      "text": "Requirements cover the agreed edge cases: categories with spending but no budget (or vice versa) shown as 'sin definir', and the alert when usage exceeds 100%",
+      "passed": true,
+      "evidence": "R3 «Categorías sin definir» y la alerta por encima del 100 % (R2)."
+    },
+    {
+      "text": "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) — those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+      "passed": true,
+      "evidence": "check_specs: sin filtraciones de implementación."
+    },
+    {
+      "text": "The assistant stops after requirements.md and explicitly asks for approval before writing design.md — it does not produce both documents in one turn",
+      "passed": true,
+      "evidence": "Se detiene después de requirements.md y pide aprobación."
+    },
+    {
+      "text": "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping",
+      "passed": true,
+      "evidence": "design.md completo, 22 ids referenciados, ninguno «solo e2e»."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "not_evaluated": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 204.9,
+    "total_duration_seconds": 204.9
+  }
+}

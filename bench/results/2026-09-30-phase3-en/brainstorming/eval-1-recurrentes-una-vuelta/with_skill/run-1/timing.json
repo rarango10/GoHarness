@@ -1,0 +1,10 @@
+{
+  "total_cost_usd": 0.1793616,
+  "duration_ms": 14973,
+  "input_tokens": 105821,
+  "output_tokens": 903,
+  "turns": 1,
+  "wall_seconds": 16.3,
+  "total_tokens": 106724,
+  "total_duration_seconds": 15.0
+}

@@ -1,0 +1,18 @@
+
+32458f7 Contrato del proyecto (harness-init)
+
+ CLAUDE.md | 138 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 138 insertions(+)
+
+9bd3f9d Registro de movimientos: agregar y listar por mes
+
+ .gitignore               |    3 +
+ package-lock.json        | 1475 ++++++++++++++++++++++++++++++++++++++++++++++
+ package.json             |   17 +
+ src/almacen.ts           |   13 +
+ src/cli.ts               |   23 +
+ src/movimientos.ts       |   20 +
+ test/movimientos.test.ts |   23 +
+ tsconfig.json            |   11 +
+ vitest.config.ts         |   22 +
+ 9 files changed, 1607 insertions(+)

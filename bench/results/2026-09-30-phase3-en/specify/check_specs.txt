@@ -1,0 +1,66 @@
+
+==============================================================================
+eval-0-import-csv-dos-fases/with_skill/run-1
+==============================================================================
+documentos: 2  |  archivos de código: 0
+  - docs/2026-09-30-importar-csv-banco/design.md
+  - docs/2026-09-30-importar-csv-banco/requirements.md
+carpeta docs/AAAA-MM-DD-<kebab>/: SI (2026-09-30-importar-csv-banco)
+requirements.md y design.md separados: SI
+
+[requirements.md]  requisitos: ['R1', 'R2', 'R3', 'R4']
+  user stories: 4
+  criterios detectados: 28  |  que abren con keyword EARS: 28
+  keywords traducidas (DEBERÁ/CUANDO): 0
+  secciones Alcance/Supuestos: True/True
+  frontera qué/cómo: sin filtraciones de implementación en los criterios
+  ⚠ CRITERIOS COMPUESTOS: 2 criterio(s) parecen describir dos comportamientos
+      R1.16: conjunción + otro verbo → …y terminar…
+      R3.2: conjunción + otro verbo → …y monto, y no hay un movimiento guardado igual THE SYSTEM SH…
+      (heurístico: revisá si conviene partirlos. Un criterio compuesto se cubre
+       a medias y el verificador no tiene cómo reportar 'medio cumplido'.)
+
+[design.md]  secciones faltantes: ninguna
+  menciones 'Cubre': 3
+  ids de criterio referenciados: 28
+  criterios sin ninguna referencia en el design: ninguno
+  tabla de alternativas descartadas: True
+
+==============================================================================
+eval-1-dashboard-dos-fases/with_skill/run-1
+==============================================================================
+documentos: 2  |  archivos de código: 0
+  - docs/2026-09-30-dashboard-presupuesto/design.md
+  - docs/2026-09-30-dashboard-presupuesto/requirements.md
+carpeta docs/AAAA-MM-DD-<kebab>/: SI (2026-09-30-dashboard-presupuesto)
+requirements.md y design.md separados: SI
+
+[requirements.md]  requisitos: ['R1', 'R2', 'R3', 'R4']
+  user stories: 4
+  criterios detectados: 22  |  que abren con keyword EARS: 22
+  keywords traducidas (DEBERÁ/CUANDO): 0
+  secciones Alcance/Supuestos: True/True
+  frontera qué/cómo: sin filtraciones de implementación en los criterios
+  ⚠ CRITERIOS COMPUESTOS: 5 criterio(s) parecen describir dos comportamientos
+      R2.5: conjunción + otro verbo → …y presupuesto definido THE SYSTEM SHALL mostrar…
+      R3.1: conjunción + otro verbo → …y no tiene presupuesto definido THE SYSTEM SHALL mostrar…
+      R3.3: conjunción + otro verbo → …y no tiene gasto en el mes THE SYSTEM SHALL mostrar…
+      R3.4: conjunción + otro verbo → …y no tiene gasto en el mes THE SYSTEM SHALL mostrar…
+      R4.2: conjunción + otro verbo → …y 12) THEN THE SYSTEM SHALL mostrar…
+      (heurístico: revisá si conviene partirlos. Un criterio compuesto se cubre
+       a medias y el verificador no tiene cómo reportar 'medio cumplido'.)
+
+[design.md]  secciones faltantes: ninguna
+  menciones 'Cubre': 3
+  ids de criterio referenciados: 22
+  criterios sin ninguna referencia en el design: ninguno
+  tabla de alternativas descartadas: True
+
+==============================================================================
+eval-2-alertas-sin-diseno/with_skill/run-1
+==============================================================================
+documentos: 0  |  archivos de código: 0
+carpeta docs/AAAA-MM-DD-<kebab>/: NO
+requirements.md y design.md separados: NO
+
+(no se produjo ningún documento)

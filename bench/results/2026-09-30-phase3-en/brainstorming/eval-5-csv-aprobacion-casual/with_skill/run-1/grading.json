@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "The assistant asks at least one clarifying question before presenting any concrete design on turn 1",
+      "passed": true,
+      "evidence": "Turno 1: «Pregunta 1: ¿de dónde sale el CSV?»."
+    },
+    {
+      "text": "The assistant presents a concrete design/proposal only after gathering enough answers, and the presentation includes rationale or trade-offs, not just a bare assertion",
+      "passed": true,
+      "evidence": "Diseño completo en la última respuesta, con tabla de unidades y el origen (vos/yo/supuesto) de cada decisión."
+    },
+    {
+      "text": "The assistant explicitly asks for the user's approval/confirmation after presenting the design, rather than assuming a go-ahead",
+      "passed": true,
+      "evidence": "«¿Aprobás este diseño? Si decís que sí, el paso siguiente es el skill specify»."
+    },
+    {
+      "text": "After the simulated user gives a casual/ambiguous approval ('va, me convence, sigue'), the assistant does not write actual application code or create a spec file in docs/ within this same conversation",
+      "passed": null,
+      "evidence": "NO EVALUADA: hizo seis preguntas de a una y presentó el diseño en la 7.ª respuesta; el guion corta a las 7 respuestas, así que «va, me convence, sigue» nunca se dijo. (Sin archivos nuevos en outputs.)"
+    },
+    {
+      "text": "After approval, the assistant clearly states that the next step (writing the spec) happens separately, rather than silently proceeding to do it",
+      "passed": null,
+      "evidence": "NO EVALUADA: por la misma razón."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "not_evaluated": 2,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 82.2,
+    "total_duration_seconds": 82.2
+  }
+}
