@@ -119,7 +119,7 @@ const TASK_FULL = {
     title: { type: 'string' },
     covers: { type: 'array', items: { type: 'string' } },
     coversNote: { type: 'string' },
-    status: { type: 'string', enum: ['pendiente', 'en curso', 'hecho'] },
+    status: { type: 'string', enum: ['pending', 'in progress', 'done'] },
     objective: { type: 'string' },
     firstTest: { type: 'string' },
     note: { type: 'string', description: 'Ej. reemplaza a T4' },
@@ -132,8 +132,8 @@ const SCOUT_SCHEMA = {
   properties: {
     specDir: { type: 'string', description: 'Ruta real de la carpeta del spec' },
     featureName: { type: 'string' },
-    requirementsStatus: { type: 'string', enum: ['aprobado', 'pendiente de aprobación', 'ausente'] },
-    designStatus: { type: 'string', enum: ['aprobado', 'pendiente de aprobación', 'ausente'] },
+    requirementsStatus: { type: 'string', enum: ['approved', 'pending approval', 'absent'] },
+    designStatus: { type: 'string', enum: ['approved', 'pending approval', 'absent'] },
     criteria: {
       type: 'array',
       description: 'TODOS los criterios de aceptacion de requirements.md, sin excepcion',
@@ -207,7 +207,7 @@ const VERDICT_SCHEMA = {
     newCovers: { type: 'array', items: { type: 'string' } },
     newObjective: { type: 'string' },
     newFirstTest: { type: 'string' },
-    newStatus: { type: 'string', enum: ['pendiente', 'en curso', 'hecho'] },
+    newStatus: { type: 'string', enum: ['pending', 'in progress', 'done'] },
     mergeInto: { type: 'string', description: 'Id de la tarea que absorbe a esta' },
     splitInto: { type: 'array', items: TASK_DRAFT, description: 'Sin id: los asigna el reducer' },
     missingTasks: { type: 'array', items: TASK_DRAFT, description: 'Huecos de cobertura vecinos, sin id' },
@@ -291,9 +291,14 @@ const scout = await agentP(
 Relevá el estado completo del spec y del proyecto. Es la única vez que alguien va a hacer esto:
 todos los revisores que vienen después trabajan con lo que devuelvas vos.
 
-1. Leé requirements.md y design.md. Reportá el estado literal del encabezado de cada uno
-   ("aprobado" / "pendiente de aprobación"), o "ausente" si el archivo no existe. Un encabezado
-   "aprobado (fecha) · enmendado (fecha): <ids>" es "aprobado": la enmienda ya tuvo su sí.
+Los estados los devolvés en su forma canónica del glosario del skill formato-de-tareas, esté
+el archivo en el idioma que esté: "aprobado" o "approved" es approved; "pendiente de aprobación"
+o "pending approval" es pending approval; "pendiente", "en curso", "hecho" (o "pending",
+"in progress", "done") son pending, in progress, done. Lo demás se transcribe tal cual.
+
+1. Leé requirements.md y design.md. Reportá el estado del encabezado de cada uno
+   (approved / pending approval), o absent si el archivo no existe. Un encabezado
+   "aprobado (fecha) · enmendado (fecha): <ids>" es approved: la enmienda ya tuvo su sí.
    Transcribí en amendments el contenido LITERAL de la sección "## Enmiendas" de cada documento,
    con su título; cadena vacía si ninguno tiene.
 2. Extraé TODOS los criterios de aceptación de requirements.md con su id (R<n>.<m>) y un resumen
@@ -336,7 +341,7 @@ if (!scout) {
 const specDir = scout.specDir
 const existingPendientes = scout.existingPendientes || ''
 
-if (!FORCE && (scout.requirementsStatus !== 'aprobado' || scout.designStatus !== 'aprobado')) {
+if (!FORCE && (scout.requirementsStatus !== 'approved' || scout.designStatus !== 'approved')) {
   return {
     error: 'Precondición no cumplida: requirements.md y design.md tienen que estar aprobados.',
     specDir,
@@ -408,7 +413,7 @@ No escribas ningún archivo. Devolvé solo el JSON.`,
     title: t.title,
     covers: t.covers || [],
     coversNote: t.coversNote,
-    status: 'pendiente',
+    status: 'pending',
     objective: t.objective,
     firstTest: t.firstTest,
   }))
@@ -624,6 +629,10 @@ const written = await agentP(
 
 Escribí ${specDir}/tasks.md con esta tabla de Plan final. Es la fuente de verdad: no agregues,
 no saques, no reordenes y no renumeres nada.
+
+Los estados del plan vienen en su forma canónica (pending, in progress, done). En el archivo se
+escriben con su alias en español del glosario del skill formato-de-tareas: pendiente, en curso,
+hecho.
 
 PLAN FINAL (${plan.length} tareas, en orden):
 ${JSON.stringify(plan, null, 2)}

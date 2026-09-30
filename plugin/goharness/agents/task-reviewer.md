@@ -32,7 +32,7 @@ implementación, no al planificar.
    tarea del plan cubre, listalo en `missingTasks` — no lo metas dentro de tu tarea.
 4. **Estado real del código.** Mirá con `Read`/`Glob`/`Grep` qué existe de verdad y contrastalo
    con el resumen de estado del proyecto que te pasa el prompt. Si el código ya satisface la
-   tarea, veredicto `status` con `newStatus: "hecho"`; si está a medias, `"en curso"`.
+   tarea, veredicto `status` con `newStatus: "done"`; si está a medias, `"in progress"`.
    **No corras los comandos de verificación del proyecto**: el workflow ya los corrió una vez y te
    pasa el resultado. Correrlos otra vez en paralelo es desperdicio y puede pisarse entre agentes.
    Por eso tu `status` es una **señal de planificación** leída del estado del repo, no una

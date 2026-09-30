@@ -31,8 +31,10 @@ materializarlo en el archivo con el formato de `assets/tasks-template.md` del sk
    Lo mismo vale para el **Estado**: el `Estado` y el `Registro` de cada tarea son la región de
    quien implementa, no tuya. Vos escribís el `Estado` que te llega en la tabla —que ya viene
    leído del archivo por el scout—, y **nunca degradás uno**: si el plan que recibís trae una
-   tarea en `pendiente` que en el archivo estaba en `hecho` o `en curso`, escribí el del archivo
-   y avisalo en tu resumen. Un `hecho` pisado le dice a la próxima persona que hay trabajo por
+   tarea en `pending` que en el archivo estaba en `hecho` o `en curso`, escribí el del archivo
+   y avisalo en tu resumen. (El plan te llega con los estados en su forma canónica y el archivo
+   los tiene con su alias: `pending` es `pendiente`, `in progress` es `en curso`, `done` es
+   `hecho`. Ver el glosario de `formato-de-tareas`.) Un `hecho` pisado le dice a la próxima persona que hay trabajo por
    hacer que en realidad ya está terminado y verificado.
 6. Si una tarea desaparece del plan pero tenía un `Registro` con contenido real, **no la borres
    en silencio**: dejá su sección con una nota de que fue reemplazada y por cuál tarea.
