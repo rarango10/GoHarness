@@ -2,7 +2,7 @@
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "goharness",
   "version": "0.5.2",
-  "description": "Harness de desarrollo asistido: contrato del proyecto -> brainstorm -> spec -> plan con fan-out -> TDD por tarea -> verificacion -> e2e -> cierre",
+  "description": "Assisted development harness: project contract -> brainstorm -> spec -> fan-out plan -> TDD per task -> verification -> e2e -> closing. Works in English and Spanish.",
   "author": {
     "name": "Raul Arango",
     "email": "raul.arango@gmail.com"

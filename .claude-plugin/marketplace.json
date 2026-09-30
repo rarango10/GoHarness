@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "goharness",
-  "description": "Harness de desarrollo asistido por agentes para Claude Code: un ciclo de nueve pasos con compuertas de aprobacion humana, del contrato del proyecto al commit de cierre.",
+  "description": "Agent-assisted development harness for Claude Code: a nine-step cycle with human approval gates, from the project contract to the closing commit. Works in English and Spanish.",
   "owner": {
     "name": "Raul Arango",
     "email": "raul.arango@gmail.com"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "goharness",
-      "description": "Brainstorm, spec en EARS, plan con fan-out, TDD por tarea, verificacion por tarea, e2e y cierre. Siete skills, siete subagentes y un workflow, con un solo productor por documento.",
+      "description": "Brainstorm, EARS spec, fan-out plan, TDD per task, per-task verification, e2e and closing. A router, eight skills, seven subagents and a workflow, with a single producer per document.",
       "author": {
         "name": "Raul Arango"
       },
