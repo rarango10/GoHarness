@@ -1,237 +1,241 @@
 ---
 name: close-feature
-description: "Cierra una feature terminada: si tiene pantalla, pide que la persona la mire —contra su referencia visual, si el design declara una— antes de nada; corre el comando de higiene completo sobre el estado final del repo, comprueba que todos los veredictos de dod-checker sigan siendo ciertos juntos, y hace el commit de cierre. Un rojo baja la tarea afectada a en curso y la devuelve al TDD. Es el paso 8 del ciclo. Usalo cuando la persona diga 'cerremos la feature', 'commiteemos', 'listo para commitear', 'ya terminamos X', o cuando todas las tareas estén en hecho y el ciclo e2e haya cerrado. No repara código, no toca el plan de tareas y no aprueba nada: si algo sale rojo, nombra la tarea que vuelve a en curso y devuelve el arreglo al skill implement-task."
+description: "Closes a finished feature: if it has a screen, it asks the person to look at it —against its visual reference, if the design declares one— before anything else; it runs the full hygiene command on the repo's final state, checks that all of dod-checker's verdicts are still true together, and makes the closing commit. A red moves the affected task down to in progress and hands it back to TDD. It is step 8 of the cycle. Use it when the person says, in English or Spanish, 'let's close the feature / cerremos la feature', 'let's commit / commiteemos', 'ready to commit / listo para commitear', 'we're done with X / ya terminamos X', or when every task is done and the e2e cycle has closed. It doesn't repair code, doesn't touch the task plan and doesn't approve anything: if something comes out red, it names the task that goes back to in progress and hands the fix back to the implement-task skill."
 ---
 
 # Close Feature
 
-El paso 8, y el último del ciclo. Durante mucho tiempo se mencionó en prosa y no tuvo fila en la
-tabla — lo que hacía que pareciera trámite. No lo es, y el nombre del skill lo dice: **no es «hacer
-el commit», es cerrar la feature**. El commit es el final; lo que importa es la corrida que va
-antes.
+Step 8, and the last of the cycle. For a long time it was mentioned in prose and had no row in the
+table — which made it look like red tape. It isn't, and the skill's name says so: **it isn't "make
+the commit", it is closing the feature**. The commit is the end; what matters is the run that comes
+before.
 
-## Un veredicto se toma sobre un estado
+## A verdict is taken on a state
 
-Es la razón principal de este paso, así que conviene tenerla clara antes del procedimiento. La
-otra es más simple: en una feature con pantalla, este es el único momento del ciclo en que alguien
-la mira (paso 2 del procedimiento).
+It is the main reason for this step, so it's worth having it clear before the procedure. The other
+one is simpler: in a feature with a screen, this is the only moment of the cycle when someone looks
+at it (step 2 of the procedure).
 
-`dod-checker` verifica **una tarea, en un momento**. Su `cumple` es cierto para el repo tal como
-estaba cuando lo tomó. Nada garantiza que siga siéndolo después, y **una tarea puede volverse
-mentira sin que su código cambie una línea**.
+`dod-checker` verifies **one task, at one moment**. Its `meets` is true for the repo as it was when
+it took it. Nothing guarantees it stays true afterwards, and **a task can become a lie without its
+code changing a line**.
 
-Pasó, y el caso vale más que la regla: una tarea se verificó con `end2end/` vacía y su `cumple` era
-correcto **entonces**. Dos pasos después el ciclo e2e pobló esa carpeta, el runner de tests unitarios
-empezó a levantar los specs de Playwright, y el comando que la tarea declaraba en verde quedó en
-rojo. La tarea no se tocó. El veredicto envejeció.
+It happened, and the case is worth more than the rule: a task was verified with `end2end/` empty and
+its `meets` was correct **then**. Two steps later the e2e cycle populated that folder, the unit test
+runner started picking up the Playwright specs, and the command the task declared green turned red.
+The task wasn't touched. The verdict aged.
 
-Lo más incómodo del caso: el propio `Objetivo` de esa tarea decía que la carpeta vacía era «el
-resultado esperado hasta que `e2e-test-writer` los escriba». **El plan sabía que el estado iba a
-cambiar y no había ningún lugar donde usar esa información.** Este paso es ese lugar.
+The most uncomfortable part of the case: that task's own `Goal` said the empty folder was "the
+expected result until `e2e-test-writer` writes them". **The plan knew the state was going to change
+and there was no place to use that information.** This step is that place.
 
-| | Qué pregunta | Sobre qué |
+| | What it asks | About what |
 |---|---|---|
-| Paso 6 · `dod-checker` | ¿esta tarea cumple los criterios que dice cubrir? | una tarea, en un momento |
-| Paso 7 · `verify-e2e` | ¿la feature entera funciona? | la feature, en un momento |
-| **Paso 8 · este skill** | **¿todos los veredictos siguen siendo ciertos *juntos*?** | **el repo, en su estado final** |
-| **Paso 8 · la persona** | **¿se ve como tenía que verse?** | **la pantalla, al lado de su referencia** |
+| Step 6 · `dod-checker` | does this task meet the criteria it claims to cover? | one task, at one moment |
+| Step 7 · `verify-e2e` | does the whole feature work? | the feature, at one moment |
+| **Step 8 · this skill** | **are all the verdicts still true *together*?** | **the repo, in its final state** |
+| **Step 8 · the person** | **does it look the way it had to look?** | **the screen, next to its reference** |
 
-**Verificar tarea por tarea no garantiza el conjunto.** Es la misma distinción que separa el paso 6
-del paso 7, un nivel más arriba.
+**Verifying task by task doesn't guarantee the whole.** It is the same distinction that separates
+step 6 from step 7, one level up.
 
-## Cuándo aplica
+## When it applies
 
-- Toda la tabla de `tasks.md` en `hecho`.
-- Si la feature tuvo ciclo e2e, cerrado y en verde.
+- The whole `tasks.md` table is `done`.
+- If the feature had an e2e cycle, closed and green.
 
-Si queda una tarea en `pendiente` o `en curso`, esto no es el cierre: decilo y parate. No se pierde
-nada — cada tarea ya tiene su commit con su id, así que el trabajo hecho está guardado igual.
+If a task is still `pending` or `in progress`, this isn't the closing: say so and stop. Nothing is
+lost — each task already has its commit with its id, so the work done is saved anyway.
 
-## El procedimiento
+## The procedure
 
-1. **Mirá el estado antes de correr nada.** La tabla de `tasks.md`, y el `e2e-test-report.md` si
-   existe. Decí en una línea qué vas a cerrar y cuántas tareas trae.
+1. **Look at the state before running anything.** The `tasks.md` table, and `e2e-test-report.md` if
+   it exists. Say in one line what you are going to close and how many tasks it brings.
 
-   **Y mirá si algún `hecho` quedó viejo por una enmienda.** Si `requirements.md` o `design.md`
-   dicen `enmendado (…): <ids>`, cruzá esos ids con el `Cubre` de cada tarea `hecho` y con la fecha
-   de su `**Verificación:**`. Un `cumple` anterior a la enmienda de un criterio que la tarea cubre se
-   tomó sobre un texto que ya no es el vigente: se trata como un rojo, con el mismo ruteo de «Qué
-   hacer con un rojo». `implement-task` lo chequea al arrancar; esto es la red para cuando la
-   enmienda llegó después de la última tarea.
+   **And check whether any `done` went stale because of an amendment.** If `requirements.md` or
+   `design.md` say `amended (…): <ids>`, cross those ids with the `Covers` of each `done` task and
+   with the date of its `**Verification:**`. A `meets` earlier than the amendment of a criterion the
+   task covers was taken on a text that is no longer current: it is treated as a red, with the same
+   routing as "What to do with a red". `implement-task` checks it when starting; this is the net for
+   when the amendment arrived after the last task.
 
-2. **Si la feature es navegable, que la persona la mire antes de la higiene.** Leé `## Superficie` y
-   `## Referencia visual` de `design.md`. Si la superficie es navegable, este paso no es opcional:
-   **es el único punto del ciclo donde alguien ve lo que se construyó**. `dod-checker` verifica
-   código contra criterios, `verify-e2e` verifica comportamiento y la higiene verifica que el repo
-   esté sano. Ninguno contesta «¿esto se ve como tenía que verse?». Pasó: un rediseño cerró con
-   todo en verde y la persona lo vio por primera vez después del commit de cierre, muy lejos del
-   mockup que tenía que respetar.
+2. **If the feature is navigable, the person looks at it before the hygiene.** Read `## Surface` and
+   `## Visual reference` of `design.md` (`## Superficie` and `## Referencia visual` in a Spanish
+   project). If the surface is navigable, this step isn't optional: **it is the only point of the
+   cycle where someone sees what was built**. `dod-checker` verifies code against criteria,
+   `verify-e2e` verifies behavior and hygiene verifies that the repo is healthy. None of them answers
+   "does this look the way it had to look?". It happened: a redesign closed with everything green and
+   the person saw it for the first time after the closing commit, very far from the mockup it had to
+   respect.
 
-   Decile cómo abrirla —lo dice `## Superficie`— y contra qué mirarla:
+   Tell them how to open it —`## Surface` says so— and what to look at it against:
 
-   - **Referencia normativa con un skill de fuente:** invocá el skill y pasale su lista de chequeo,
-     para recorrerla con la app al lado de la referencia.
-   - **Referencia normativa con un archivo de fuente:** la lista es la tabla adoptar / adaptar /
-     descartar de `## Referencia visual`. Que abra el archivo al lado de la app.
-   - **Orientativa o ninguna:** alcanza con mirarla y preguntarse si se la mostraría a quien pidió
-     la feature.
+   - **Binding reference with a skill as source:** invoke the skill and pass them its checklist, to
+     walk it with the app next to the reference.
+   - **Binding reference with a file as source:** the list is the adopt / adapt / discard table of
+     `## Visual reference`. They open the file next to the app.
+   - **Guiding or none:** it's enough to look at it and ask yourself whether you'd show it to whoever
+     asked for the feature.
 
-   **Quien decide es la persona, y esperás su respuesta antes de seguir.** Si podés sacar capturas,
-   ayudan, pero no reemplazan su mirada. Un design escrito antes de que existiera la sección
-   `## Referencia visual` no la tiene: preguntá si había algo a lo que tenía que parecerse.
+   **The person decides, and you wait for their answer before continuing.** If you can take
+   screenshots, they help, but they don't replace their eyes. A design written before the
+   `## Visual reference` section existed doesn't have it: ask whether there was something it had to
+   look like.
 
-   Lo que aparezca **no se arregla acá**, y se rutea según qué criterio lo cubre:
+   Whatever shows up **isn't fixed here**, and it's routed according to which criterion covers it:
 
-   - **Contradice un criterio que una tarea cubre** → es un rojo como cualquier otro: la tarea baja
-     a `en curso`. Ver «Qué hacer con un rojo».
-   - **No lo cubre ningún criterio** —el caso típico: una pieza de la referencia que nunca llegó al
-     spec— → no hay tarea que reabrir, y este paso no crea tareas. Es un hueco del spec. Nombrá
-     `specify` para sumar el criterio (una enmienda) y `planning-tasks` para el plan, y parate. Si
-     la persona decide dejarlo para otra feature, anotalo en `## Pendientes` de `tasks.md` con
-     destinatario `[backlog]` y seguí: el paso «El backlog», más abajo, lo mueve al cerrar.
+   - **It contradicts a criterion a task covers** → it is a red like any other: the task moves down
+     to `in progress`. See "What to do with a red".
+   - **No criterion covers it** —the typical case: a piece of the reference that never reached the
+     spec— → there is no task to reopen, and this step doesn't create tasks. It is a gap in the spec.
+     Name `specify` to add the criterion (an amendment) and `planning-tasks` for the plan, and stop.
+     If the person decides to leave it for another feature, write it in the `## Follow-ups` of
+     `tasks.md` with recipient `[backlog]` and continue: the "The backlog" step, below, moves it when
+     closing.
 
-   Una feature no navegable saltea este paso.
+   A non-navigable feature skips this step.
 
-3. **Corré el comando de higiene, completo, una vez.** El que `CLAUDE.md` declara como tal — no el de
-   corrección, que es el del paso 6.
+3. **Run the hygiene command, complete, once.** The one `CLAUDE.md` declares as such — not the
+   correctness one, which belongs to step 6.
 
-   Dos atajos que hay que no tomar, porque los dos anulan el paso entero: **no lo acotes** a los
-   tests de esta feature, y **no lo saltees** porque cada tarea ya corrió lo suyo. Cada tarea corrió
-   sobre *su* estado; ninguna corrió sobre *este*. Que las partes hayan pasado por separado es
-   exactamente la afirmación que este paso viene a comprobar, así que no puede ser también su
-   justificación para no comprobarla.
+   Two shortcuts not to take, because both cancel the whole step: **don't narrow it** to this
+   feature's tests, and **don't skip it** because each task already ran its own. Each task ran on
+   *its* state; none ran on *this* one. That the parts passed separately is exactly the claim this
+   step comes to check, so it can't also be its excuse for not checking it.
 
-   Si alguna pata del comando de higiene no aplica hoy —un runner e2e sin app que navegar, una
-   dependencia sin instalar— decilo explícitamente en vez de dejarla correr y contar el fallo como
-   hallazgo. Un rojo de andamiaje ausente no reabre ninguna tarea.
+   If some leg of the hygiene command doesn't apply today —an e2e runner with no app to navigate, a
+   dependency not installed— say so explicitly instead of letting it run and counting the failure as
+   a finding. A red from missing scaffolding doesn't reopen any task.
 
-4. **Verde → contrato, dependencias, backlog y commit de cierre.** Secciones de abajo, en ese
-   orden.
+4. **Green → contract, dependencies, backlog and closing commit.** Sections below, in that order.
 
-5. **Rojo → ruteo.** Sección de abajo. **Presentá el rojo y qué pensás hacer con él antes de tocar
-   `tasks.md`**: bajar una tarea de `hecho` muta el único registro durable de qué está terminado, y
-   eso no se hace sin un sí.
+5. **Red → routing.** Section below. **Present the red and what you plan to do with it before
+   touching `tasks.md`**: moving a task down from `done` mutates the only durable record of what is
+   finished, and that isn't done without a yes.
 
-## Qué hacer con un rojo
+## What to do with a red
 
-**No lo arregles acá.** Por la misma razón por la que el ciclo e2e no repara código: sería un segundo
-escritor de `src/`, saltearía el TDD que el proyecto fija como regla, y puede cerrar el síntoma
-dejando la causa. Este paso diagnostica y rutea.
+**Don't fix it here.** For the same reason the e2e cycle doesn't repair code: it would be a second
+writer of `src/`, it would skip the TDD the project sets as a rule, and it can close the symptom
+leaving the cause. This step diagnoses and routes.
 
-**Antes de buscar la tarea, mirá si el rojo ya es conocido.** Si falla un test que **coincide con
-una entrada abierta del backlog** —`docs/pendientes.md`, o una línea `[backlog]` de esta feature—,
-no es de esta feature: reintentá esa pata una vez, asentá el resultado literal en la entrada
-existente (no en una nueva), y no reabras ninguna tarea. Si el test no está en el backlog, es un
-rojo como cualquier otro: **no asumas que es lo conocido** porque se parece. La coincidencia es por
-el nombre del test o el archivo, no por el aire de familia.
+**Before looking for the task, check whether the red is already known.** If a test fails that
+**matches an open entry in the backlog** —`docs/pendientes.md`, or a `[backlog]` line of this
+feature—, it isn't this feature's: retry that leg once, record the literal result in the existing
+entry (not in a new one), and don't reopen any task. If the test isn't in the backlog, it is a red
+like any other: **don't assume it is the known one** because it looks alike. The match is by the
+test's name or the file, not by family resemblance.
 
-1. **Identificá la tarea afectada.** El fallo apunta a un criterio, a un archivo o a un comando; la
-   tarea es la que lo cubre. Si el rojo no es de ninguna tarea en particular —configuración del
-   proyecto, un runner que levanta lo que no le toca— **la tarea afectada es la que declaró que ese
-   comando quedaba en verde**. Si sigue sin estar claro, preguntá: adivinar cuál baja de `hecho`
-   cuesta más que preguntarlo.
+1. **Identify the affected task.** The failure points to a criterion, a file or a command; the task
+   is the one that covers it. If the red isn't any particular task's —project configuration, a
+   runner picking up what isn't its business— **the affected task is the one that declared that
+   command would stay green**. If it's still unclear, ask: guessing which one drops from `done` costs
+   more than asking.
 
-2. **Bajala a `en curso`** en su celda de `Estado`, y asentá en su `Registro` qué rojo la reabrió,
-   con el fallo literal. La línea de verificación anterior **se marca**
-   `**Verificación previa (superada):**`, no se borra: era correcta cuando se tomó, y eso es
-   precisamente lo que este paso enseña. Un veredicto que envejeció no es un veredicto que estuvo
-   mal.
+2. **Move it down to `in progress`** in its `Status` cell, and record in its `Log` which red
+   reopened it, with the literal failure. The previous verification line **is marked**
+   `**Previous verification (superseded):**`, not deleted: it was correct when it was taken, and that
+   is precisely what this step teaches. A verdict that aged isn't a verdict that was wrong.
 
-3. **Devolvela al paso 5** nombrando `implement-task`, y parate. El arreglo es el TDD de siempre, y
-   la tarea vuelve a `hecho` **solo con un `cumple` nuevo, tomado ya sobre el estado final**. No
-   arranques la reparación en el mismo mensaje.
+3. **Hand it back to step 5** by naming `implement-task`, and stop. The fix is the usual TDD, and
+   the task goes back to `done` **only with a new `meets`, taken on the final state**. Don't start
+   the repair in the same message.
 
-4. **Cuando vuelva, este paso se rehace entero.** No alcanza con que el rojo puntual se ponga verde:
-   la corrida de higiene se corre de nuevo, completa, porque el arreglo cambió el estado otra vez.
+4. **When it comes back, this step is redone in full.** It isn't enough for the specific red to turn
+   green: the hygiene run is done again, complete, because the fix changed the state again.
 
-## El contrato, releído
+## The contract, reread
 
-`CLAUDE.md` se escribió antes de esta feature, y la feature pudo volver falsa alguna de sus frases
-sin tocarlo: pasó con un «el repo no tiene una copia del sistema» que se volvió mentira el día que
-una tarea portó el sistema al código, y nadie lo vio, porque ninguna tarea toca el contrato y ningún
-verificador lee su prosa. Una frase falsa ahí es peor que una ausente: la leen todos los agentes.
+`CLAUDE.md` was written before this feature, and the feature may have made one of its sentences
+false without touching it: it happened with a "the repo has no copy of the system" that became a lie
+the day a task ported the system into the code, and nobody saw it, because no task touches the
+contract and no verifier reads its prose. A false sentence there is worse than a missing one: every
+agent reads it.
 
-Releé las frases **de estado** —el Stack, las reglas propias del proyecto, las fuentes que nombra—
-contra el repo final. No las del método, que no dependen de la feature. Si alguna quedó falsa, **no
-la arregles acá**: nombrá `harness-init` en modo revisión, que es su productor, y parate hasta que
-vuelva. Si todas siguen siendo ciertas, decilo en una línea y seguí.
+Reread the sentences **about state** —the Stack, the project's own rules, the sources it names—
+against the final repo. Not the method's, which don't depend on the feature. If one became false,
+**don't fix it here**: name `harness-init` in review mode, which is its producer, and stop until it
+comes back. If they are all still true, say so in one line and continue.
 
-## Las dependencias
+## The dependencies
 
-Si `CLAUDE.md` declara un auditor de dependencias, corrélo sobre el estado final. **Es informativo,
-y bloquea solo lo que esta feature trajo.** Para distinguirlo, mirá el diff del manifiesto desde
-antes del primer commit de la feature (`git log --oneline -- <manifiesto>` y `git diff`, solo
-lectura):
+If `CLAUDE.md` declares a dependency auditor, run it on the final state. **It is informative, and it
+blocks only what this feature brought.** To tell them apart, look at the manifest's diff since before
+the feature's first commit (`git log --oneline -- <manifest>` and `git diff`, read only):
 
-- **Una vulnerabilidad en un paquete que la feature agregó o subió** es de la feature. Es un rojo:
-  la tarea que trajo ese paquete baja a `en curso`, con el ruteo de «Qué hacer con un rojo».
-- **Una vulnerabilidad heredada** —el paquete ya estaba, con esa versión, antes de la feature— se
-  informa y no bloquea. Si no está en el backlog, va como entrada nueva en el paso siguiente.
-  Casi siempre su arreglo es un salto de versión del toolchain, y eso es una feature propia: hecho
-  acá, invalidaría todos los veredictos de esta.
+- **A vulnerability in a package the feature added or bumped** is the feature's. It is a red: the
+  task that brought that package moves down to `in progress`, with the routing of "What to do with a
+  red".
+- **An inherited vulnerability** —the package was already there, with that version, before the
+  feature— is reported and doesn't block. If it isn't in the backlog, it goes in as a new entry in
+  the next step. Its fix is almost always a version jump of the toolchain, and that is a feature of
+  its own: done here, it would invalidate every verdict of this one.
 
-Si el contrato dice «ninguno» o no tiene la ranura, decilo en una línea y seguí: la ranura faltante
-es un hallazgo para `harness-init`, no un rojo de esta feature.
+If the contract says "none" or doesn't have the slot, say so in one line and continue: the missing
+slot is a finding for `harness-init`, not a red of this feature.
 
-## El backlog
+## The backlog
 
-Lo que esta feature encontró y le corresponde a otra no se pierde con ella. Con la higiene en verde
-y antes del commit de cierre:
+What this feature found that belongs to another isn't lost with it. With hygiene green and before
+the closing commit:
 
-1. **Mové cada línea `[backlog]` de `## Pendientes`** al backlog del proyecto —`docs/pendientes.md`,
-   salvo que `CLAUDE.md` nombre otro lugar—. Si el archivo no existe, crealo desde
-   `assets/pendientes-template.md`. Cada entrada nueva toma el próximo `P<n>`, que no se reusa
-   nunca, y lleva lo que dice la plantilla: de dónde salió, la evidencia, lo que se sabe y lo que
-   no, y qué **no** hacer. En `Pendientes` la línea queda, con el id al que se movió al final:
-   `→ P4`. No la borres: es la región de quien la escribió.
-2. **Si la feature tomó entradas del backlog** (las nombra `## Alcance` de `requirements.md`), pasá
-   su estado a `resuelto` con la fecha. El hash del commit de cierre no existe todavía: se completa
-   con la carpeta de la feature, que alcanza para encontrarlo.
-3. **Si el proyecto usa un tracker en vez del archivo**, no lo escribas vos: listá las entradas a
-   crear, con su texto listo, y que la persona las cargue. Publicar en un servicio externo no se
-   hace sin su sí.
+1. **Move each `[backlog]` line of `## Follow-ups`** to the project backlog —`docs/pendientes.md`,
+   unless `CLAUDE.md` names another place—. If the file doesn't exist, create it from
+   `assets/pendientes-template.md`. Each new entry takes the next `P<n>`, which is never reused, and
+   carries what the template says: where it came from, the evidence, what is known and what isn't,
+   and what **not** to do. In `Follow-ups` the line stays, with the id it was moved to at the end:
+   `→ P4`. Don't delete it: it is the region of whoever wrote it.
+2. **If the feature took backlog entries** (the `## Scope` of `requirements.md` names them), move
+   their state to `resolved` (`resuelto`) with the date. The closing commit's hash doesn't exist yet:
+   it is filled in with the feature's folder, which is enough to find it.
+3. **If the project uses a tracker instead of the file**, don't write it yourself: list the entries
+   to create, with their text ready, and let the person load them. Publishing to an external service
+   isn't done without their yes.
 
-En el backlog escribís solo **entradas nuevas** y el **estado** de las que esta feature tomó. El
-resto de cada entrada es de quien la escribió, igual que en `Pendientes`.
+In the backlog you write only **new entries** and the **state** of the ones this feature took. The
+rest of each entry belongs to whoever wrote it, just like in `Follow-ups`.
 
-## El commit de cierre
+## The closing commit
 
-Trae lo que las tareas no commitearon: los documentos del paso 7 (`e2e-tests-plan.md`,
-`e2e-test-report.md`), los specs de `end2end/`, `docs/pendientes.md` si lo tocaste, y los ajustes
-de configuración que hayan salido de este paso. **No reemplaza ni aplasta los commits por tarea** — cada uno tiene su id y su diff, y ese
-escalonamiento es lo que hace que `git log` sirva de registro. El mensaje de este nombra la feature,
-no una tarea.
+It brings what the tasks didn't commit: the step 7 documents (`e2e-tests-plan.md`,
+`e2e-test-report.md`), the `end2end/` specs, `docs/pendientes.md` if you touched it, and the
+configuration adjustments that came out of this step. **It doesn't replace or squash the per-task
+commits** — each one has its id and its diff, and that staggering is what makes `git log` work as a
+record. This one's message names the feature, not a task.
 
-**Si no quedó nada sin commitear, decilo y terminá.** No fabriques un commit vacío para tener uno: el
-valor de este paso es la corrida, no el commit. Un cierre legítimo puede consistir en «la higiene dio
-verde y no había nada pendiente de commitear».
+**If nothing was left uncommitted, say so and finish.** Don't fabricate an empty commit to have one:
+the value of this step is the run, not the commit. A legitimate closing may consist of "hygiene came
+out green and there was nothing pending to commit".
 
-## Lo que este paso no hace
+## What this step doesn't do
 
-- **No repara código ni tests.** Rutea a `implement-task`.
-- **No toca el plan.** Qué tareas existen y sus ids son del workflow `tasks-fanout`. Este paso mueve
-  `Estado` y escribe `Registro` y `Pendientes`, que son la región de quien implementa — y en este momento del ciclo,
-  quien implementa es esta sesión.
-- **No aprueba nada.** Si un documento del spec quedó sin aprobar, es un hallazgo para reportar, no
-  algo que se asiente acá.
-- **No decide que la feature está bien.** Decide que el repo está sano con ella adentro. Si se ve
-  como tenía que verse lo decide la persona, mirándola en el paso 2: este skill le da qué abrir y
-  contra qué compararlo, no el veredicto.
-- **No crea tareas.** Un hallazgo de la mirada que ningún criterio cubre va a `specify` y a
-  `planning-tasks`, no a una tarea inventada acá.
-- **No arregla lo que está en el backlog.** Lo registra y lo reconoce; lo resuelve la feature que
-  lo elija.
-- **No edita `CLAUDE.md`.** Si el contrato quedó mintiendo, lo arregla `harness-init` en modo
-  revisión.
+- **It doesn't repair code or tests.** It routes to `implement-task`.
+- **It doesn't touch the plan.** Which tasks exist and their ids belong to the `tasks-fanout`
+  workflow. This step moves `Status` and writes `Log` and `Follow-ups`, which are the region of
+  whoever implements — and at this moment of the cycle, whoever implements is this session.
+- **It doesn't approve anything.** If a spec document was left unapproved, it is a finding to
+  report, not something to record here.
+- **It doesn't decide the feature is good.** It decides the repo is healthy with it inside. Whether
+  it looks the way it had to look is decided by the person, looking at it in step 2: this skill gives
+  them what to open and what to compare it against, not the verdict.
+- **It doesn't create tasks.** A finding from the look that no criterion covers goes to `specify` and
+  `planning-tasks`, not to a task invented here.
+- **It doesn't fix what's in the backlog.** It records it and acknowledges it; the feature that
+  picks it resolves it.
+- **It doesn't edit `CLAUDE.md`.** If the contract was left lying, `harness-init` fixes it in review
+  mode.
 
-## Al terminar
+## When finished
 
-Con el commit hecho —o con la constancia de que no hacía falta— la feature está cerrada. Decilo,
-nombrá lo que quedó en `Pendientes` de `tasks.md` y las entradas `P<n>` que se sumaron al backlog,
-si hay algo, y parate. La feature siguiente
-arranca por el paso 1, con `brainstorming`.
+With the commit made —or with the record that it wasn't needed— the feature is closed. Say so, name
+what was left in the `Follow-ups` of `tasks.md` and the `P<n>` entries added to the backlog, if
+anything, and stop. The next feature starts at step 1, with `brainstorming`.
 
-## Archivos de este skill
+## This skill's files
 
-- `assets/pendientes-template.md` — estructura del backlog del proyecto, con sus reglas de dueño y
-  lector. Se copia a `docs/pendientes.md` la primera vez que una feature deja algo para otra.
+- `assets/pendientes-template.md` — structure of the project backlog, with its owner and reader
+  rules. It is copied to `docs/pendientes.md` the first time a feature leaves something for another.
+
+Keywords go in the project's language (see the glossary in `task-format`): in a Spanish project,
+`hecho`, `en curso`, `cumple`, `**Verificación previa (superada):**`, `## Pendientes` and the
+backlog's `resuelto`.
