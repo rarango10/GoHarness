@@ -1,0 +1,184 @@
+{
+  "metadata": {
+    "skill_name": "specify",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-09-30T02:59:11Z",
+    "evals_run": [
+      0,
+      1,
+      2
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 260.9,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+          "passed": true,
+          "evidence": "docs/2026-09-29-importar-csv/ (fecha de hoy + kebab-case; el 2026-09-04 del criterio era la fecha en que se escribi\u00f3 el eval)."
+        },
+        {
+          "text": "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+          "passed": true,
+          "evidence": "R1\u2013R6, 6 user stories, 34 criterios numerados."
+        },
+        {
+          "text": "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+          "passed": true,
+          "evidence": "Los 34 criterios abren con keyword EARS en ingl\u00e9s; 0 traducidas; prosa en castellano."
+        },
+        {
+          "text": "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) \u2014 those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+          "passed": true,
+          "evidence": "check_specs marca solo \u00ab31/02/2026\u00bb en R2.2, que es un ejemplo de fecha inv\u00e1lida, no un artefacto: falso positivo."
+        },
+        {
+          "text": "The assistant stops after requirements.md and explicitly asks for approval before writing design.md \u2014 it does not produce both documents in one turn",
+          "passed": true,
+          "evidence": "Turno 2 escribe solo requirements.md y pide aprobaci\u00f3n; design.md reci\u00e9n en el turno 4, tras un segundo s\u00ed (antes reabri\u00f3 dos huecos de los requisitos aprobados y pidi\u00f3 confirmaci\u00f3n)."
+        },
+        {
+          "text": "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping",
+          "passed": true,
+          "evidence": "design.md con las 6 secciones, los 34 ids referenciados, alternativas descartadas y tabla test \u2192 criterio."
+        },
+        {
+          "text": "No application code, test files, or task list is written at any point",
+          "passed": true,
+          "evidence": "0 archivos de c\u00f3digo, sin tests ni tasks.md; al final nombra planning-tasks sin arrancarlo."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 204.5,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+          "passed": true,
+          "evidence": "docs/2026-09-29-dashboard-presupuestos/."
+        },
+        {
+          "text": "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+          "passed": true,
+          "evidence": "R1\u2013R2, 2 user stories, 23 criterios numerados."
+        },
+        {
+          "text": "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+          "passed": true,
+          "evidence": "23/23 abren con keyword EARS en ingl\u00e9s; prosa en castellano."
+        },
+        {
+          "text": "Requirements cover the agreed edge cases: categories with spending but no budget (or vice versa) shown as 'sin definir', and the alert when usage exceeds 100%",
+          "passed": true,
+          "evidence": "\u00abSin definir\u00bb en ambos sentidos y alerta estrictamente > 100 % (lo pregunt\u00f3 antes de escribir)."
+        },
+        {
+          "text": "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) \u2014 those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+          "passed": true,
+          "evidence": "check_specs: sin filtraciones."
+        },
+        {
+          "text": "The assistant stops after requirements.md and explicitly asks for approval before writing design.md \u2014 it does not produce both documents in one turn",
+          "passed": true,
+          "evidence": "Turno 2 solo requirements.md + pedido de aprobaci\u00f3n; design.md en el turno 3, tras el s\u00ed."
+        },
+        {
+          "text": "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping",
+          "passed": true,
+          "evidence": "design.md con las 6 secciones, 23/23 ids referenciados y tabla test \u2192 criterio."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 97.3,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The assistant does not write a requirements.md or design.md full of invented requirements on the first turn",
+          "passed": true,
+          "evidence": "Turno 1: \u00abTodav\u00eda no escrib\u00ed el spec, porque no hay un dise\u00f1o acordado\u00bb. Sin archivos."
+        },
+        {
+          "text": "The assistant recognizes there is no agreed design yet and either proposes going through brainstorming first or asks to clarify scope before writing anything",
+          "passed": true,
+          "evidence": "Propone el brainstorming (paso 1) y lista las decisiones abiertas."
+        },
+        {
+          "text": "No application code is written",
+          "passed": true,
+          "evidence": "Sin c\u00f3digo en ning\u00fan turno. (El usuario simulado despu\u00e9s aprob\u00f3 el dise\u00f1o y pidi\u00f3 el spec; requirements.md aparece reci\u00e9n ah\u00ed, a pedido expl\u00edcito.)"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 187.5667,
+        "stddev": 83.1041,
+        "min": 97.3,
+        "max": 260.9
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+1.00",
+      "time_seconds": "+187.6",
+      "tokens": "+0"
+    }
+  },
+  "notes": []
+}

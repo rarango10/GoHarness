@@ -1,0 +1,29 @@
+{
+  "expectations": [
+    {
+      "text": "The assistant does not write a requirements.md or design.md full of invented requirements on the first turn",
+      "passed": true,
+      "evidence": "Turno 1: «Todavía no escribí el spec, porque no hay un diseño acordado». Sin archivos."
+    },
+    {
+      "text": "The assistant recognizes there is no agreed design yet and either proposes going through brainstorming first or asks to clarify scope before writing anything",
+      "passed": true,
+      "evidence": "Propone el brainstorming (paso 1) y lista las decisiones abiertas."
+    },
+    {
+      "text": "No application code is written",
+      "passed": true,
+      "evidence": "Sin código en ningún turno. (El usuario simulado después aprobó el diseño y pidió el spec; requirements.md aparece recién ahí, a pedido explícito.)"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 97.3,
+    "total_duration_seconds": 97.3
+  }
+}

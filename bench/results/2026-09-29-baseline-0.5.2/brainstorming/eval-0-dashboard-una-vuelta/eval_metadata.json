@@ -1,0 +1,12 @@
+{
+  "eval_id": 0,
+  "eval_name": "dashboard-una-vuelta",
+  "prompt": "Quiero que la app tenga un dashboard donde vea cuánto llevo gastado por categoría este mes comparado con mi presupuesto.",
+  "assertions": [
+    "The assistant does not write or propose actual application code implementing the dashboard in its turn-1 response",
+    "The assistant does not create a spec file under docs/ in this turn",
+    "The assistant asks at least one clarifying question about scope, data source, or success criteria before proposing a full design",
+    "The assistant's response ends by explicitly asking for the user's confirmation/approval rather than assuming it and moving on",
+    "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "eval_id": 0,
+  "eval_name": "import-csv-dos-fases",
+  "prompt": "Ya quedó aprobado del brainstorm el diseño para importar movimientos del banco: parser de CSV de formato fijo (fecha, descripción, monto) de un solo banco, motor de reglas por palabra clave sobre la descripción con las categorías Comida, Transporte, Servicios, Ocio, Salud y Otros, los movimientos que no matchean quedan como \"Sin categoría\", detección de duplicados por fecha+descripción+monto, y todo se corre como comando de CLI. Escribamos el spec.",
+  "assertions": [
+    "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+    "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+    "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+    "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) — those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+    "The assistant stops after requirements.md and explicitly asks for approval before writing design.md — it does not produce both documents in one turn",
+    "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping",
+    "No application code, test files, or task list is written at any point"
+  ]
+}

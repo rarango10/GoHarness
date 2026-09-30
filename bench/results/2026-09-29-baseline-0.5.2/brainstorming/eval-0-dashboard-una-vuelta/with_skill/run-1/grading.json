@@ -1,0 +1,39 @@
+{
+  "expectations": [
+    {
+      "text": "The assistant does not write or propose actual application code implementing the dashboard in its turn-1 response",
+      "passed": true,
+      "evidence": "Solo lee archivos; la respuesta describe opciones sin código."
+    },
+    {
+      "text": "The assistant does not create a spec file under docs/ in this turn",
+      "passed": true,
+      "evidence": "git status vacío: no creó nada en docs/."
+    },
+    {
+      "text": "The assistant asks at least one clarifying question about scope, data source, or success criteria before proposing a full design",
+      "passed": true,
+      "evidence": "Pregunta qué se imagina con «dashboard» (terminal, web u otra) antes de cualquier diseño."
+    },
+    {
+      "text": "The assistant's response ends by explicitly asking for the user's confirmation/approval rather than assuming it and moving on",
+      "passed": true,
+      "evidence": "Termina con una pregunta de A/B/C y «decidilo vos»; no asume. Es una pregunta de alcance, no un pedido formal de aprobación, pero no avanza sola."
+    },
+    {
+      "text": "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once",
+      "passed": true,
+      "evidence": "Una sola pregunta, con opciones."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 19.6,
+    "total_duration_seconds": 19.6
+  }
+}

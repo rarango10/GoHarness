@@ -1,0 +1,33 @@
+
+216eade Design importar-csv: aprobado
+
+ docs/2026-09-29-importar-csv/design.md | 246 +++++++++++++++++++++++++++++++++
+ 1 file changed, 246 insertions(+)
+
+445eed8 Requirements importar-csv: aclara R2.3, agrega R1.9 y R1.10
+
+ docs/2026-09-29-importar-csv/requirements.md | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+447f0e0 Requirements importar-csv: aprobado
+
+ docs/2026-09-29-importar-csv/requirements.md | 170 +++++++++++++++++++++++++++
+ 1 file changed, 170 insertions(+)
+
+20d1548 Contrato del proyecto (harness-init)
+
+ CLAUDE.md | 138 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 138 insertions(+)
+
+9ce607a Registro de movimientos: agregar y listar por mes
+
+ .gitignore               |    3 +
+ package-lock.json        | 1475 ++++++++++++++++++++++++++++++++++++++++++++++
+ package.json             |   17 +
+ src/almacen.ts           |   13 +
+ src/cli.ts               |   23 +
+ src/movimientos.ts       |   20 +
+ test/movimientos.test.ts |   23 +
+ tsconfig.json            |   11 +
+ vitest.config.ts         |   22 +
+ 9 files changed, 1607 insertions(+)

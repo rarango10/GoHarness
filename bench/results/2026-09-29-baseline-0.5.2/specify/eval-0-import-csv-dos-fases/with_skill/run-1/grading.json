@@ -1,0 +1,49 @@
+{
+  "expectations": [
+    {
+      "text": "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+      "passed": true,
+      "evidence": "docs/2026-09-29-importar-csv/ (fecha de hoy + kebab-case; el 2026-09-04 del criterio era la fecha en que se escribió el eval)."
+    },
+    {
+      "text": "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+      "passed": true,
+      "evidence": "R1–R6, 6 user stories, 34 criterios numerados."
+    },
+    {
+      "text": "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+      "passed": true,
+      "evidence": "Los 34 criterios abren con keyword EARS en inglés; 0 traducidas; prosa en castellano."
+    },
+    {
+      "text": "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) — those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+      "passed": true,
+      "evidence": "check_specs marca solo «31/02/2026» en R2.2, que es un ejemplo de fecha inválida, no un artefacto: falso positivo."
+    },
+    {
+      "text": "The assistant stops after requirements.md and explicitly asks for approval before writing design.md — it does not produce both documents in one turn",
+      "passed": true,
+      "evidence": "Turno 2 escribe solo requirements.md y pide aprobación; design.md recién en el turno 4, tras un segundo sí (antes reabrió dos huecos de los requisitos aprobados y pidió confirmación)."
+    },
+    {
+      "text": "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping",
+      "passed": true,
+      "evidence": "design.md con las 6 secciones, los 34 ids referenciados, alternativas descartadas y tabla test → criterio."
+    },
+    {
+      "text": "No application code, test files, or task list is written at any point",
+      "passed": true,
+      "evidence": "0 archivos de código, sin tests ni tasks.md; al final nombra planning-tasks sin arrancarlo."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 260.9,
+    "total_duration_seconds": 260.9
+  }
+}

@@ -1,0 +1,2 @@
+?? docs/2026-09-29-alertas-presupuesto/requirements.md
+?? docs/pendientes.md

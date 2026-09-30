@@ -1,0 +1,2 @@
+?? docs/2026-09-29-resumen-presupuesto/requirements.md
+?? docs/pendientes.md

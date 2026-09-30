@@ -1,0 +1,39 @@
+{
+  "expectations": [
+    {
+      "text": "The assistant does not write or propose actual application code (e.g. a CSV parser or categorization algorithm) in its turn-1 response",
+      "passed": true,
+      "evidence": "Sin parser ni algoritmo de categorización."
+    },
+    {
+      "text": "The assistant does not create a spec file under docs/ in this turn",
+      "passed": true,
+      "evidence": "git status vacío."
+    },
+    {
+      "text": "The assistant asks about scope/format details (e.g. CSV format, bank, categorization rules) and/or presents approaches with trade-offs for auto-categorization before finalizing a design",
+      "passed": true,
+      "evidence": "Pregunta por el formato del CSV antes de diseñar."
+    },
+    {
+      "text": "The assistant's response ends by explicitly asking for approval before proceeding, rather than proceeding directly into an implementation plan",
+      "passed": true,
+      "evidence": "Termina esperando la respuesta sobre el CSV."
+    },
+    {
+      "text": "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once",
+      "passed": false,
+      "evidence": "Anuncia «de a una», pero la primera pregunta tiene cuatro sub-preguntas (a: bancos, b: separador, c: fecha, d: montos). Además lista de antemano otras cinco decisiones que va a preguntar."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  },
+  "timing": {
+    "executor_duration_seconds": 19.4,
+    "total_duration_seconds": 19.4
+  }
+}

@@ -1,0 +1,28 @@
+
+74ccbf4 Spec importar-movimientos: design aprobado
+
+ docs/2026-09-29-importar-movimientos/design.md | 236 +++++++++++++++++++++++++
+ 1 file changed, 236 insertions(+)
+
+3065e8f Spec importar-movimientos: requirements aprobado
+
+ .../requirements.md                                | 135 +++++++++++++++++++++
+ 1 file changed, 135 insertions(+)
+
+fe8105a Contrato del proyecto (harness-init)
+
+ CLAUDE.md | 138 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 138 insertions(+)
+
+a58b7d2 Registro de movimientos: agregar y listar por mes
+
+ .gitignore               |    3 +
+ package-lock.json        | 1475 ++++++++++++++++++++++++++++++++++++++++++++++
+ package.json             |   17 +
+ src/almacen.ts           |   13 +
+ src/cli.ts               |   23 +
+ src/movimientos.ts       |   20 +
+ test/movimientos.test.ts |   23 +
+ tsconfig.json            |   11 +
+ vitest.config.ts         |   22 +
+ 9 files changed, 1607 insertions(+)

@@ -1,0 +1,12 @@
+{
+  "eval_id": 2,
+  "eval_name": "csv-una-vuelta",
+  "prompt": "Necesito poder importar mis movimientos bancarios desde un CSV y que la app intente categorizarlos automáticamente.",
+  "assertions": [
+    "The assistant does not write or propose actual application code (e.g. a CSV parser or categorization algorithm) in its turn-1 response",
+    "The assistant does not create a spec file under docs/ in this turn",
+    "The assistant asks about scope/format details (e.g. CSV format, bank, categorization rules) and/or presents approaches with trade-offs for auto-categorization before finalizing a design",
+    "The assistant's response ends by explicitly asking for approval before proceeding, rather than proceeding directly into an implementation plan",
+    "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once"
+  ]
+}

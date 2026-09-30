@@ -1,0 +1,49 @@
+{
+  "expectations": [
+    {
+      "text": "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+      "passed": true,
+      "evidence": "docs/2026-09-29-dashboard-presupuestos/."
+    },
+    {
+      "text": "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+      "passed": true,
+      "evidence": "R1–R2, 2 user stories, 23 criterios numerados."
+    },
+    {
+      "text": "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+      "passed": true,
+      "evidence": "23/23 abren con keyword EARS en inglés; prosa en castellano."
+    },
+    {
+      "text": "Requirements cover the agreed edge cases: categories with spending but no budget (or vice versa) shown as 'sin definir', and the alert when usage exceeds 100%",
+      "passed": true,
+      "evidence": "«Sin definir» en ambos sentidos y alerta estrictamente > 100 % (lo preguntó antes de escribir)."
+    },
+    {
+      "text": "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) — those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+      "passed": true,
+      "evidence": "check_specs: sin filtraciones."
+    },
+    {
+      "text": "The assistant stops after requirements.md and explicitly asks for approval before writing design.md — it does not produce both documents in one turn",
+      "passed": true,
+      "evidence": "Turno 2 solo requirements.md + pedido de aprobación; design.md en el turno 3, tras el sí."
+    },
+    {
+      "text": "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping",
+      "passed": true,
+      "evidence": "design.md con las 6 secciones, 23/23 ids referenciados y tabla test → criterio."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 204.5,
+    "total_duration_seconds": 204.5
+  }
+}

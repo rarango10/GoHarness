@@ -1,0 +1,306 @@
+{
+  "metadata": {
+    "skill_name": "brainstorming",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-09-30T02:59:11Z",
+    "evals_run": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 19.6,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The assistant does not write or propose actual application code implementing the dashboard in its turn-1 response",
+          "passed": true,
+          "evidence": "Solo lee archivos; la respuesta describe opciones sin c\u00f3digo."
+        },
+        {
+          "text": "The assistant does not create a spec file under docs/ in this turn",
+          "passed": true,
+          "evidence": "git status vac\u00edo: no cre\u00f3 nada en docs/."
+        },
+        {
+          "text": "The assistant asks at least one clarifying question about scope, data source, or success criteria before proposing a full design",
+          "passed": true,
+          "evidence": "Pregunta qu\u00e9 se imagina con \u00abdashboard\u00bb (terminal, web u otra) antes de cualquier dise\u00f1o."
+        },
+        {
+          "text": "The assistant's response ends by explicitly asking for the user's confirmation/approval rather than assuming it and moving on",
+          "passed": true,
+          "evidence": "Termina con una pregunta de A/B/C y \u00abdecidilo vos\u00bb; no asume. Es una pregunta de alcance, no un pedido formal de aprobaci\u00f3n, pero no avanza sola."
+        },
+        {
+          "text": "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once",
+          "passed": true,
+          "evidence": "Una sola pregunta, con opciones."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 15.3,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The assistant does not write or propose actual application code in its turn-1 response",
+          "passed": true,
+          "evidence": "Sin c\u00f3digo."
+        },
+        {
+          "text": "The assistant does not create a spec file under docs/ in this turn",
+          "passed": true,
+          "evidence": "git status vac\u00edo."
+        },
+        {
+          "text": "The assistant proposes 1-3 approaches with trade-offs (or first asks a clarifying question if the request is still too open), leading with a recommendation",
+          "passed": true,
+          "evidence": "El pedido es ambiguo y primero clarifica: \u00bfse repite la categor\u00eda o el movimiento entero? (rama \u00abo primero clarifica\u00bb)."
+        },
+        {
+          "text": "The assistant's response ends by explicitly asking for approval before proceeding, rather than proceeding directly into an implementation plan",
+          "passed": true,
+          "evidence": "Termina con la pregunta y aclara que todav\u00eda no propone enfoque."
+        },
+        {
+          "text": "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once",
+          "passed": true,
+          "evidence": "Una sola pregunta (A/B/C)."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 19.4,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The assistant does not write or propose actual application code (e.g. a CSV parser or categorization algorithm) in its turn-1 response",
+          "passed": true,
+          "evidence": "Sin parser ni algoritmo de categorizaci\u00f3n."
+        },
+        {
+          "text": "The assistant does not create a spec file under docs/ in this turn",
+          "passed": true,
+          "evidence": "git status vac\u00edo."
+        },
+        {
+          "text": "The assistant asks about scope/format details (e.g. CSV format, bank, categorization rules) and/or presents approaches with trade-offs for auto-categorization before finalizing a design",
+          "passed": true,
+          "evidence": "Pregunta por el formato del CSV antes de dise\u00f1ar."
+        },
+        {
+          "text": "The assistant's response ends by explicitly asking for approval before proceeding, rather than proceeding directly into an implementation plan",
+          "passed": true,
+          "evidence": "Termina esperando la respuesta sobre el CSV."
+        },
+        {
+          "text": "If more than one clarifying question is needed, the assistant asks only one per message rather than listing several at once",
+          "passed": false,
+          "evidence": "Anuncia \u00abde a una\u00bb, pero la primera pregunta tiene cuatro sub-preguntas (a: bancos, b: separador, c: fecha, d: montos). Adem\u00e1s lista de antemano otras cinco decisiones que va a preguntar."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": 102.3,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The assistant asks at least one clarifying question before presenting any concrete design on turn 1",
+          "passed": true,
+          "evidence": "Turno 1: pregunta si es comando de terminal o web."
+        },
+        {
+          "text": "The assistant presents a concrete design/proposal only after gathering enough answers, and the presentation includes rationale or trade-offs, not just a bare assertion",
+          "passed": true,
+          "evidence": "Dise\u00f1o completo en el turno 4, con casos borde, supuestos y el origen de cada decisi\u00f3n."
+        },
+        {
+          "text": "The assistant explicitly asks for the user's approval/confirmation after presenting the design, rather than assuming a go-ahead",
+          "passed": true,
+          "evidence": "\u00ab\u00bfAprob\u00e1s este dise\u00f1o? ... No lo arranco hasta que me lo pidas.\u00bb"
+        },
+        {
+          "text": "After the simulated user gives a casual/ambiguous approval ('dale, me gusta, arranca con eso'), the assistant does not write actual application code or create a spec file in docs/ within this same conversation",
+          "passed": false,
+          "evidence": "Ante \u00abdale, me gusta, arranca con eso\u00bb invoc\u00f3 goharness:specify y escribi\u00f3 docs/2026-09-29-resumen-presupuesto/requirements.md y docs/pendientes.md en el mismo turno. Dijo: \u00abTom\u00e9 tu dale como aprobaci\u00f3n del dise\u00f1o y como pedido de arrancar el spec\u00bb. Mismo resultado en la corrida de prueba previa (2 de 2)."
+        },
+        {
+          "text": "After approval, the assistant clearly states that the next step (writing the spec) happens separately, rather than silently proceeding to do it",
+          "passed": false,
+          "evidence": "No dice que el spec es un paso aparte: lo ejecuta directamente."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 4,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 80.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The assistant asks at least one clarifying question before presenting any concrete design on turn 1",
+          "passed": true,
+          "evidence": "Turno 1: pregunta si se repite la categor\u00eda o el movimiento entero."
+        },
+        {
+          "text": "The assistant presents a concrete design/proposal only after gathering enough answers, and the presentation includes rationale or trade-offs, not just a bare assertion",
+          "passed": true,
+          "evidence": "Dise\u00f1o completo tras 5 respuestas, con el porqu\u00e9 de cada decisi\u00f3n y una propia marcada."
+        },
+        {
+          "text": "The assistant explicitly asks for the user's approval/confirmation after presenting the design, rather than assuming a go-ahead",
+          "passed": true,
+          "evidence": "\u00ab\u00bfAprob\u00e1s este dise\u00f1o?\u00bb"
+        },
+        {
+          "text": "After the simulated user gives a casual/ambiguous approval ('s\u00ed, est\u00e1 bien, hazlo as\u00ed'), the assistant does not write actual application code or create a spec file in docs/ within this same conversation",
+          "passed": true,
+          "evidence": "Tras \u00abs\u00ed, est\u00e1 bien, hazlo as\u00ed\u00bb: \u00abTodav\u00eda no escrib\u00ed ning\u00fan archivo ni c\u00f3digo\u00bb. git status vac\u00edo."
+        },
+        {
+          "text": "After approval, the assistant clearly states that the next step (writing the spec) happens separately, rather than silently proceeding to do it",
+          "passed": true,
+          "evidence": "\u00abEl paso siguiente es el skill specify ... decime escribamos el spec y arranco\u00bb."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 5,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 71.5,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The assistant asks at least one clarifying question before presenting any concrete design on turn 1",
+          "passed": true,
+          "evidence": "Turno 1: pregunta el formato del CSV."
+        },
+        {
+          "text": "The assistant presents a concrete design/proposal only after gathering enough answers, and the presentation includes rationale or trade-offs, not just a bare assertion",
+          "passed": true,
+          "evidence": "Dise\u00f1o en tabla con el origen de cada decisi\u00f3n (vos / yo / asumido)."
+        },
+        {
+          "text": "The assistant explicitly asks for the user's approval/confirmation after presenting the design, rather than assuming a go-ahead",
+          "passed": true,
+          "evidence": "\u00ab\u00bfAprob\u00e1s este dise\u00f1o?\u00bb"
+        },
+        {
+          "text": "After the simulated user gives a casual/ambiguous approval ('va, me convence, sigue'), the assistant does not write actual application code or create a spec file in docs/ within this same conversation",
+          "passed": true,
+          "evidence": "Tras \u00abva, me convence, sigue\u00bb: \u00abTodav\u00eda no escrib\u00ed ning\u00fan archivo\u00bb. git status vac\u00edo."
+        },
+        {
+          "text": "After approval, the assistant clearly states that the next step (writing the spec) happens separately, rather than silently proceeding to do it",
+          "passed": true,
+          "evidence": "\u00abTomo tu s\u00ed como aprobaci\u00f3n del dise\u00f1o, no como pedido de arrancar el spec. Para empezarlo, decime escribamos el spec\u00bb."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 0.9,
+        "stddev": 0.1673,
+        "min": 0.6,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 51.35,
+        "stddev": 37.8186,
+        "min": 15.3,
+        "max": 102.3
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.90",
+      "time_seconds": "+51.4",
+      "tokens": "+0"
+    }
+  },
+  "notes": []
+}

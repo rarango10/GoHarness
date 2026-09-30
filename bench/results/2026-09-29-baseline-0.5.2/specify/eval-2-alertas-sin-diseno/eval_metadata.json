@@ -1,0 +1,10 @@
+{
+  "eval_id": 2,
+  "eval_name": "alertas-sin-diseno",
+  "prompt": "che, hagamos el spec de las alertas de presupuesto",
+  "assertions": [
+    "The assistant does not write a requirements.md or design.md full of invented requirements on the first turn",
+    "The assistant recognizes there is no agreed design yet and either proposes going through brainstorming first or asks to clarify scope before writing anything",
+    "No application code is written"
+  ]
+}

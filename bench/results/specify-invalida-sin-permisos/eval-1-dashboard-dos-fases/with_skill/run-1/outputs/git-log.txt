@@ -1,0 +1,33 @@
+
+9172ac3 Design dashboard-presupuesto: aprobado
+
+ docs/2026-09-29-dashboard-presupuesto/design.md | 247 ++++++++++++++++++++++++
+ 1 file changed, 247 insertions(+)
+
+322cf6d Enmienda dashboard-presupuesto: R1.6, R1.7
+
+ docs/2026-09-29-dashboard-presupuesto/requirements.md | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+2772b7e Requirements dashboard-presupuesto: aprobado
+
+ .../requirements.md                                | 110 +++++++++++++++++++++
+ 1 file changed, 110 insertions(+)
+
+e4a6786 Contrato del proyecto (harness-init)
+
+ CLAUDE.md | 138 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 138 insertions(+)
+
+947ca55 Registro de movimientos: agregar y listar por mes
+
+ .gitignore               |    3 +
+ package-lock.json        | 1475 ++++++++++++++++++++++++++++++++++++++++++++++
+ package.json             |   17 +
+ src/almacen.ts           |   13 +
+ src/cli.ts               |   23 +
+ src/movimientos.ts       |   20 +
+ test/movimientos.test.ts |   23 +
+ tsconfig.json            |   11 +
+ vitest.config.ts         |   22 +
+ 9 files changed, 1607 insertions(+)

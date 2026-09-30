@@ -1,0 +1,14 @@
+{
+  "eval_id": 1,
+  "eval_name": "dashboard-dos-fases",
+  "prompt": "Del brainstorm quedó aprobado esto para el dashboard: un comando de CLI que para un mes dado muestra por categoría gastado, presupuestado, % usado y una alerta si pasa el 100%; las categorías que tienen gasto pero no presupuesto (o al revés) se muestran igual marcadas como \"sin definir\"; el cálculo va en una función pura testeable, separada de la impresión. Pasemos a la spec.",
+  "assertions": [
+    "Creates requirements.md inside a docs/ folder named with today's date prefix and a kebab-case feature name (docs/2026-09-04-<feature>/)",
+    "requirements.md has numbered requirements (R1, R2...) each with a user story and numbered acceptance criteria",
+    "Acceptance criteria use EARS keywords in English (WHEN / IF-THEN / WHILE / WHERE / THE SYSTEM SHALL) with Spanish prose, and each states a single observable, testable behavior",
+    "Requirements cover the agreed edge cases: categories with spending but no budget (or vice versa) shown as 'sin definir', and the alert when usage exceeds 100%",
+    "No acceptance criterion names a concrete implementation artifact (file path, filename, function call or library) — those belong in Supuestos or in design.md, unless the exact value is itself the requirement and the criterion says what depends on it. Checkable with evals/check_specs.py",
+    "The assistant stops after requirements.md and explicitly asks for approval before writing design.md — it does not produce both documents in one turn",
+    "design.md covers architecture, data flow, interfaces, data models, error handling and testing strategy, and traces back to requirement ids (e.g. R1.2), including a test-to-criterion mapping"
+  ]
+}
