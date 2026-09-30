@@ -21,10 +21,10 @@ planner that architecture eliminates. If the workflow isn't available, the right
 it, not to improvise the plan.
 
 What follows are the file's **format rules**, not a procedure. The template is
-`assets/tasks-template.md`, in this same skill.
+`assets/<lang>/tasks-template.md`, in this same skill.
 
 1. **The file is `tasks.md`**, in the spec folder (`docs/YYYY-MM-DD-<feature>/`), following
-   `assets/tasks-template.md`.
+   `assets/<lang>/tasks-template.md`.
 2. **One task, one TDD cycle**: failing test → implement → passing test, of a size that can be
    finished in one sitting. If a task needs three different tests to make sense, it is probably
    three tasks.
@@ -102,4 +102,6 @@ the `Pendientes` section is `Follow-ups` so it doesn't clash with a task's `pend
 
 ## This skill's files
 
-- `assets/tasks-template.md` — structure of `tasks.md` (plan + journal + follow-ups)
+The templates come twice, in `assets/en/` and `assets/es/`: `<lang>` is the project's language.
+
+- `assets/<lang>/tasks-template.md` — structure of `tasks.md` (plan + journal + follow-ups)

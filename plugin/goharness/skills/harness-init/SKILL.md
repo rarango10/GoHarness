@@ -66,7 +66,7 @@ Look at five things:
    dependency is installed** — run the doctor from the section below, don't inspect it by eye.
 5. **Every slot of the template exists in the contract, with its mark.** The template marks the
    slots that the cycle's steps read with an invisible comment, `<!-- ranura: auditor -->`. Look
-   for every mark of `assets/CLAUDE.template.md` in the project's `CLAUDE.md`: if one is missing,
+   for every mark of `assets/<lang>/CLAUDE.template.md` in the project's `CLAUDE.md`: if one is missing,
    that slot doesn't exist yet —the template added it after the contract was written— and it is
    proposed, with its mark, like any other fix. If the slot is there but without the mark (written
    in another form, for example a table), only the mark is proposed: the project's wording is not
@@ -129,7 +129,7 @@ rule of the contract and from then on nobody questions it again.
 
 ## Writing the file
 
-Copy `assets/CLAUDE.template.md` to `CLAUDE.md` at the project root and fill the slots with what
+Copy `assets/<lang>/CLAUDE.template.md` to `CLAUDE.md` at the project root and fill the slots with what
 came out of the interview. The cycle table and the harness's rules **come already written**: they
 are the method's memory, not the project's decisions, and they are not reopened on every init.
 **The `<!-- ranura: … -->` marks stay**: they are invisible when reading, and they are what lets a
@@ -222,5 +222,7 @@ Say in three lines what was left: the agreed stack, the two commands, and which 
 
 ## This skill's files
 
-- `assets/CLAUDE.template.md` — the contract template, with its slots.
+The templates come twice, in `assets/en/` and `assets/es/`: `<lang>` is the project's language.
+
+- `assets/<lang>/CLAUDE.template.md` — the contract template, with its slots.
 - `assets/stacks/typescript-node/` — the configs that encode the harness's memory for that stack.

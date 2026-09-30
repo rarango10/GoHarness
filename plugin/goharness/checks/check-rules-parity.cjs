@@ -42,7 +42,7 @@ const ROOT = path.resolve(__dirname, '..', '..', '..');
 const SOURCES = {
   template: {
     label: 'CLAUDE.template.md (harness-init)',
-    file: path.join(ROOT, 'plugin/goharness/skills/harness-init/assets/CLAUDE.template.md'),
+    file: path.join(ROOT, 'plugin/goharness/skills/harness-init/assets/es/CLAUDE.template.md'),
   },
   router: {
     label: 'SKILL.md (router)',

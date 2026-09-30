@@ -67,7 +67,7 @@ tests — which is exactly what a project working with TDD needs.
 1. **Pick the folder**: `docs/YYYY-MM-DD-<feature-in-kebab-case>/`, with today's date and a short,
    descriptive name (`docs/2026-09-04-import-csv/`). One focused spec per feature, not a monolithic
    document.
-2. **Write `requirements.md`** following `assets/requirements-template.md`.
+2. **Write `requirements.md`** following `assets/<lang>/requirements-template.md`.
 3. **Write the criteria in EARS**: prose in the project's language, keywords in English (`WHEN`,
    `IF`/`THEN`, `WHILE`, `WHERE`, `THE SYSTEM SHALL`). They work as formal vocabulary, like SQL's
    keywords. The patterns, examples and typical mistakes are in `references/ears-patterns.md` —
@@ -126,7 +126,7 @@ add it to `requirements.md` with two precautions:
 
 Then:
 
-1. **Write `design.md`** in the same folder, following `assets/design-template.md`.
+1. **Write `design.md`** in the same folder, following `assets/<lang>/design-template.md`.
 2. **Reference the requirements**: every design decision exists to satisfy something. Link sections
    with the ids (`R1.2`) and, in the testing strategy, map which test covers which criterion.
    **Separate state criteria from effect criteria**: if the feature has client-side JavaScript, the
@@ -233,8 +233,10 @@ them to `resolved` when closing.
 
 ## This skill's files
 
-- `assets/requirements-template.md` — structure of `requirements.md`
-- `assets/design-template.md` — structure of `design.md`
+The templates come twice, in `assets/en/` and `assets/es/`: `<lang>` is the project's language.
+
+- `assets/<lang>/requirements-template.md` — structure of `requirements.md`
+- `assets/<lang>/design-template.md` — structure of `design.md`
 - `references/ears-patterns.md` — the 5 EARS patterns, examples and typical mistakes
 
 Keywords, section titles and the header's states go in the project's language: in a Spanish

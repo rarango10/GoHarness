@@ -15,7 +15,7 @@ you did, the last one to save would overwrite the others. Your output is JSON, a
 agent applies it afterwards.
 
 You have the `task-format` skill preloaded, which defines the structure of `tasks.md`
-(`assets/tasks-template.md`): one task = one complete TDD cycle, numbering that is never reused,
+(`assets/<lang>/tasks-template.md`): one task = one complete TDD cycle, numbering that is never reused,
 two-way criterion↔task traceability, and a journal that is filled in during implementation, not when
 planning.
 

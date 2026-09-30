@@ -85,7 +85,7 @@ many tasks are `done`.
 
 ## Phase 2 — The e2e test plan
 
-Write `e2e-tests-plan.md` in the spec folder, following `assets/e2e-tests-plan-template.md`.
+Write `e2e-tests-plan.md` in the spec folder, following `assets/<lang>/e2e-tests-plan-template.md`.
 
 **There are exactly three cases: one happy path and two failure cases.** Not four because you found
 another interesting flow, nor two because the third looked similar. The number is fixed on purpose:
@@ -170,7 +170,9 @@ leaves the loop on purpose.
 
 ## This skill's files
 
-- `assets/e2e-tests-plan-template.md` — structure of `e2e-tests-plan.md`
+The templates come twice, in `assets/en/` and `assets/es/`: `<lang>` is the project's language.
+
+- `assets/<lang>/e2e-tests-plan-template.md` — structure of `e2e-tests-plan.md`
 - `scripts/e2e-doctor.cjs` — precondition 4: dependency and browser installed. `harness-init` also
   invokes it, at the end of step 0 in a project with a navigable surface.
 

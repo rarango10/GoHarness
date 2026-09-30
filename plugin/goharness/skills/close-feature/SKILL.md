@@ -181,7 +181,7 @@ the closing commit:
 
 1. **Move each `[backlog]` line of `## Follow-ups`** to the project backlog —`docs/pendientes.md`,
    unless `CLAUDE.md` names another place—. If the file doesn't exist, create it from
-   `assets/pendientes-template.md`. Each new entry takes the next `P<n>`, which is never reused, and
+   `assets/<lang>/pendientes-template.md`. Each new entry takes the next `P<n>`, which is never reused, and
    carries what the template says: where it came from, the evidence, what is known and what isn't,
    and what **not** to do. In `Follow-ups` the line stays, with the id it was moved to at the end:
    `→ P4`. Don't delete it: it is the region of whoever wrote it.
@@ -233,7 +233,9 @@ anything, and stop. The next feature starts at step 1, with `brainstorming`.
 
 ## This skill's files
 
-- `assets/pendientes-template.md` — structure of the project backlog, with its owner and reader
+The templates come twice, in `assets/en/` and `assets/es/`: `<lang>` is the project's language.
+
+- `assets/<lang>/pendientes-template.md` — structure of the project backlog, with its owner and reader
   rules. It is copied to `docs/pendientes.md` the first time a feature leaves something for another.
 
 Keywords go in the project's language (see the glossary in `task-format`): in a Spanish project,

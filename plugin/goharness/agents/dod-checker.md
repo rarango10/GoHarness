@@ -65,7 +65,7 @@ claims of results, not about your own configuration.
 1. **Locate the task.** Its row in the Plan table of `tasks.md` and its section of the journal:
    `Goal`, `Covers` and `First test (red)` (`Objetivo`, `Cubre` and `Primer test (rojo)` in a
    Spanish project). You have the `task-format` skill preloaded, which defines that structure in
-   `assets/tasks-template.md`.
+   `assets/<lang>/tasks-template.md`.
 
 2. **Run the verification, once.** The commands of `CLAUDE.md`. Transcribe the literal result —pass
    or fail, and how many tests— without over-summarizing. If they don't run, go to "When the

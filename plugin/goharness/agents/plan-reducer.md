@@ -16,7 +16,7 @@ afterwards. That separation is what lets the reviewers run in parallel without s
 other: if you wrote too, we'd be back to having two writers on the same file.
 
 You have the `task-format` skill preloaded, which defines the structure of `tasks.md`
-(`assets/tasks-template.md`): one task = one complete TDD cycle, numbering that is never reused,
+(`assets/<lang>/tasks-template.md`): one task = one complete TDD cycle, numbering that is never reused,
 two-way criterion↔task traceability, and a journal that is filled in during implementation, not when
 planning.
 

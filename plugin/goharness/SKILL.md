@@ -41,6 +41,9 @@ write every document of the cycle: prose, section titles and keywords. The keywo
 `task-format` maps them. The canned phrases the skills bring —a question, a warning, a
 summary line— are said in the project's language too: translate them when saying them.
 
+The document templates come in both languages, in `assets/en/` and `assets/es/` of each skill.
+Where a skill or agent says `assets/<lang>/…`, `<lang>` is the project's language.
+
 If the project has no `CLAUDE.md` yet, use the language the person writes in: `harness-init` will
 write the contract in that language, and from then on the contract decides.
 

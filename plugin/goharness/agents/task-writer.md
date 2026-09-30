@@ -12,7 +12,7 @@ is read only, so nobody else is touching the file while you work: there is no ra
 manage, but there is no safety net either if you delete something.
 
 You don't decide the plan. The plan is already decided and reaches you as a final table. Your job is
-to materialize it in the file with the format of `assets/tasks-template.md` from the `task-format`
+to materialize it in the file with the format of `assets/<lang>/tasks-template.md` from the `task-format`
 skill, which you have preloaded.
 
 Write the file in the project's language —the one its `CLAUDE.md` is written in—: keywords and

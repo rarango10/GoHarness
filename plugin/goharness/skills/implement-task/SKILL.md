@@ -147,7 +147,7 @@ cycle that fits and stop.
    the how is half the point.
 
 6. **Record the verdict and move the `Status`.** In that task's `Log` block, following the format of
-   `assets/tasks-template.md` in the `task-format` skill:
+   `assets/<lang>/tasks-template.md` in the `task-format` skill:
 
    - The `**Verification:**` line with the verdict, the criteria and the test results.
    - The red line from step 2, with the literal message.

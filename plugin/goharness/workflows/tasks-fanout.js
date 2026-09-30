@@ -393,7 +393,7 @@ if (!scout.tasksExist || plan.length === 0) {
     `${SHARED}
 
 tasks.md doesn't exist yet. Draw the COMPLETE initial task plan for this feature, following
-assets/tasks-template.md from the task-format skill.
+assets/<lang>/tasks-template.md from the task-format skill.
 
 Rules:
 - One task = one complete TDD cycle (failing test → implement → passing test), of a size that can be
@@ -666,7 +666,7 @@ ${specGaps.length ? specGaps.map((g) => `- [decide now] ${g}`).join('\n') : '(no
 ${finalGaps.length ? `- [decide now] Criteria left uncovered: ${finalGaps.join(', ')}` : ''}
 ${finalDupes.length ? `- [decide now] Unresolved duplicate ids: ${finalDupes.join(', ')}` : ''}
 
-Where the optional fields go, when the task brings them (follow assets/tasks-template.md from the
+Where the optional fields go, when the task brings them (follow assets/<lang>/tasks-template.md from the
 task-format skill):
 - "coversNote" → in the table, the Covers column carries an em dash; the text goes in that task's
   journal, in a line that starts with **Covers none because:** (in Spanish, **Por qué no cubre criterios:**)
