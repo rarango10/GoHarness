@@ -2,6 +2,13 @@
 
 <what it is, in one or two lines: ask before filling in>
 
+## Language
+
+<!-- ranura: idioma -->
+The cycle's documents —this file, the specs, the plans, the reports and the backlog— are written in
+**<English | Spanish: ask before filling in>**, keywords included. The chat is not bound by it: each
+person talks in their own language.
+
 ## Stack
 
 <!-- ranura: stack -->

@@ -83,6 +83,9 @@ question that spends the person's patience without buying anything.
 
 **First round — what doesn't depend on anything:**
 
+- **The language of the documents**: English or Spanish. Propose the one the person writes in,
+  but ask: a team can talk in Spanish and write its documents in English. It goes first because it
+  decides which template gets copied.
 - The project's name and what it is, in one line.
 - **The stack.** This is the one that is never skipped, not even when the answer seems obvious. If
   you have a recommendation, give it — but **labeled**: "I decided this, tell me if it works". What
@@ -129,7 +132,7 @@ rule of the contract and from then on nobody questions it again.
 
 ## Writing the file
 
-Copy `assets/<lang>/CLAUDE.template.md` to `CLAUDE.md` at the project root and fill the slots with what
+Copy `assets/<lang>/CLAUDE.template.md` —`<lang>` is the language of the documents— to `CLAUDE.md` at the project root and fill the slots with what
 came out of the interview. The cycle table and the harness's rules **come already written**: they
 are the method's memory, not the project's decisions, and they are not reopened on every init.
 **The `<!-- ranura: … -->` marks stay**: they are invisible when reading, and they are what lets a
@@ -138,7 +141,7 @@ future review know which slots the template added later.
 **The check before calling the step finished**, and it is mechanical on purpose:
 
 ```bash
-grep -n "preguntá antes de completar" CLAUDE.md
+grep -nE "ask before filling in|preguntá antes de completar" CLAUDE.md
 ```
 
 If it returns something, there is an unfilled slot. That can be fine —sometimes a piece of data is

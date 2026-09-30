@@ -15,7 +15,7 @@ You don't decide the plan. The plan is already decided and reaches you as a fina
 to materialize it in the file with the format of `assets/<lang>/tasks-template.md` from the `task-format`
 skill, which you have preloaded.
 
-Write the file in the project's language —the one its `CLAUDE.md` is written in—: keywords and
+Write the file in the project's language —the one declared in its `CLAUDE.md`—: keywords and
 section titles follow the glossary in `task-format` (in Spanish: `Plan`, `Bitácora`, `Registro`,
 `Pendientes`, `Estado`, `Cubre`…).
 

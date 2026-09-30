@@ -56,7 +56,7 @@ export const meta = {
 // what keeps a plugin rename from breaking the script.
 //
 // LANGUAGE: the prompts are in English; the documents are written in the project's
-// language (the one its CLAUDE.md is written in). The scout reads keywords in either
+// language (the one declared in its CLAUDE.md). The scout reads keywords in either
 // language and returns canonical values; the writer writes the project's form, following
 // the glossary in the task-format skill.
 // ---------------------------------------------------------------------------
@@ -639,7 +639,7 @@ const written = await agentP(
 Write ${specDir}/tasks.md with this final Plan table. It is the source of truth: don't add, don't
 remove, don't reorder and don't renumber anything.
 
-LANGUAGE: the file is written in the project's language (the one its CLAUDE.md is written in).
+LANGUAGE: the file is written in the project's language (the one declared in its CLAUDE.md).
 Section titles, field names, statuses and recipients follow the glossary of the task-format skill:
 the canonical form in an English project, the Spanish alias in a Spanish one. The plan's statuses
 come in canonical form (pending, in progress, done); in Spanish they are pendiente, en curso, hecho.

@@ -2,6 +2,13 @@
 
 <qué es, en una o dos líneas: preguntá antes de completar>
 
+## Idioma
+
+<!-- ranura: idioma -->
+Los documentos del ciclo —este archivo, los specs, los planes, los reportes y el backlog— se
+escriben en **<inglés | español: preguntá antes de completar>**, palabras clave incluidas. La charla
+no: cada persona habla en su idioma.
+
 ## Stack
 
 <!-- ranura: stack -->

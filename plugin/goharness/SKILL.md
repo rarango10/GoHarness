@@ -34,18 +34,22 @@ skill describes the default cycle, it does not impose it on a repo that already 
 
 ## Language
 
-The harness's instructions are in English; the project speaks its own language. **The project's
-language is the one its `CLAUDE.md` is written in.** In that language you talk with the person and
+The harness's instructions are in English; the project writes in its own language. **The project's
+language is the one the `Language` slot of its `CLAUDE.md` declares** (`<!-- ranura: idioma -->`);
+a contract from before that slot existed uses the language it is written in. In that language you
 write every document of the cycle: prose, section titles and keywords. The keywords (`done`,
 `meets`, `Covers`, `Log`…) have a canonical English form and a Spanish alias; the glossary in
-`task-format` maps them. The canned phrases the skills bring —a question, a warning, a
-summary line— are said in the project's language too: translate them when saying them.
+`task-format` maps them.
+
+**The chat is not bound by it**: talk with each person in the language they write in. A team can
+talk in Spanish and write its documents in English. The canned phrases the skills bring —a
+question, a warning, a summary line— are part of the chat: translate them when saying them.
 
 The document templates come in both languages, in `assets/en/` and `assets/es/` of each skill.
 Where a skill or agent says `assets/<lang>/…`, `<lang>` is the project's language.
 
-If the project has no `CLAUDE.md` yet, use the language the person writes in: `harness-init` will
-write the contract in that language, and from then on the contract decides.
+If the project has no `CLAUDE.md` yet, `harness-init` asks for the documents' language and writes it
+in the contract; from then on the contract decides.
 
 ## What the harness expects from the project
 

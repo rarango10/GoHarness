@@ -82,7 +82,7 @@ These words aren't prose: they are signals between agents. One agent writes `mee
 reads it to move the task to `done`; if one writes one word and the other expects another, the
 chain breaks without any visible error. That is why each one has a **canonical form, in English**,
 and a Spanish alias. Both forms mean exactly the same thing. **When writing, use the form of the
-project's language** —the language its `CLAUDE.md` is written in—: the canonical one in an English
+project's language** —the one declared in its `CLAUDE.md`—: the canonical one in an English
 project, the alias in a Spanish one. When reading, accept both.
 
 | Canonical | Spanish alias | Where it lives |
