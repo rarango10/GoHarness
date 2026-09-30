@@ -1,138 +1,139 @@
-# Patrones EARS
+# EARS patterns
 
-EARS (Easy Approach to Requirements Syntax) es un conjunto chico de plantillas para escribir
-requisitos. La gracia no es la ceremonia: es que obliga a decir **bajo qué condición** el sistema
-hace **qué cosa observable**, y eso se traduce casi uno a uno en un test.
+EARS (Easy Approach to Requirements Syntax) is a small set of templates for writing requirements.
+The point isn't the ceremony: it forces you to say **under what condition** the system does **what
+observable thing**, and that translates almost one to one into a test.
 
-En este proyecto la prosa va en español y las palabras clave en inglés (`WHEN`, `IF`/`THEN`,
-`WHILE`, `WHERE`, `THE SYSTEM SHALL`), como vocabulario formal reconocible.
+The prose goes in the project's language and the keywords in English (`WHEN`, `IF`/`THEN`,
+`WHILE`, `WHERE`, `THE SYSTEM SHALL`), as recognizable formal vocabulary. In a Spanish project:
+`WHEN el usuario importa un CSV válido THE SYSTEM SHALL crear una transacción por fila`.
 
-## Los 5 patrones
+## The 5 patterns
 
-### 1. Ubicuo — siempre vale, sin condición
-
-```
-THE SYSTEM SHALL <comportamiento>
-```
-
-Para reglas que rigen en todo momento. Si te sale escribir muchos de estos, sospechá: casi
-siempre hay una condición implícita que conviene explicitar.
-
-> THE SYSTEM SHALL registrar cada transacción con fecha, monto y categoría.
-
-### 2. Dirigido por evento — `WHEN`
+### 1. Ubiquitous — always holds, no condition
 
 ```
-WHEN <evento o condición>
-THE SYSTEM SHALL <comportamiento>
+THE SYSTEM SHALL <behavior>
 ```
 
-El caso más común: algo pasa, el sistema responde.
+For rules that apply at all times. If you find yourself writing many of these, be suspicious:
+there is almost always an implicit condition worth making explicit.
 
-> WHEN el usuario ejecuta el comando de importación con un archivo CSV válido
-> THE SYSTEM SHALL crear una transacción por cada fila e informar cuántas importó.
+> THE SYSTEM SHALL record every transaction with date, amount and category.
 
-### 3. Comportamiento no deseado — `IF` / `THEN`
-
-```
-IF <condición no deseada o caso borde>
-THEN THE SYSTEM SHALL <respuesta>
-```
-
-Para errores, datos inválidos y todo lo que puede salir mal. Es el patrón que después se
-convierte en la tabla de manejo de errores del design.
-
-> IF una fila del CSV tiene un monto no numérico
-> THEN THE SYSTEM SHALL omitir esa fila, reportarla al final y continuar con el resto.
-
-### 4. Dirigido por estado — `WHILE`
+### 2. Event-driven — `WHEN`
 
 ```
-WHILE <estado en curso>
-THE SYSTEM SHALL <comportamiento>
+WHEN <event or condition>
+THE SYSTEM SHALL <behavior>
 ```
 
-Para lo que vale mientras dura una situación, no en un instante puntual.
+The most common case: something happens, the system responds.
 
-> WHILE una importación está en curso
-> THE SYSTEM SHALL rechazar una segunda importación sobre el mismo archivo.
+> WHEN the user runs the import command with a valid CSV file
+> THE SYSTEM SHALL create one transaction per row and report how many it imported.
 
-### 5. Opcional / condicionado a una capacidad — `WHERE`
+### 3. Unwanted behavior — `IF` / `THEN`
 
 ```
-WHERE <la característica o configuración está presente>
-THE SYSTEM SHALL <comportamiento>
+IF <unwanted condition or edge case>
+THEN THE SYSTEM SHALL <response>
 ```
 
-Para lo que aplica solo si cierta opción está habilitada o cierto dato existe.
+For errors, invalid data and everything that can go wrong. It is the pattern that later becomes the
+design's error handling table.
 
-> WHERE el usuario definió un presupuesto para la categoría
-> THE SYSTEM SHALL mostrar el porcentaje usado junto al monto gastado.
+> IF a CSV row has a non-numeric amount
+> THEN THE SYSTEM SHALL skip that row, report it at the end and continue with the rest.
 
-## Combinaciones
+### 4. State-driven — `WHILE`
 
-Se pueden encadenar cuando el caso lo pide, pero sin pasarse: si un criterio necesita tres
-condiciones anidadas para entenderse, probablemente sean varios criterios.
+```
+WHILE <ongoing state>
+THE SYSTEM SHALL <behavior>
+```
 
-> WHEN el usuario importa un archivo ya importado antes
-> IF la detección de duplicados está activa
-> THEN THE SYSTEM SHALL omitir los movimientos repetidos e informar cuántos omitió.
+For what holds while a situation lasts, not at a single instant.
 
-## Criterios de apariencia
+> WHILE an import is in progress
+> THE SYSTEM SHALL reject a second import of the same file.
 
-Solo hacen falta cuando `design.md` va a declarar una referencia visual **normativa** (la tabla
-adoptar / adaptar / descartar sale del brainstorming). Sin ellos, la referencia no existe para el
-ciclo: nadie la verifica, porque ningún criterio la nombra, y un spec que solo pide «los colores del
-sistema» termina con un resultado que cumple todo y no se parece.
+### 5. Optional / conditioned on a capability — `WHERE`
 
-«Se ve como el mockup» no es verificable, igual que «el sistema debe ser rápido». La salida es la
-misma: bajar la cualidad a algo comprobable. Cada pieza que la tabla marca `adoptar` o `adaptar`
-entra en alguno de estos cuatro tipos:
+```
+WHERE <the feature or configuration is present>
+THE SYSTEM SHALL <behavior>
+```
 
-- **Inventario** — qué partes hay y en qué orden.
-  > THE SYSTEM SHALL mostrar, en este orden: el cumplimiento del día, el resumen del día y la línea
-  > de tiempo.
-- **Estructura** — cómo se ubican unas respecto de otras.
-  > THE SYSTEM SHALL mostrar el cumplimiento del día y el resumen del día en una misma fila, con el
-  > cumplimiento al doble de ancho que el resumen.
-- **Componente** — con qué forma se muestra un dato.
-  > THE SYSTEM SHALL representar el porcentaje de cumplimiento como un anillo de progreso.
-- **Token** — qué vocabulario visual se usa.
-  > THE SYSTEM SHALL usar solo colores declarados en la tabla de tokens del sistema de diseño.
+For what applies only if a certain option is enabled or a certain piece of data exists.
 
-Nombrar los tokens o las piezas de un sistema de diseño **no** es «implementación disfrazada de
-requisito» (ver abajo): el valor lo fija algo externo, y eso lo hace requisito. Lo que sigue siendo
-del design es *cómo* se construye — con qué archivos, funciones o estructura de CSS.
+> WHERE the user defined a budget for the category
+> THE SYSTEM SHALL show the percentage used next to the amount spent.
 
-**Y cada criterio de apariencia dice quién lo mira y contra qué.** Un test sobre CSS no distingue
-una grilla de doce columnas de una pila de una columna: las dos usan los mismos tokens. Solo el de
-token se prueba bien con un test; los otros tres se comprueban **mirando la pantalla al lado de la
-referencia**, y eso lo hace `close-feature` antes de cerrar. Si el criterio no lo dice, el
-verificador lo termina dando por cumplido leyendo código, que es justo donde la diferencia no se ve.
+## Combinations
 
-## Errores típicos
+They can be chained when the case calls for it, but without overdoing it: if a criterion needs
+three nested conditions to be understood, it is probably several criteria.
 
-**Comportamiento no observable.** Si no se puede escribir un test que falle cuando no se cumple,
-no es un criterio de aceptación.
+> WHEN the user imports a file that was already imported before
+> IF duplicate detection is on
+> THEN THE SYSTEM SHALL skip the repeated movements and report how many it skipped.
 
-- ✗ THE SYSTEM SHALL manejar los CSV de forma eficiente.
-- ✓ WHEN se importa un archivo de hasta 5.000 filas, THE SYSTEM SHALL completar la importación en menos de 2 segundos.
+## Appearance criteria
 
-**Dos comportamientos en un criterio.** El "y además" es la pista.
+They are only needed when `design.md` is going to declare a **binding** visual reference (the
+adopt / adapt / discard table comes out of brainstorming). Without them, the reference doesn't exist
+for the cycle: nobody verifies it, because no criterion names it, and a spec that only asks for "the
+system's colors" ends with a result that meets everything and doesn't look like it.
 
-- ✗ WHEN se importa un CSV, THE SYSTEM SHALL categorizar los movimientos y detectar duplicados y mostrar un resumen.
-- ✓ Tres criterios separados, cada uno verificable por su cuenta.
+"Looks like the mockup" is not verifiable, just like "the system must be fast". The way out is the
+same: bring the quality down to something checkable. Every piece the table marks `adopt` or `adapt`
+falls into one of these four types:
 
-**Implementación disfrazada de requisito.** Nombres de funciones, archivos o librerías son
-decisiones de diseño, no necesidades del usuario.
+- **Inventory** — which parts there are and in what order.
+  > THE SYSTEM SHALL show, in this order: the day's completion, the day's summary and the timeline.
+- **Structure** — how they are placed relative to each other.
+  > THE SYSTEM SHALL show the day's completion and the day's summary in the same row, with the
+  > completion at twice the width of the summary.
+- **Component** — in what form a piece of data is shown.
+  > THE SYSTEM SHALL represent the completion percentage as a progress ring.
+- **Token** — which visual vocabulary is used.
+  > THE SYSTEM SHALL use only colors declared in the design system's token table.
 
-- ✗ THE SYSTEM SHALL usar `csv-parse` para leer el archivo.
-- ✓ WHEN el archivo tiene el formato esperado (fecha, descripción, monto), THE SYSTEM SHALL leer todas sus filas. *(qué librería se usa se decide en design.md)*
+Naming a design system's tokens or pieces is **not** "implementation disguised as a requirement"
+(see below): the value is fixed by something external, and that makes it a requirement. What is
+still the design's is *how* it is built — with which files, functions or CSS structure.
 
-**Condición vaga.** "Si algo sale mal" no dice cuándo.
+**And every appearance criterion says who looks at it and against what.** A test on CSS doesn't
+tell a twelve-column grid from a one-column stack: both use the same tokens. Only the token one is
+tested well with a test; the other three are checked **by looking at the screen next to the
+reference**, and `close-feature` does that before closing. If the criterion doesn't say so, the
+verifier ends up marking it as met by reading code, which is exactly where the difference doesn't
+show.
 
-- ✗ IF hay un problema con el archivo, THEN THE SYSTEM SHALL avisar.
-- ✓ IF el archivo no existe en la ruta indicada, THEN THE SYSTEM SHALL terminar con un mensaje que indique la ruta buscada.
+## Typical mistakes
 
-**Requisito sin dueño.** Si no se sabe qué rol lo necesita ni para qué, revisá si hace falta:
-puede ser una feature que nadie pidió.
+**Non-observable behavior.** If you can't write a test that fails when it isn't met, it isn't an
+acceptance criterion.
+
+- ✗ THE SYSTEM SHALL handle CSV files efficiently.
+- ✓ WHEN a file of up to 5,000 rows is imported, THE SYSTEM SHALL complete the import in under 2 seconds.
+
+**Two behaviors in one criterion.** The "and also" is the clue.
+
+- ✗ WHEN a CSV is imported, THE SYSTEM SHALL categorize the movements and detect duplicates and show a summary.
+- ✓ Three separate criteria, each verifiable on its own.
+
+**Implementation disguised as a requirement.** Names of functions, files or libraries are design
+decisions, not user needs.
+
+- ✗ THE SYSTEM SHALL use `csv-parse` to read the file.
+- ✓ WHEN the file has the expected format (date, description, amount), THE SYSTEM SHALL read all its rows. *(which library is used is decided in design.md)*
+
+**Vague condition.** "If something goes wrong" doesn't say when.
+
+- ✗ IF there is a problem with the file, THEN THE SYSTEM SHALL warn.
+- ✓ IF the file doesn't exist at the given path, THEN THE SYSTEM SHALL exit with a message that shows the path it looked in.
+
+**Requirement without an owner.** If nobody knows which role needs it or what for, check whether
+it's needed: it may be a feature nobody asked for.

@@ -72,7 +72,7 @@ Recordatorios al escribir:
   "El sistema debe ser rápido" no es verificable; "THE SYSTEM SHALL responder en menos de 2 s
   para archivos de hasta 5.000 filas" sí.
   Si la feature tiene una referencia visual normativa, lo que se adopta de ella también es criterio,
-  y se verifica mirando: el criterio dice quién mira y contra qué. Ver «Criterios de apariencia» en
+  y se verifica mirando: el criterio dice quién mira y contra qué. Ver «Appearance criteria» en
   ../references/ears-patterns.md.
 - Sin implementación: nada de nombres de funciones, archivos ni librerías acá. Si te sale
   escribirlo, es material para design.md.

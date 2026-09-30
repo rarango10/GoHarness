@@ -1,101 +1,242 @@
 ---
 name: specify
-description: "Escribe el spec de una feature en dos fases, cada una con su compuerta de aprobación: requirements.md con criterios de aceptación en notación EARS, y design.md con arquitectura, interfaces, modelos de datos, errores y estrategia de testing. El plan de tareas (tasks.md) NO lo hace este skill: es el paso siguiente y lo hace el skill planning-tasks. Usá este skill apenas haya un diseño aprobado en brainstorming, o cuando la persona diga 'escribamos el spec', 'documentemos los requisitos', 'hagamos el spec de X', 'pasemos a la spec', 'definamos los criterios de aceptación', 'pasemos al diseño' o pida dejar por escrito qué tiene que hacer una feature antes de programarla. Es el paso siguiente al brainstorming y previo al plan de tareas — documenta qué hay que construir y cómo, pero no escribe código ni planifica las tareas."
+description: "Writes a feature's spec in two phases, each with its approval gate: requirements.md with acceptance criteria in EARS notation, and design.md with architecture, interfaces, data models, errors and testing strategy. The task plan (tasks.md) is NOT this skill's job: it is the next step and the planning-tasks skill does it. Use this skill as soon as there is an approved design from brainstorming, or when the person says, in English or Spanish, 'let's write the spec / escribamos el spec', 'let's document the requirements / documentemos los requisitos', 'let's spec X / hagamos el spec de X', 'let's define the acceptance criteria / definamos los criterios de aceptación', 'on to the design / pasemos al diseño', or asks to put in writing what a feature has to do before coding it. It is the step after brainstorming and before the task plan — it documents what has to be built and how, but it doesn't write code or plan the tasks."
 ---
 
 # Specify
 
-Convertir una idea ya clarificada en un spec ejecutable: primero **qué** tiene que hacer el sistema (`requirements.md`), después **cómo** se construye (`design.md`). **En qué orden se hace** (`tasks.md`) viene después y no es trabajo de este skill: lo arma el skill `planning-tasks` con el workflow `tasks-fanout`.
+Turn an already clarified idea into an executable spec: first **what** the system has to do
+(`requirements.md`), then **how** it is built (`design.md`). **In what order it is done**
+(`tasks.md`) comes afterwards and is not this skill's work: the `planning-tasks` skill builds it
+with the `tasks-fanout` workflow.
 
-El workflow del proyecto es: brainstorm → **requirements + design (este skill)** → plan de tareas (`planning-tasks`) → implementación TDD → verificación → commit. Este skill cubre las dos primeras fases del spec y se detiene ahí.
+The project's workflow is: brainstorm → **requirements + design (this skill)** → task plan
+(`planning-tasks`) → TDD implementation → verification → commit. This skill covers the first two
+phases of the spec and stops there.
 
-## Antes de empezar
+## Before starting
 
-Este skill parte de una idea ya conversada y acordada. Si llegás sin eso —la persona tiró una idea suelta, el alcance sigue ambiguo, o todavía no se acordó un enfoque— no inventes los requisitos: proponé pasar primero por el brainstorming. Un spec construido sobre supuestos propios se ve prolijo y aun así documenta la feature equivocada, y el costo de descubrirlo aparece recién en la implementación.
+This skill starts from an idea that was already discussed and agreed. If you arrive without that
+—the person dropped a loose idea, the scope is still ambiguous, or no approach has been agreed
+yet— don't invent the requirements: propose going through brainstorming first. A spec built on
+your own assumptions looks tidy and still documents the wrong feature, and the cost of finding out
+only shows up during implementation.
 
-Si el diseño ya viene aprobado de un brainstorm, no vuelvas a preguntar lo que ya se decidió: leelo de la conversación y usalo. Hacer repetir decisiones ya tomadas es la forma más rápida de que el spec se sienta burocracia.
+If the design already comes approved from a brainstorm, don't ask again what was already decided:
+read it from the conversation and use it. Making people repeat decisions already made is the
+fastest way for the spec to feel like bureaucracy.
 
-Lo inverso también vale: un brainstorm fija la forma de la feature, no todos los detalles que hacen falta para escribir criterios verificables. Formato de fecha, separador decimal, si el CSV trae encabezado, dónde se persisten los datos, qué código de salida devuelve el comando — nada de eso suele discutirse al diseñar, y sin embargo sin eso ningún criterio se puede testear. Cuando falte algo así, preguntá **antes** de escribir y todo junto en un mismo mensaje: acá no estás explorando la idea (esa parte ya pasó), estás cerrando huecos puntuales, y una lista corta se responde de una sentada.
+The reverse holds too: a brainstorm fixes the shape of the feature, not every detail needed to
+write verifiable criteria. Date format, decimal separator, whether the CSV has a header, where the
+data is persisted, what exit code the command returns — none of that is usually discussed while
+designing, and yet without it no criterion can be tested. When something like that is missing, ask
+**before** writing and all together in one message: here you are not exploring the idea (that part
+is over), you are closing specific gaps, and a short list gets answered in one sitting.
 
-El criterio para saber si preguntar o no: **¿podés escribir un test que falle sin ese dato?** Si no podés, preguntá. Si el dato no cambia ningún criterio, elegí lo razonable, seguí, y anotalo en **Supuestos** — para eso está esa sección. Para lo visual, la pregunta equivalente es **¿podés señalar la diferencia abriendo la pantalla al lado de la referencia?**
+The criterion for whether to ask: **can you write a test that fails without that piece of data?**
+If you can't, ask. If the data doesn't change any criterion, pick the reasonable option, keep
+going, and write it down under **Assumptions** — that is what that section is for. For visuals, the
+equivalent question is **can you point at the difference by opening the screen next to the
+reference?**
 
-**Si el brainstorming acordó una referencia visual normativa**, cada pieza que su tabla marca `adoptar` o `adaptar` tiene que terminar como criterio en `requirements.md` —de inventario, estructura, componente o token, ver «Criterios de apariencia» en `references/ears-patterns.md`—, y la tabla entera se copia a la sección `## Referencia visual` de `design.md`. Una pieza adoptada que no llega a un criterio es invisible para el resto del ciclo: nadie la implementa a propósito y nadie nota que falta.
+**If brainstorming agreed on a binding visual reference**, every piece its table marks `adopt` or
+`adapt` has to end up as a criterion in `requirements.md` —of inventory, structure, component or
+token, see "Appearance criteria" in `references/ears-patterns.md`—, and the whole table is copied
+to the `## Visual reference` section of `design.md`. An adopted piece that doesn't reach a criterion
+is invisible to the rest of the cycle: nobody implements it on purpose and nobody notices it is
+missing.
 
-Ojo con qué hacés después con esas respuestas. Van a llegarte a nivel implementación —"en `data/movimientos.json`", "código de salida 2"— y un criterio de aceptación describe comportamiento observable, no mecanismo. Antes de transcribirla, preguntate si a la persona le importa **ese valor concreto** o solamente que el comportamiento ocurra. Si lo que necesita es que los movimientos sigan estando la próxima vez que abre la app, eso es el criterio; la ruta del archivo es un supuesto ahora y una decisión del design después. Si en cambio el valor exacto **es** el requisito, porque algo externo depende de él, entonces sí va en el criterio — y decí de qué depende, para que se entienda por qué está fijado.
+Be careful with what you do next with those answers. They will reach you at implementation level
+—"in `data/movements.json`", "exit code 2"— and an acceptance criterion describes observable
+behavior, not mechanism. Before transcribing one, ask yourself whether the person cares about
+**that concrete value** or only that the behavior happens. If what they need is for the movements
+to still be there the next time they open the app, that is the criterion; the file path is an
+assumption now and a design decision later. If instead the exact value **is** the requirement,
+because something external depends on it, then it does go in the criterion — and say what depends
+on it, so it's clear why it is fixed.
 
-## Por qué requirements antes que design
+## Why requirements before design
 
-Separar el "qué" del "cómo" mantiene honesto al diseño: si arrancás por la solución, los requisitos terminan escritos para justificar lo que ya decidiste construir. Escritos primero, y en forma de condición → comportamiento observable, los criterios de aceptación se convierten directamente en los tests de la fase siguiente — que es justo lo que necesita un proyecto que trabaja con TDD.
+Separating the "what" from the "how" keeps the design honest: if you start with the solution, the
+requirements end up written to justify what you already decided to build. Written first, and in the
+form condition → observable behavior, the acceptance criteria turn directly into the next phase's
+tests — which is exactly what a project working with TDD needs.
 
-## Fase 1 — Requirements
+## Phase 1 — Requirements
 
-1. **Elegí la carpeta**: `docs/AAAA-MM-DD-<feature-en-kebab-case>/`, con la fecha de hoy y un nombre corto y descriptivo (`docs/2026-09-04-importar-csv/`). Un spec enfocado por feature, no un documento monolítico.
-2. **Escribí `requirements.md`** siguiendo `assets/requirements-template.md`.
-3. **Redactá los criterios en EARS**: prosa en español, palabras clave en inglés (`WHEN`, `IF`/`THEN`, `WHILE`, `WHERE`, `THE SYSTEM SHALL`). Funcionan como vocabulario formal, igual que las palabras clave de SQL. Los patrones, ejemplos y errores típicos están en `references/ears-patterns.md` — leelo si dudás de cuál corresponde o cómo formular algo que no encaja en el patrón simple.
-4. **Numerá todo**: requisitos `R1`, `R2`… y criterios `R1.1`, `R1.2`… El design y los tests van a referenciarlos, y esa trazabilidad es lo que después permite verificar que no quedó nada sin cubrir.
-5. **Acotá el alcance**: incluí solo lo que se acordó, y dejá explícito lo que queda afuera por ahora. Un requisito de más es una feature de más que alguien va a construir.
-6. **Releé cada criterio buscando conjunciones, antes de presentar.** Un criterio, un comportamiento: si dice «mostrar dos campos editables **y** un tercero de solo lectura», son dos criterios, no uno. Es una pasada corta y hay que hacerla explícitamente, porque el costo de saltearla no se paga acá sino dos pasos después: un criterio compuesto se cubre a medias —una cláusula con test y la otra sin— y el verificador se queda sin forma de decirlo, porque su vocabulario tiene un veredicto por criterio y no por cláusula. Terminás con un `cumple` sobre algo que solo está medio probado.
-7. **Presentá y esperá aprobación**: contá en el chat qué requisitos quedaron (los títulos alcanzan, no repitas el archivo entero), dónde está el archivo, y qué supuestos o preguntas abiertas anotaste. **Decí también qué habilita ese sí**: si lo aprueba, sigue la fase 2, que convierte estos criterios en `design.md`. Después parate.
+1. **Pick the folder**: `docs/YYYY-MM-DD-<feature-in-kebab-case>/`, with today's date and a short,
+   descriptive name (`docs/2026-09-04-import-csv/`). One focused spec per feature, not a monolithic
+   document.
+2. **Write `requirements.md`** following `assets/requirements-template.md`.
+3. **Write the criteria in EARS**: prose in the project's language, keywords in English (`WHEN`,
+   `IF`/`THEN`, `WHILE`, `WHERE`, `THE SYSTEM SHALL`). They work as formal vocabulary, like SQL's
+   keywords. The patterns, examples and typical mistakes are in `references/ears-patterns.md` —
+   read it if you're unsure which one applies or how to phrase something that doesn't fit the
+   simple pattern.
+4. **Number everything**: requirements `R1`, `R2`… and criteria `R1.1`, `R1.2`… The design and the
+   tests are going to reference them, and that traceability is what later lets you verify nothing
+   was left uncovered.
+5. **Bound the scope**: include only what was agreed, and make explicit what stays out for now. One
+   requirement too many is one feature too many that someone is going to build.
+6. **Reread every criterion looking for conjunctions, before presenting.** One criterion, one
+   behavior: if it says "show two editable fields **and** a third read-only one", that is two
+   criteria, not one. It is a short pass and it has to be done explicitly, because the cost of
+   skipping it isn't paid here but two steps later: a compound criterion gets half covered —one
+   clause with a test and the other without— and the verifier has no way to say so, because its
+   vocabulary has one verdict per criterion and not per clause. You end up with a `meets` on
+   something that is only half tested.
+7. **Present and wait for approval**: say in the chat which requirements were left (the titles are
+   enough, don't repeat the whole file), where the file is, and what assumptions or open questions
+   you wrote down. **Also say what that yes unlocks**: if it's approved, phase 2 follows, which turns
+   these criteria into `design.md`. Then stop.
 
-   Nombrar el paso siguiente **al pedir** la aprobación y no después no es un detalle de cortesía: quien aprueba tiene que saber hacia dónde está aprobando. Si el nombre del paso llega recién con el «listo, aprobado», la cadena queda descubrible solo en retrospectiva — te enterás de qué autorizaste después de haberlo autorizado.
+   Naming the next step **when asking** for approval and not afterwards is not a courtesy detail:
+   whoever approves has to know what they are approving toward. If the step's name only arrives
+   with the "ok, approved", the chain can only be discovered in hindsight — you find out what you
+   authorized after having authorized it.
 
-No pases a diseño hasta tener un sí. Si la respuesta trae cambios, ajustá el archivo y volvé a pedir aprobación.
+Don't move to design until you have a yes. If the answer brings changes, adjust the file and ask for
+approval again.
 
-**Cuando llegue el sí, asentalo en el archivo en el acto**: el encabezado de `requirements.md` pasa a `> Estado: aprobado (AAAA-MM-DD)`. La aprobación ocurre en el chat y el chat se pierde; lo que queda es el encabezado, y es lo que van a leer `planning-tasks` para decidir si el spec está listo y el scout del workflow en la corrida siguiente. Un documento aprobado que figura como pendiente se trata como no aprobado. **Commiteá ese cambio ahí mismo**: quien recibe el sí de un documento lo commitea, y sin eso el archivo queda flotando hasta el commit de la primera tarea, mezclado con trabajo de otro paso.
+**When the yes arrives, record it in the file right away**: the header of `requirements.md` becomes
+`> Status: approved (YYYY-MM-DD)` (in a Spanish project, `> Estado: aprobado (AAAA-MM-DD)`). The
+approval happens in the chat and the chat gets lost; what stays is the header, and it is what
+`planning-tasks` reads to decide whether the spec is ready, and what the workflow's scout reads on
+the next run. An approved document that shows as pending is treated as not approved. **Commit that
+change right there**: whoever receives the yes for a document commits it, and without that the file
+stays floating until the first task's commit, mixed with another step's work.
 
-## Fase 2 — Design
+## Phase 2 — Design
 
-Antes de escribir nada, **releé los requisitos aprobados buscando problemas**: ambigüedades, criterios que se contradicen, huecos entre lo que se pide y lo que haría falta para que funcione. Si encontrás algo, decilo y resolvelo con la persona en vez de taparlo con una decisión propia — es mucho más barato acá que a mitad de la implementación.
+Before writing anything, **reread the approved requirements looking for problems**: ambiguities,
+criteria that contradict each other, gaps between what is asked and what would be needed for it to
+work. If you find something, say it and resolve it with the person instead of covering it with a
+decision of your own — it's much cheaper here than halfway through the implementation.
 
-Cuando de ese repaso sale un criterio nuevo —pasa seguido, es justamente para lo que sirve— agregalo a `requirements.md` con dos cuidados:
+When a new criterion comes out of that review —it happens often, that is exactly what it's for—
+add it to `requirements.md` with two precautions:
 
-- **Numerá al final, nunca renumeres.** Los ids ya se citan en lo que se escribió hasta ahora y van a terminar en los nombres de los tests. Si un criterio quedó mal, corregilo o marcalo como obsoleto en su lugar; reusar su número rompe referencias en silencio.
-- **Decí qué cambió y confirmalo.** La aprobación fue sobre lo que la persona leyó. Nombrá los criterios que agregaste y esperá un sí antes de seguir con el design — es un intercambio corto, no una re-aprobación completa del documento, pero sin él el documento aprobado y el que existe dejan de ser el mismo.
+- **Number at the end, never renumber.** The ids are already quoted in what has been written so far
+  and will end up in the test names. If a criterion was wrong, correct it or mark it obsolete in
+  place; reusing its number silently breaks references.
+- **Say what changed and confirm it.** The approval was on what the person read. Name the criteria
+  you added and wait for a yes before continuing with the design — it's a short exchange, not a full
+  re-approval of the document, but without it the approved document and the one that exists stop
+  being the same.
 
-Después:
+Then:
 
-1. **Escribí `design.md`** en la misma carpeta, siguiendo `assets/design-template.md`.
-2. **Referenciá los requisitos**: cada decisión de diseño existe para satisfacer algo. Enlazá secciones con los ids (`R1.2`) y, en la estrategia de testing, mapeá qué test cubre qué criterio. **Separá los criterios de estado de los de efecto**: si la feature tiene JavaScript de cliente, los de efecto —lo que cambia en pantalla al interactuar— necesitan un DOM de pruebas declarado en el design, y «lo confirma el e2e» no sirve para un criterio que una tarea va a cubrir. Descartar el DOM de pruebas es una decisión válida solo si ningún criterio de efecto queda en el `Cubre` de una tarea; si se descarta, decí cuáles quedan «solo e2e». Esa consecuencia aparece recién en el paso 6, dos pasos después de esta aprobación, y por eso hay que nombrarla acá.
-3. **Diseñá para lo que hay**: seguí los patrones del código existente y las reglas que declara `CLAUDE.md` — su stack, sus comandos de verificación, y las restricciones que se haya puesto el proyecto (por ejemplo, no agregar dependencias sin necesidad). Si una dependencia o una capa nueva parece necesaria, justificá por qué el requisito no se puede satisfacer sin ella.
-4. **Dejá registro de lo descartado**: qué alternativas consideraste y por qué no. Eso evita rediscutir lo mismo en tres semanas.
-5. **Presentá y esperá aprobación**, igual que en la fase 1: al pedir el sí, decí también qué habilita —el plan de tareas, que arma `planning-tasks` lanzando un workflow con un agente por tarea— para que quien aprueba sepa qué está autorizando y a qué costo. Y cuando el sí llegue, **asentá `> Estado: aprobado (AAAA-MM-DD)` en el encabezado de `design.md` en el acto, y commiteá el cambio**, por la misma razón que en la fase 1.
+1. **Write `design.md`** in the same folder, following `assets/design-template.md`.
+2. **Reference the requirements**: every design decision exists to satisfy something. Link sections
+   with the ids (`R1.2`) and, in the testing strategy, map which test covers which criterion.
+   **Separate state criteria from effect criteria**: if the feature has client-side JavaScript, the
+   effect ones —what changes on screen when interacting— need a test DOM declared in the design,
+   and "the e2e confirms it" doesn't work for a criterion a task is going to cover. Ruling out the
+   test DOM is a valid decision only if no effect criterion stays in a task's `Covers`; if it is
+   ruled out, say which ones stay "e2e only". That consequence only shows up in step 6, two steps
+   after this approval, and that is why it has to be named here.
+3. **Design for what exists**: follow the patterns of the existing code and the rules `CLAUDE.md`
+   declares — its stack, its verification commands, and the restrictions the project set for itself
+   (for example, not adding dependencies without need). If a new dependency or layer seems
+   necessary, justify why the requirement can't be satisfied without it.
+4. **Keep a record of what was ruled out**: which alternatives you considered and why not. That
+   avoids discussing the same thing again in three weeks.
+5. **Present and wait for approval**, same as in phase 1: when asking for the yes, also say what it
+   unlocks —the task plan, which `planning-tasks` builds by launching a workflow with one agent per
+   task— so whoever approves knows what they are authorizing and at what cost. And when the yes
+   arrives, **record `> Status: approved (YYYY-MM-DD)` in the header of `design.md` right away, and
+   commit the change**, for the same reason as in phase 1.
 
-**Si el design recién aprobado declara superficie navegable**, antes de nombrar el paso siguiente corré el doctor de Playwright (`node <ruta-de-verify-e2e>/scripts/e2e-doctor.cjs`, con la ruta del proyecto). Puede ser la primera feature del proyecto que necesita una interfaz: si el doctor falla, no lo arregles vos — nombrá el skill `harness-init` **en modo revisión** (siembra `playwright.config.ts`, pide el sí para instalar la dependencia y suma la pata `e2e` al comando de higiene) y esperá a que vuelva antes de seguir con `planning-tasks`. Detectarlo acá, con el design recién aprobado, cuesta una revisión corta; detectarlo en el paso 7 cuesta la feature entera ya implementada.
+**If the just-approved design declares a navigable surface**, before naming the next step run the
+Playwright doctor (`node <verify-e2e-path>/scripts/e2e-doctor.cjs`, with the project's path). It
+may be the project's first feature that needs an interface: if the doctor fails, don't fix it
+yourself — name the `harness-init` skill **in review mode** (it seeds `playwright.config.ts`, asks
+for the yes to install the dependency and adds the `e2e` leg to the hygiene command) and wait for it
+to come back before continuing with `planning-tasks`. Detecting it here, with the design just
+approved, costs a short review; detecting it in step 7 costs the whole feature already implemented.
 
-Una vez aprobado el design (y, si aplica, con el doctor en verde), decí que el paso siguiente es el skill **`planning-tasks`**, que comprueba el spec y lanza el workflow dinámico `tasks-fanout`: un revisor por tarea en paralelo, un reducer que sintetiza los veredictos y un único escritor al final. Nombralo, no lo arranques: igual que el propio `brainstorming` nombra a `specify` sin invocarlo, encadenarlo acá se saltearía la compuerta de aprobación del design que acaba de pasar. Que `planning-tasks` ahora sepa disparar el workflow por su cuenta no cambia eso — hace más fácil encadenar de más, no más aceptable.
+Once the design is approved (and, if it applies, with the doctor green), say that the next step is
+the **`planning-tasks`** skill, which checks the spec and launches the dynamic workflow
+`tasks-fanout`: one reviewer per task in parallel, a reducer that synthesizes the verdicts and a
+single writer at the end. Name it, don't start it: just as `brainstorming` itself names `specify`
+without invoking it, chaining it here would skip the design approval gate it just passed. That
+`planning-tasks` now knows how to trigger the workflow on its own doesn't change that — it makes
+over-chaining easier, not more acceptable.
 
-## El formato de `tasks.md` no es de este skill
+## The format of `tasks.md` is not this skill's
 
-El **plan** de `tasks.md` —qué tareas hay, sus ids, su orden, su `Cubre`— lo escribe únicamente el workflow `tasks-fanout`, que dispara `planning-tasks`; el `Estado` y el `Registro` de cada tarea los escribe quien implementa. No escribas el plan a mano ni lo delegues a un subagente con permiso de escritura: el workflow existe para que el plan tenga un único escritor. Si el workflow no está disponible, el paso correcto es destrabarlo, no improvisar el plan.
+The **plan** in `tasks.md` —which tasks there are, their ids, their order, their `Covers`— is
+written only by the `tasks-fanout` workflow, which `planning-tasks` triggers; each task's `Status`
+and `Log` are written by whoever implements. Don't write the plan by hand or delegate it to a
+subagent with write permission: the workflow exists so the plan has a single writer. If the
+workflow isn't available, the right step is to unblock it, not to improvise the plan.
 
-Las reglas de formato del archivo y su plantilla viven en el skill de referencia `formato-de-tareas`. Están separadas de este skill a propósito: los agentes que las necesitan las precargan sin cargar también el mandato de escribir un spec.
+The file's format rules and its template live in the reference skill `formato-de-tareas`. They are
+separate from this skill on purpose: the agents that need them preload them without also loading
+the mandate to write a spec.
 
-## Después de la aprobación de las tasks
+## After the tasks are approved
 
-Pará ahí. Decí que el spec quedó completo —`requirements.md`, `design.md` y `tasks.md`— y que el paso siguiente es la implementación con TDD, empezando por el primer test rojo de T1. No la arranques: es otro paso del workflow, no parte de este skill.
+Stop there. Say that the spec is complete —`requirements.md`, `design.md` and `tasks.md`— and that
+the next step is the TDD implementation, starting with T1's first red test. Don't start it: it is
+another step of the workflow, not part of this skill.
 
-Una aprobación corta o informal ("dale", "va", "listo") aprueba el documento que presentaste, nada más. No la leas como permiso para encadenar la fase siguiente en el mismo mensaje: aprobar los requirements no es aprobar el design, aprobar el design no es aprobar las tasks, y aprobar las tasks no es pedir código.
+A short or informal approval ("ok", "go", "sure" / "dale", "va", "listo") approves the document you
+presented, nothing more. Don't read it as permission to chain the next phase in the same message:
+approving the requirements is not approving the design, approving the design is not approving the
+tasks, and approving the tasks is not asking for code.
 
-## Enmiendas: cuando el spec cambia después de aprobado
+## Amendments: when the spec changes after being approved
 
-Llegás acá desde otro paso: `implement-task` encontró un criterio mal o un design que ya no describe lo que existe, `verify-e2e` ruteó `aSpecify`, `close-feature` encontró algo que ningún criterio cubre. Es el camino de vuelta del ciclo, y las clases que lo disparan están en el router, en «Cuando algo cambia a mitad de camino».
+You arrive here from another step: `implement-task` found a wrong criterion or a design that no
+longer describes what exists, `verify-e2e` routed `aSpecify`, `close-feature` found something no
+criterion covers. It is the way back of the cycle, and the classes that trigger it are in the
+router, in "When something changes midway".
 
-**Escribís solo `requirements.md` y `design.md`.** Nunca `tasks.md`, aunque la enmienda deje una tarea sin propósito o pida una nueva: el plan lo rehace `planning-tasks`, y el `Estado` de una tarea lo mueve quien implementa. Un documento que quedó describiendo requisitos viejos es peor que no tenerlo, porque se lee como si estuviera vigente — por eso la enmienda nombra todo lo que queda afectado, aunque no lo toque.
+**You write only `requirements.md` and `design.md`.** Never `tasks.md`, even if the amendment leaves
+a task without a purpose or asks for a new one: the plan is redone by `planning-tasks`, and a task's
+`Status` is moved by whoever implements. A document left describing old requirements is worse than
+not having it, because it reads as if it were current — that is why the amendment names everything
+that is affected, even what it doesn't touch.
 
-1. **Empezá por el documento más alto que toca.** Si cambia un criterio, es `requirements.md`, y después preguntás si arrastra al design. Si solo cambió el cómo —los criterios siguen igual—, es `design.md` y nada más.
-2. **Mismas reglas de numeración que en la fase 2:** los criterios nuevos van al final y nada se renumera. Un criterio que **cambia de sentido** no se reescribe en su lugar: se marca `(obsoleto — ver R3.5)` y nace con id nuevo. Corregir la redacción sin cambiar el comportamiento (una errata, una ambigüedad que no mueve ningún test) se hace en su lugar y se enmienda igual.
-3. **Asentá la enmienda en el documento.** Una línea en `## Enmiendas` —fecha, ids, qué cambió, de dónde salió (`T7`, paso 7, cierre)— y el encabezado pasa a `> Estado: aprobado (AAAA-MM-DD) · enmendado (AAAA-MM-DD): R3.2, R3.5`. Si ya tenía enmiendas, la lista de ids se acumula.
-4. **Presentá solo lo que cambió y esperá el sí.** Es una aprobación corta, no una re-aprobación del documento. Al pedirla, decí qué habilita: qué tareas `hecho` cubren los ids enmendados y van a volver a `en curso`, y si hace falta re-planificar (hace falta si se agregaron, quitaron o volvieron obsoletos criterios). Con el sí, **commiteá la enmienda aparte**: `Enmienda <feature>: R3.2, R3.5`.
-5. **Nombrá el paso siguiente y parate.** `planning-tasks` si el conjunto de criterios cambió; si no, `implement-task`, que al arrancar detecta las tareas a reabrir. No reabras tareas vos: `Estado` y `Registro` no son tu región.
+1. **Start with the highest document it touches.** If a criterion changes, it is
+   `requirements.md`, and then you ask whether it drags the design along. If only the how changed
+   —the criteria stay the same—, it is `design.md` and nothing else.
+2. **Same numbering rules as in phase 2:** new criteria go at the end and nothing is renumbered. A
+   criterion that **changes meaning** is not rewritten in place: it is marked
+   `(obsolete — see R3.5)` and is born with a new id. Correcting the wording without changing the
+   behavior (a typo, an ambiguity that doesn't move any test) is done in place and amended anyway.
+3. **Record the amendment in the document.** A line in `## Amendments` —date, ids, what changed,
+   where it came from (`T7`, step 7, closing)— and the header becomes
+   `> Status: approved (YYYY-MM-DD) · amended (YYYY-MM-DD): R3.2, R3.5`. If it already had
+   amendments, the list of ids accumulates.
+4. **Present only what changed and wait for the yes.** It is a short approval, not a re-approval of
+   the document. When asking for it, say what it unlocks: which `done` tasks cover the amended ids
+   and will go back to `in progress`, and whether re-planning is needed (it is if criteria were
+   added, removed or made obsolete). With the yes, **commit the amendment separately**:
+   `Amendment <feature>: R3.2, R3.5`.
+5. **Name the next step and stop.** `planning-tasks` if the set of criteria changed; if not,
+   `implement-task`, which detects the tasks to reopen when it starts. Don't reopen tasks yourself:
+   `Status` and `Log` are not your region.
 
-**Si la enmienda redefine la feature** —cambia el problema que resuelve, o deja sin propósito buena parte del plan—, no es una enmienda: decilo y nombrá `brainstorming`. La persona decide si esta feature cierra con lo que tiene y lo otro es una feature nueva.
+**If the amendment redefines the feature** —it changes the problem it solves, or leaves much of the
+plan without a purpose—, it is not an amendment: say so and name `brainstorming`. The person decides
+whether this feature closes with what it has and the rest is a new feature.
 
-## Si la feature toma entradas del backlog
+## If the feature takes backlog entries
 
-Si el brainstorming acordó que esta feature resuelve entradas de `docs/pendientes.md` (o del tracker que nombre `CLAUDE.md`), nombralas en `## Alcance` de `requirements.md` por su id (`P2`), y al commitear la aprobación de `requirements.md` pasá su estado a `en <carpeta-de-la-feature>` en el backlog. Solo esa celda: el resto de la entrada es de quien la escribió. `close-feature` las pasa a `resuelto` al cerrar.
+If brainstorming agreed that this feature resolves entries of `docs/pendientes.md` (or of the
+tracker `CLAUDE.md` names), name them in the `## Scope` of `requirements.md` by their id (`P2`), and
+when committing the approval of `requirements.md` move their state to `in <feature-folder>` in the
+backlog. Only that cell: the rest of the entry belongs to whoever wrote it. `close-feature` moves
+them to `resolved` when closing.
 
-## Archivos de este skill
+## This skill's files
 
-- `assets/requirements-template.md` — estructura de `requirements.md`
-- `assets/design-template.md` — estructura de `design.md`
-- `references/ears-patterns.md` — los 5 patrones EARS, ejemplos del dominio y errores típicos
+- `assets/requirements-template.md` — structure of `requirements.md`
+- `assets/design-template.md` — structure of `design.md`
+- `references/ears-patterns.md` — the 5 EARS patterns, examples and typical mistakes
+
+Keywords, section titles and the header's states go in the project's language: in a Spanish
+project, `Estado`, `aprobado`, `enmendado`, `## Alcance`, `## Supuestos`, `## Enmiendas`,
+`(obsoleto — ver R3.5)`, and the backlog's `en <carpeta>` and `resuelto`.
