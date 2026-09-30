@@ -291,7 +291,7 @@ const scout = await agentP(
 Relevá el estado completo del spec y del proyecto. Es la única vez que alguien va a hacer esto:
 todos los revisores que vienen después trabajan con lo que devuelvas vos.
 
-Los estados los devolvés en su forma canónica del glosario del skill formato-de-tareas, esté
+Los estados los devolvés en su forma canónica del glosario del skill task-format, esté
 el archivo en el idioma que esté: "aprobado" o "approved" es approved; "pendiente de aprobación"
 o "pending approval" es pending approval; "pendiente", "en curso", "hecho" (o "pending",
 "in progress", "done") son pending, in progress, done. Lo demás se transcribe tal cual.
@@ -384,7 +384,7 @@ if (!scout.tasksExist || plan.length === 0) {
     `${SHARED}
 
 Todavía no existe tasks.md. Dibujá el plan inicial COMPLETO de tareas para esta feature,
-siguiendo assets/tasks-template.md del skill formato-de-tareas.
+siguiendo assets/tasks-template.md del skill task-format.
 
 Reglas:
 - Una tarea = un ciclo de TDD completo (test que falla → implementar → test que pasa), del tamaño
@@ -632,7 +632,7 @@ no saques, no reordenes y no renumeres nada.
 
 Los estados del plan vienen en su forma canónica (pending, in progress, done). En el archivo se
 escriben en el idioma del proyecto (el de su CLAUDE.md), según el glosario del skill
-formato-de-tareas: la canónica en inglés; en español, pendiente, en curso, hecho.
+task-format: la canónica en inglés; en español, pendiente, en curso, hecho.
 
 PLAN FINAL (${plan.length} tareas, en orden):
 ${JSON.stringify(plan, null, 2)}
@@ -655,7 +655,7 @@ ${finalGaps.length ? `- [decidir ya] Criterios que quedaron sin cubrir: ${finalG
 ${finalDupes.length ? `- [decidir ya] Ids duplicados sin resolver: ${finalDupes.join(', ')}` : ''}
 
 Dónde van los campos opcionales, cuando la tarea los trae (seguí assets/tasks-template.md del
-skill formato-de-tareas):
+skill task-format):
 - "coversNote" → en la tabla, la columna "Cubre" lleva un guion largo; el texto va en la bitácora
   de esa tarea, en una línea que empieza con **Por qué no cubre criterios:**
 - "note" → en la bitácora de esa tarea, en una línea que empieza con **Nota:**

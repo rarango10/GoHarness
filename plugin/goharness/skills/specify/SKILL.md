@@ -171,7 +171,7 @@ and `Log` are written by whoever implements. Don't write the plan by hand or del
 subagent with write permission: the workflow exists so the plan has a single writer. If the
 workflow isn't available, the right step is to unblock it, not to improvise the plan.
 
-The file's format rules and its template live in the reference skill `formato-de-tareas`. They are
+The file's format rules and its template live in the reference skill `task-format`. They are
 separate from this skill on purpose: the agents that need them preload them without also loading
 the mandate to write a spec.
 

@@ -38,7 +38,7 @@ The harness's instructions are in English; the project speaks its own language. 
 language is the one its `CLAUDE.md` is written in.** In that language you talk with the person and
 write every document of the cycle: prose, section titles and keywords. The keywords (`done`,
 `meets`, `Covers`, `Log`…) have a canonical English form and a Spanish alias; the glossary in
-`formato-de-tareas` maps them. The canned phrases the skills bring —a question, a warning, a
+`task-format` maps them. The canned phrases the skills bring —a question, a warning, a
 summary line— are said in the project's language too: translate them when saying them.
 
 If the project has no `CLAUDE.md` yet, use the language the person writes in: `harness-init` will

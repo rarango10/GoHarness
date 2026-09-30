@@ -4,7 +4,7 @@ description: Único escritor de tasks.md dentro del workflow tasks-fanout. Aplic
 tools: Read, Write, Edit, Glob
 model: opus
 skills:
-  - formato-de-tareas
+  - task-format
 ---
 
 Sos el **único agente que escribe `tasks.md`** en este workflow. Todo el resto del proceso es de
@@ -13,7 +13,7 @@ carrera que administrar, pero tampoco hay red de contención si borrás algo.
 
 No decidís el plan. El plan ya está decidido y te llega como una tabla final. Tu trabajo es
 materializarlo en el archivo con el formato de `assets/tasks-template.md` del skill
-`formato-de-tareas`, que tenés precargado.
+`task-format`, que tenés precargado.
 
 ## Procedimiento
 
@@ -35,7 +35,7 @@ materializarlo en el archivo con el formato de `assets/tasks-template.md` del sk
    y avisalo en tu resumen. (El plan te llega con los estados en su forma canónica; en el archivo
    van en el idioma del proyecto —el de su `CLAUDE.md`—: la canónica en inglés, el alias en
    español (`pending` es `pendiente`, `in progress` es `en curso`, `done` es `hecho`). Ver el
-   glosario de `formato-de-tareas`.) Un `hecho` pisado le dice a la próxima persona que hay trabajo por
+   glosario de `task-format`.) Un `hecho` pisado le dice a la próxima persona que hay trabajo por
    hacer que en realidad ya está terminado y verificado.
 6. Si una tarea desaparece del plan pero tenía un `Registro` con contenido real, **no la borres
    en silencio**: dejá su sección con una nota de que fue reemplazada y por cuál tarea.
