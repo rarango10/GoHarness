@@ -1,116 +1,179 @@
 ---
 name: verify-e2e
-description: "Verifica una feature ya implementada de punta a punta, en dos fases: escribe e2e-tests-plan.md con 3 casos (1 happy path y 2 de fallo) a partir del spec aprobado, y después orquesta la generación de los tests de Playwright y su corrida, hasta un e2e-test-report.md que rutea cada fallo. Usalo cuando la persona diga 'verifiquemos e2e', 'probemos de punta a punta', 'armemos los tests end to end', 'corramos el e2e', o cuando todas las tareas de un tasks.md ya estén en hecho y falte comprobar que la feature completa funciona. Es el paso siguiente a la verificación por tarea de dod-checker: dod-checker verifica una tarea contra sus criterios, este skill verifica la feature entera contra el spec. No escribe los tests ni el reporte por su cuenta — eso lo hacen los subagentes e2e-test-writer y e2e-triager."
+description: "Verifies an already implemented feature end to end, in two phases: it writes e2e-tests-plan.md with 3 cases (1 happy path and 2 failure cases) from the approved spec, and then orchestrates the generation of the Playwright tests and their run, up to an e2e-test-report.md that routes each failure. Use it when the person says, in English or Spanish, 'let's verify e2e / verifiquemos e2e', 'let's test end to end / probemos de punta a punta', 'let's build the end to end tests / armemos los tests end to end', 'let's run the e2e / corramos el e2e', or when every task of a tasks.md is already done and it remains to check that the whole feature works. It is the step after dod-checker's per-task verification: dod-checker verifies a task against its criteria, this skill verifies the whole feature against the spec. It doesn't write the tests or the report on its own — the e2e-test-writer and e2e-triager subagents do that."
 ---
 
 # Verify E2E
 
-`dod-checker` responde «¿T7 cumple R3.2?». Este skill responde otra pregunta: **¿la feature entera funciona?** Son verificaciones distintas y ninguna reemplaza a la otra — 29 tareas en `hecho`, cada una verificada contra sus criterios, siguen sin decir nada sobre si el flujo completo camina de principio a fin.
+`dod-checker` answers "does T7 meet R3.2?". This skill answers another question: **does the whole
+feature work?** They are different verifications and neither replaces the other — 29 tasks `done`,
+each one verified against its criteria, still say nothing about whether the complete flow walks from
+start to finish.
 
-El workflow del proyecto es: brainstorm → requirements + design → plan de tareas → implementación TDD (`implement-task`) → verificación por tarea (`dod-checker`) → **verificación end-to-end (este skill)** → cierre (`close-feature`). Este skill es el paso 7 y se detiene ahí.
+The project's workflow is: brainstorm → requirements + design → task plan → TDD implementation
+(`implement-task`) → per-task verification (`dod-checker`) → **end-to-end verification (this
+skill)** → closing (`close-feature`). This skill is step 7 and stops there.
 
-Producís vos un solo documento: `e2e-tests-plan.md`. Los otros dos productos del ciclo tienen cada uno su propio dueño, y no sos vos: los scripts los escribe el subagente `e2e-test-writer` y el reporte lo escribe el subagente `e2e-triager`. Es la misma regla de un solo productor por documento que rige el resto del proyecto.
+You produce a single document yourself: `e2e-tests-plan.md`. The other two products of the cycle
+each have their own owner, and it isn't you: the scripts are written by the `e2e-test-writer`
+subagent and the report by the `e2e-triager` subagent. It is the same single-producer-per-document
+rule that governs the rest of the project.
 
-## Modos y compuertas
+## Modes and gates
 
-Hay tres compuertas, y **por defecto las tres están activas**. El modo se dice al invocar; no hay archivo de configuración, y no lo agregues: el default vive acá, en este archivo, que es el único lugar que manda sobre este paso.
+There are three gates, and **by default all three are active**. The mode is said when invoking;
+there is no configuration file, and don't add one: the default lives here, in this file, which is
+the only place that rules over this step.
 
-| id | Dónde para | Qué protege |
+| id | Where it stops | What it protects |
 |---|---|---|
-| `plan` | Después de escribir `e2e-tests-plan.md`, antes de generar scripts | Un plan malo produce tres tests malos. Revisarlo es leer un markdown de tres casos. |
-| `scripts` | Después de generar los tests, antes de correrlos | Que no se ejecute código generado sin que nadie lo haya mirado. |
-| `ruteo` | Después del reporte, antes de actuar sobre él | Es la única que muta estado durable: baja una tarea de `hecho` a `en curso` en `tasks.md`. |
+| `plan` | After writing `e2e-tests-plan.md`, before generating scripts | A bad plan produces three bad tests. Reviewing it is reading a three-case markdown. |
+| `scripts` | After generating the tests, before running them | That generated code isn't executed without anyone having looked at it. |
+| `ruteo` | After the report, before acting on it | It is the only one that mutates durable state: it moves a task down from `done` to `in progress` in `tasks.md`. |
 
-Vocabulario exacto, tal como puede venir en la invocación:
+Exact vocabulary, as it may come in the invocation:
 
-- sin nada → las tres activas
-- `--modo autonomo` → ninguna; el ciclo corre del spec al reporte sin parar
-- `--sin plan`, `--sin scripts`, `--sin ruteo` → desactiva esa y solo esa
-- se combinan: `--sin scripts --sin ruteo`
+- nothing → all three active
+- `--modo autonomo` → none; the cycle runs from the spec to the report without stopping
+- `--sin plan`, `--sin scripts`, `--sin ruteo` → turns off that one and only that one
+- they combine: `--sin scripts --sin ruteo`
 
-Dos cuidados. **Desactivá exactamente lo que te dijeron y nada más**: un `--sin scripts` no autoriza a saltear la compuerta de `ruteo`, aunque las dos estén en el mismo ciclo. Y **decí al arrancar qué modo entendiste**, en una línea, antes de hacer nada. Si la persona se equivocó al escribirlo, ese es el único momento barato para descubrirlo.
+Two precautions. **Turn off exactly what you were told and nothing more**: a `--sin scripts`
+doesn't authorize skipping the `ruteo` gate, even though both are in the same cycle. And **say when
+starting which mode you understood**, in one line, before doing anything. If the person mistyped it,
+that is the only cheap moment to find out.
 
-## Fase 1 — Entender el proceso y verificar precondiciones
+## Phase 1 — Understand the process and check preconditions
 
-La carpeta del spec es `docs/AAAA-MM-DD-<feature>/`. Si hay varias y no está claro cuál, preguntá.
+The spec folder is `docs/YYYY-MM-DD-<feature>/`. If there are several and it isn't clear which one,
+ask.
 
-Leé, en este orden: `requirements.md` (los criterios numerados son la materia prima del plan), `design.md` (de ahí sale cuál es la superficie de la app y cómo se levanta) y `tasks.md` (la columna `Estado` dice qué está realmente implementado).
+Read, in this order: `requirements.md` (the numbered criteria are the plan's raw material),
+`design.md` (that's where the app's surface and how to bring it up come from) and `tasks.md` (the
+`Status` column says what is really implemented).
 
-Después comprobá cuatro cosas, y **paralo todo si falla cualquiera**:
+Then check four things, and **stop everything if any of them fails**:
 
-1. **`requirements.md` y `design.md` dicen `aprobado`** en su encabezado. Si no, remití al skill `specify`. Un plan de tests e2e escrito sobre un spec sin aprobar prueba una feature que todavía puede cambiar.
-2. **Hay algo implementado que valga la pena probar.** Si toda la tabla de `tasks.md` está en `pendiente`, no hay nada que verificar de punta a punta todavía. Si algunas tareas están en `hecho` y otras no, decilo y preguntá si vale la pena igual: un e2e sobre una feature a medias falla por diseño, y esos fallos no significan nada.
-3. **La feature tiene superficie navegable.** Leé la sección `## Superficie` de `design.md`. Si
-   declara **no navegable**, esto no es un fallo: es una rama. Decilo con todas las letras y nombrá
-   el **paso 8** (`close-feature`) — no hay e2e que generar para esta feature, y no escribas ningún
-   archivo cuando pares acá. Si declara **navegable**, seguí con la URL (o el `file://`) y cómo se
-   levanta que la misma sección describe.
+1. **`requirements.md` and `design.md` say `approved`** in their header. If not, send them to the
+   `specify` skill. An e2e test plan written on an unapproved spec tests a feature that can still
+   change.
+2. **There is something implemented worth testing.** If the whole `tasks.md` table is `pending`,
+   there is nothing to verify end to end yet. If some tasks are `done` and others aren't, say so and
+   ask whether it's worth it anyway: an e2e on a half-built feature fails by design, and those
+   failures mean nothing.
+3. **The feature has a navigable surface.** Read the `## Surface` section of `design.md`
+   (`## Superficie` in a Spanish project). If it declares **not navigable**, this isn't a failure:
+   it is a branch. Say it plainly and name **step 8** (`close-feature`) — there is no e2e to generate
+   for this feature, and don't write any file when you stop here. If it declares **navigable**,
+   continue with the URL (or the `file://`) and how to bring it up that the same section describes.
 
-   Los specs escritos antes de que existiera esta ranura no la tienen. Para esos, el sondeo de
-   respaldo: buscá un script `dev`/`start`/`serve` en `package.json`, un `index.html`, un servidor,
-   un `baseURL` en `playwright.config.ts`. Si tampoco aparece nada ahí, pará y decilo con todas las
-   letras: sin superficie navegable no hay e2e que generar, y el remedio no es inventarlo ni caer a
-   tests de unidad disfrazados —para eso ya está Vitest— sino construir la interfaz como una
-   feature aparte, con su propio brainstorming.
-4. **El doctor de Playwright da verde.** Corré `node scripts/e2e-doctor.cjs <ruta-del-proyecto>`
-   (la ruta del proyecto, no la del skill). Reemplaza la inspección a ojo por dos comprobaciones
-   mecánicas: la dependencia declarada y resuelta desde el proyecto, y el browser que esa versión
-   espera presente en disco. Si falla, reportalo con el `arreglo` que imprime cada línea
-   (`npm i -D @playwright/test`, `npx playwright install chromium`) y esperá: instalar dependencias
-   o bajar un browser de cientos de megas es una decisión de la persona, no tuya.
+   Specs written before this slot existed don't have it. For those, the fallback probe: look for a
+   `dev`/`start`/`serve` script in `package.json`, an `index.html`, a server, a `baseURL` in
+   `playwright.config.ts`. If nothing shows up there either, stop and say it plainly: without a
+   navigable surface there is no e2e to generate, and the remedy isn't to invent it or to fall back
+   to unit tests in disguise —Vitest is already there for that— but to build the interface as a
+   separate feature, with its own brainstorming.
+4. **The Playwright doctor is green.** Run `node scripts/e2e-doctor.cjs <project-path>` (the
+   project's path, not the skill's). It replaces inspecting by eye with two mechanical checks: the
+   dependency declared and resolved from the project, and the browser that version expects present
+   on disk. If it fails, report it with the fix each line prints (`npm i -D @playwright/test`,
+   `npx playwright install chromium`) and wait: installing dependencies or downloading a browser of
+   hundreds of megabytes is the person's decision, not yours.
 
-Cerrá la fase contando en una línea qué encontraste: la superficie de la app, cómo se levanta, y cuántas tareas hay en `hecho`.
+Close the phase saying in one line what you found: the app's surface, how it is brought up, and how
+many tasks are `done`.
 
-## Fase 2 — El plan de tests e2e
+## Phase 2 — The e2e test plan
 
-Escribí `e2e-tests-plan.md` en la carpeta del spec, siguiendo `assets/e2e-tests-plan-template.md`.
+Write `e2e-tests-plan.md` in the spec folder, following `assets/e2e-tests-plan-template.md`.
 
-**Son exactamente tres casos: uno de happy path y dos de fallo.** No cuatro porque encontraste otro flujo interesante, ni dos porque el tercero se parecía. El número es fijo a propósito: un plan e2e que crece sin techo termina siendo una segunda suite de tests unitarios, lenta y frágil, que nadie corre.
+**There are exactly three cases: one happy path and two failure cases.** Not four because you found
+another interesting flow, nor two because the third looked similar. The number is fixed on purpose:
+an e2e plan that grows without a ceiling ends up being a second suite of unit tests, slow and
+fragile, that nobody runs.
 
-- **El happy path (`E1`)** es el recorrido completo que le da sentido a la feature, de la primera pantalla al resultado observable. Si tenés que elegir entre dos, quedate con el que cruza más criterios de aceptación.
-- **Los dos de fallo (`E2`, `E3`)** salen de los criterios que ya describen un rechazo o un error en `requirements.md` —los `IF ... THEN`— y se citan por id. **No los inventes.** Un caso de fallo inventado prueba una decisión de producto que nadie tomó, y cuando falla no se sabe si el bug está en el código o en el supuesto.
-- Si en `requirements.md` no hay dos criterios de error, decilo: es un hueco del spec, va a **Pendientes** del plan con destinatario `[decidir ya]`, y lo decide una persona. No lo tapes eligiendo cualquier cosa.
+- **The happy path (`E1`)** is the complete journey that gives the feature its meaning, from the
+  first screen to the observable result. If you have to choose between two, keep the one that
+  crosses more acceptance criteria.
+- **The two failure cases (`E2`, `E3`)** come from the criteria that already describe a rejection or
+  an error in `requirements.md` —the `IF ... THEN` ones— and are cited by id. **Don't invent them.**
+  An invented failure case tests a product decision nobody made, and when it fails nobody knows
+  whether the bug is in the code or in the assumption.
+- If `requirements.md` doesn't have two error criteria, say so: it is a gap in the spec, it goes to
+  the plan's **Follow-ups** with recipient `[decide now]`, and a person decides it. Don't cover it
+  up by picking anything.
 
-Cada caso lleva id, título, criterios que cubre, precondiciones, pasos numerados en términos de lo que hace un usuario (no de selectores CSS: eso lo resuelve quien escribe el script) y resultado esperado observable.
+Each case carries an id, a title, the criteria it covers, preconditions, numbered steps in terms of
+what a user does (not CSS selectors: whoever writes the script solves that) and an observable
+expected result.
 
-**Compuerta `plan`:** presentá los tres títulos y los criterios que cubren, decí dónde quedó el archivo, y parate. No sigas sin un sí.
+**`plan` gate:** present the three titles and the criteria they cover, say where the file is, and
+stop. Don't continue without a yes.
 
-## Generar los scripts
+## Generating the scripts
 
-Invocá al subagente **`e2e-test-writer`**, uno solo, pasándole la ruta del plan aprobado y la carpeta destino `end2end/AAAA-MM-DD-<feature>/`. Es el único que escribe ahí; no toques vos los archivos que produce, ni siquiera para un arreglo chico.
+Invoke the **`e2e-test-writer`** subagent, just one, passing it the path of the approved plan and
+the destination folder `end2end/YYYY-MM-DD-<feature>/`. It is the only one that writes there; don't
+touch the files it produces yourself, not even for a small fix.
 
-**Compuerta `scripts`:** contá qué archivos generó y parate antes de correrlos.
+**`scripts` gate:** say which files it generated and stop before running them.
 
-## Correr y diagnosticar
+## Run and diagnose
 
-Invocá al subagente **`e2e-triager`**. Corre los tests, diagnostica cada fallo y escribe `e2e-test-report.md` en la carpeta del spec. Te devuelve además un veredicto estructurado en JSON, que es lo que usás para rutear.
+Invoke the **`e2e-triager`** subagent. It runs the tests, diagnoses each failure and writes
+`e2e-test-report.md` in the spec folder. It also returns a structured verdict in JSON, which is what
+you use to route.
 
-No corras vos los tests antes de invocarlo: la corrida es suya, y una segunda corrida por afuera solo agrega un resultado que después hay que reconciliar.
+Don't run the tests yourself before invoking it: the run is its own, and a second run from outside
+only adds a result that then has to be reconciled.
 
-**Compuerta `ruteo`:** presentá el resumen del reporte y qué pensás hacer con cada fallo, y esperá el sí antes de tocar nada.
+**`ruteo` gate:** present the report's summary and what you plan to do with each failure, and wait
+for the yes before touching anything.
 
-## Ruteo
+## Routing
 
-El campo `ruteo` del veredicto tiene tres destinos, y cada uno es un camino distinto:
+The verdict's `ruteo` field has three destinations, and each one is a different path:
 
-- **`aFase2`** — el test estaba mal escrito. Volvé a la fase 2, corregí **solo esos casos** del plan, y rehacé el ciclo desde ahí. **Máximo dos rondas.** A la tercera, pará y subilo a la persona: un caso que no se estabiliza en dos intentos no es un test mal escrito, es una ambigüedad del spec disfrazada.
-- **`aTDD`** — el fallo es del código. La tarea nombrada vuelve a `en curso` en `tasks.md` y el fallo e2e queda asentado en su `Registro` como el punto de partida. Eso **lo escribís vos**, no el triager: `Estado` y `Registro` son la región de quien implementa, y en este ciclo quien implementa es esta sesión. A partir de ahí el arreglo es el TDD de siempre, con el skill `implement-task`, y la tarea vuelve a `hecho` solo cuando `dod-checker` devuelva `cumple`. El ciclo e2e termina acá; no arranques la reparación en el mismo mensaje.
-- **`aSpecify`** — el test y el código hacen lo que dicen, y lo que está mal es el criterio. Nombrá al skill `specify` para una **enmienda** y pará. No corrijas `requirements.md` vos. Lo que sigue a la enmienda —qué tareas `hecho` se reabren, si hace falta re-planificar— está en el router, «Cuando algo cambia a mitad de camino»; este ciclo e2e se vuelve a correr cuando las tareas afectadas vuelvan a `hecho`.
+- **`aFase2`** — the test was badly written. Go back to phase 2, correct **only those cases** of the
+  plan, and redo the cycle from there. **Two rounds at most.** On the third, stop and take it to the
+  person: a case that doesn't stabilize in two attempts isn't a badly written test, it is an
+  ambiguity of the spec in disguise.
+- **`aTDD`** — the failure is in the code. The named task goes back to `in progress` in `tasks.md`
+  and the e2e failure is recorded in its `Log` as the starting point. **You write that**, not the
+  triager: `Status` and `Log` are the region of whoever implements, and in this cycle whoever
+  implements is this session. From there the fix is the usual TDD, with the `implement-task` skill,
+  and the task goes back to `done` only when `dod-checker` returns `meets`. The e2e cycle ends here;
+  don't start the repair in the same message.
+- **`aSpecify`** — the test and the code do what they say, and what's wrong is the criterion. Name
+  the `specify` skill for an **amendment** and stop. Don't correct `requirements.md` yourself. What
+  follows the amendment —which `done` tasks are reopened, whether re-planning is needed— is in the
+  router, "When something changes midway"; this e2e cycle is run again when the affected tasks are
+  back to `done`.
 
-Un caso en `indeterminado` no se rutea a ningún lado: se cuenta y se sube. Adivinar el destino de un fallo ambiguo cuesta más que preguntarlo.
+A case in `indeterminado` isn't routed anywhere: it is counted and taken to the person. Guessing the
+destination of an ambiguous failure costs more than asking.
 
-Si todo dio verde, decilo y nombrá el **paso 8**, el skill `close-feature`: corre la higiene
-completa sobre el estado final y hace el commit de cierre. No lo arranques vos. Y decilo al cerrar,
-no después, porque este ciclo es justo el que puede invalidar un veredicto viejo — poblar `end2end/`
-ya dejó una vez en rojo el comando que una tarea declaraba en verde, sin que esa tarea cambiara nada.
-El reporte queda como el registro durable de esta corrida.
+If everything came out green, say so and name **step 8**, the `close-feature` skill: it runs the
+full hygiene on the final state and makes the closing commit. Don't start it yourself. And say it
+when closing, not afterwards, because this cycle is exactly the one that can invalidate an old
+verdict — populating `end2end/` once already turned red the command a task declared green, without
+that task changing anything. The report stays as the durable record of this run.
 
-## Por qué no hay un agente que repare el código
+## Why there is no agent that repairs the code
 
-Porque ya existe uno y es el TDD del proyecto. Un fallo e2e cuya causa es el código es un bug en una tarea ya implementada: una tarea que vuelve a `en curso`, con un test rojo de partida que encima ya está escrito. Un agente que editara `src/` para poner el e2e en verde sería un segundo escritor del código, saltearía el ciclo TDD que `CLAUDE.md` fija como regla, y podría cerrar el síntoma dejando la causa. El loop automático de este skill es el del lado del test; el lado del código sale del loop a propósito.
+Because one already exists and it is the project's TDD. An e2e failure whose cause is the code is a
+bug in an already implemented task: a task that goes back to `in progress`, with a red starting test
+that on top of that is already written. An agent that edited `src/` to turn the e2e green would be a
+second writer of the code, would skip the TDD cycle `CLAUDE.md` sets as a rule, and could close the
+symptom leaving the cause. This skill's automatic loop is the one on the test side; the code side
+leaves the loop on purpose.
 
-## Archivos de este skill
+## This skill's files
 
-- `assets/e2e-tests-plan-template.md` — estructura de `e2e-tests-plan.md`
-- `scripts/e2e-doctor.cjs` — la precondición 4: dependencia y browser instalados. `harness-init`
-  también lo invoca, al terminar el paso 0 en un proyecto con superficie navegable.
+- `assets/e2e-tests-plan-template.md` — structure of `e2e-tests-plan.md`
+- `scripts/e2e-doctor.cjs` — precondition 4: dependency and browser installed. `harness-init` also
+  invokes it, at the end of step 0 in a project with a navigable surface.
+
+The gate ids, the flags and the triager's JSON values (`ruteo`, `aFase2`, `aTDD`, `aSpecify`,
+`indeterminado`) are literal vocabulary: they stay as they are in any language. The keywords in the
+documents follow the project's language (see the glossary in `task-format`).
