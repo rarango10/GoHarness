@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
-  "name": "goharness-es",
+  "name": "goharness",
   "version": "0.5.2",
   "description": "Harness de desarrollo asistido: contrato del proyecto -> brainstorm -> spec -> plan con fan-out -> TDD por tarea -> verificacion -> e2e -> cierre",
   "author": {
