@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Use this before any creative or design work in this project - adding a feature, changing behavior, or shaping a new part of the app. Turns a raw idea into a clarified, approved design through clarifying questions and conversation, before any spec is written or any code is touched. Trigger this whenever the user proposes a new feature, asks 'how should we build X', or describes something to add/change and hasn't yet agreed on an approach."
+description: "Use this before any creative or design work in this project - adding a feature, changing behavior, or shaping a new part of the app. Turns a raw idea into a clarified, approved design through clarifying questions and conversation, before any spec is written or any code is touched. Trigger this whenever the user proposes a new feature, asks 'how should we build X', or describes something to add/change and hasn't yet agreed on an approach — in English or Spanish: 'I want to add X / quiero agregar X', 'how should we build Y / cómo construimos Y'."
 ---
 
 # Brainstorming
@@ -26,7 +26,7 @@ Every brainstorm ends with the human partner approving the design before anythin
 
 ## The Process
 
-1. **Explore project context** — check relevant files, docs, and recent commits before asking anything. Don't make the human repeat what's already visible in the repo. **Read the project backlog too**: `docs/pendientes.md`, or whatever tracker `CLAUDE.md` names. If an entry in state `abierto` touches the same code as the new idea, name it by its id (`P2`) and ask whether this feature takes it. A backlog nobody reads at the moment a feature is chosen is a place where findings go to be forgotten. If the answer is yes, the entry becomes part of the approved design, and `specify` names it in `## Alcance`.
+1. **Explore project context** — check relevant files, docs, and recent commits before asking anything. Don't make the human repeat what's already visible in the repo. **Read the project backlog too**: `docs/pendientes.md`, or whatever tracker `CLAUDE.md` names. If an entry in state `open` (`abierto`) touches the same code as the new idea, name it by its id (`P2`) and ask whether this feature takes it. A backlog nobody reads at the moment a feature is chosen is a place where findings go to be forgotten. If the answer is yes, the entry becomes part of the approved design, and `specify` names it in `## Scope` (`## Alcance`).
 2. **Ask clarifying questions, one at a time** — focus on purpose, constraints, and success criteria. Prefer multiple choice when a question has a natural small set of answers; open-ended is fine otherwise. One question per message — if a topic needs more exploration, split it into several questions rather than stacking them.
 3. **Know when to stop asking.** "One at a time" sets the *rate*; this sets the *exit condition*, and without it the rate is all you have. Before you move on, **list the behavioural decisions the request leaves open** — what happens on empty or malformed input, whether something recalculates automatically or only on demand, what a "clear" action clears, which fields are editable. Move on only when that list is empty, or when what remains is written down explicitly as an assumption. A stated assumption is honest; a silent one turns into a numbered acceptance criterion two steps later, and from then on nobody questions it.
 4. **Propose approaches** — once the shape of the idea is clear, offer 1-3 approaches with trade-offs. Lead with the one you'd recommend and say why. Cut anything not needed for the actual request (YAGNI) — a smaller design is easier to approve and easier to build.
@@ -37,16 +37,16 @@ If new complexity turns up mid-conversation that changes the scope significantly
 
 ### When you arrive in the middle of a feature
 
-Sometimes this skill is named from inside a feature that is already being built: a finding changed the problem the feature solves, or an amendment would leave much of the plan without a purpose (see «Cuando algo cambia a mitad de camino» in the `goharness` router). Don't start from zero, and don't quietly reshape the feature. Read what exists — the spec, the plan, what is already `hecho` — and put the choice in front of the person: **close this feature with what it has** (and the new shape becomes a new feature, with its own folder), or **reshape it** (and what is already built gets re-examined against the new design). Either way the approved design, not the code already written, decides what comes next.
+Sometimes this skill is named from inside a feature that is already being built: a finding changed the problem the feature solves, or an amendment would leave much of the plan without a purpose (see "When something changes midway" in the `goharness` router). Don't start from zero, and don't quietly reshape the feature. Read what exists — the spec, the plan, what is already `done` — and put the choice in front of the person: **close this feature with what it has** (and the new shape becomes a new feature, with its own folder), or **reshape it** (and what is already built gets re-examined against the new design). Either way the approved design, not the code already written, decides what comes next.
 
 ### When the feature has to look like something
 
-If the feature has a screen, ask whether there is a visual reference it has to match — a mockup, a prototype, a design skill, a brand. It is one of the decisions from step 3, and the answer ends up in the `## Referencia visual` section of `design.md`: **none**, **orientativa** (inspires, doesn't bind) or **normativa** (the result has to look like it), plus where it lives.
+If the feature has a screen, ask whether there is a visual reference it has to match — a mockup, a prototype, a design skill, a brand. It is one of the decisions from step 3, and the answer ends up in the `## Visual reference` (`## Referencia visual`) section of `design.md`: **none**, **guiding** (inspires, doesn't bind; `orientativa`) or **binding** (the result has to look like it; `normativa`), plus where it lives.
 
-If it is normativa:
+If it is binding:
 
 - **Go to the source.** If the reference comes from a skill, invoke the skill — don't read a copy or a summary that lives in the repo, even when `CLAUDE.md` points at the copy. Summaries lose exactly what nobody was looking at: that is how a whole layout went missing once.
-- **Walk the reference piece by piece and classify every part: `adoptar` / `adaptar` / `descartar`**, with the reason when it isn't obvious. This table is part of the design you present for approval. Whatever isn't named is dropped by omission, and nobody notices until the app is opened, two steps after the feature was closed.
+- **Walk the reference piece by piece and classify every part: `adopt` / `adapt` / `discard`** (`adoptar` / `adaptar` / `descartar`), with the reason when it isn't obvious. This table is part of the design you present for approval. Whatever isn't named is dropped by omission, and nobody notices until the app is opened, two steps after the feature was closed.
 - **Watch for the question that eats the step.** One big technical decision — a dependency, whether to use JavaScript at all — can take the whole conversation and leave the table unwritten. A question being important doesn't make it the only one.
 
 The reference covers how it looks. How it behaves still goes through ordinary acceptance criteria.
@@ -81,6 +81,6 @@ Smaller, well-bounded units are also easier to reason about and edit reliably �
 
 ## After Approval
 
-Once the human approves the design, stop. Confirm the design is approved and restate that the next step is the **`specify` skill**, which turns the approved design into `requirements.md` and then `design.md`, under `docs/AAAA-MM-DD-<feature>/`. You already named it when you asked for the yes, so this is a confirmation rather than the first they hear of it. The task plan (`tasks.md`) comes after that and is a separate step — the `planning-tasks` skill — so don't promise it as part of `specify`. Name the next skill, don't start it: which skill comes next is information they need, deciding when to run it is theirs.
+Once the human approves the design, stop. Confirm the design is approved and restate that the next step is the **`specify` skill**, which turns the approved design into `requirements.md` and then `design.md`, under `docs/YYYY-MM-DD-<feature>/`. You already named it when you asked for the yes, so this is a confirmation rather than the first they hear of it. The task plan (`tasks.md`) comes after that and is a separate step — the `planning-tasks` skill — so don't promise it as part of `specify`. Name the next skill, don't start it: which skill comes next is information they need, deciding when to run it is theirs.
 
 A short or casual approval ("go ahead", "sure", "do it") still counts as approving the design — it does not extend to drafting the spec in the same message. Name the next step and stop there, even if the user's tone suggests they're in a hurry.
