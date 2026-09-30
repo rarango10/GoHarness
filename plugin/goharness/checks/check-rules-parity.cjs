@@ -2,36 +2,36 @@
 'use strict';
 
 /**
- * Guarda de paridad (L42).
+ * Parity guard (L42).
  *
- * Dos cosas del método viven escritas en más de un lugar, y nada comprobaba que dijeran lo mismo:
+ * Two things of the method live written in more than one place, and nothing checked that they
+ * said the same:
  *
- *   - Las reglas del router (`SKILL.md`)      ↔  las «Reglas» de `CLAUDE.template.md`.
- *   - La tabla del ciclo del router            ↔  la tabla del ciclo de la plantilla.
+ *   - The router's rules (`SKILL.md`)          ↔  the "Rules" of `CLAUDE.template.md`.
+ *   - The router's cycle table                 ↔  the template's cycle table.
  *
- * Una regla que se arregla en un lado y no en el otro no rompe nada visible: el plugin sigue
- * validando, y el proyecto que se siembre mañana nace con la versión vieja. Este script convierte
- * eso en un rojo.
+ * A rule fixed on one side and not the other breaks nothing visible: the plugin still validates,
+ * and the project seeded tomorrow is born with the old version. This script turns that into a red.
  *
- * **Las reglas se comparan por etiqueta, no por redacción.** Cada regla lleva arriba un comentario
- * invisible, `<!-- regla: done-means-verified -->`, igual que los casilleros llevan
- * `<!-- ranura: … -->`. Antes la identidad era el título en negrita, y eso alcanzaba mientras todo
- * estuviera en un idioma; al traducir, «`hecho` significa verificado» y «`done` means verified»
- * serían dos reglas distintas. La etiqueta no se traduce nunca.
+ * **Rules are compared by tag, not by wording.** Every rule carries an invisible comment above it,
+ * `<!-- regla: done-means-verified -->`, just like the slots carry `<!-- ranura: … -->`. Before,
+ * the identity was the bold title, and that was enough while everything was in one language; once
+ * translated, "`hecho` significa verificado" and "`done` means verified" would be two different
+ * rules. The tag is never translated.
  *
- * El router resume: tiene 4 reglas y la plantilla 11, y su cuarta junta dos de la plantilla (por
- * eso lleva dos etiquetas). Así que la comparación va en una sola dirección: toda etiqueta del
- * router tiene que existir en la plantilla.
+ * The router summarizes: it has 4 rules and the template 11, and its fourth one joins two of the
+ * template's (that is why it carries two tags). So the comparison goes in a single direction: every
+ * tag of the router has to exist in the template.
  *
- * Y una regla sin etiqueta es un rojo: si no, una regla nueva escrita sin marca quedaría afuera de
- * la comparación sin que nadie lo note.
+ * And a rule without a tag is a red: otherwise, a new rule written without a mark would stay out of
+ * the comparison without anyone noticing.
  *
- * Hasta la 0.5.2 comparaba además el `CLAUDE.md` del repo, que era el contrato de la calculadora.
- * Ese archivo se quedó en `GoHarness-es`; la comparación entre la plantilla en inglés y en español
- * llega en la fase 4 de la mudanza.
+ * Up to 0.5.2 it also compared the repo's own `CLAUDE.md`, which was the calculator's contract.
+ * That file stayed in `GoHarness-es`; the comparison between the English and the Spanish template
+ * arrives in phase 4 of the move.
  *
- * Uso: node plugin/goharness/checks/check-rules-parity.cjs
- * Sale 0 si hay paridad, 1 si no.
+ * Usage: node plugin/goharness/checks/check-rules-parity.cjs
+ * Exits 0 if there is parity, 1 if not.
  */
 
 const fs = require('node:fs');
@@ -39,134 +39,134 @@ const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..', '..', '..');
 
-const FUENTES = {
-  plantilla: {
-    rotulo: 'CLAUDE.template.md (harness-init)',
-    archivo: path.join(ROOT, 'plugin/goharness/skills/harness-init/assets/CLAUDE.template.md'),
+const SOURCES = {
+  template: {
+    label: 'CLAUDE.template.md (harness-init)',
+    file: path.join(ROOT, 'plugin/goharness/skills/harness-init/assets/CLAUDE.template.md'),
   },
   router: {
-    rotulo: 'SKILL.md (router)',
-    archivo: path.join(ROOT, 'plugin/goharness/SKILL.md'),
+    label: 'SKILL.md (router)',
+    file: path.join(ROOT, 'plugin/goharness/SKILL.md'),
   },
 };
 
-const ETIQUETA = /^<!--\s*regla:\s*([\w-]+)\s*-->$/;
+const TAG = /^<!--\s*regla:\s*([\w-]+)\s*-->$/;
 
-function leer(fuente) {
-  if (!fs.existsSync(fuente.archivo)) {
-    throw new Error(`No existe ${path.relative(ROOT, fuente.archivo)}`);
+function read(source) {
+  if (!fs.existsSync(source.file)) {
+    throw new Error(`${path.relative(ROOT, source.file)} does not exist`);
   }
-  const texto = fs.readFileSync(fuente.archivo, 'utf8');
-  // Los comentarios HTML se descartan antes de parsear, salvo las etiquetas de regla. La plantilla
-  // cierra su sección de reglas con un bloque `<!-- Qué NO va en este archivo -->` que tiene sus
-  // propios bullets: son notas para quien edita la plantilla, no reglas del método.
-  return texto.replace(/<!--(?!\s*regla:)[\s\S]*?-->/g, '');
+  const text = fs.readFileSync(source.file, 'utf8');
+  // HTML comments are dropped before parsing, except the rule tags. The template closes its rules
+  // section with a "what does NOT go in this file" comment block that has its own bullets: they
+  // are notes for whoever edits the template, not rules of the method.
+  return text.replace(/<!--(?!\s*regla:)[\s\S]*?-->/g, '');
 }
 
 /**
- * Las reglas de un archivo, como lista de etiquetas. La lista de reglas se ubica por las etiquetas
- * y no por el título de su sección, para que traducir el título no la haga desaparecer: arranca en
- * la primera etiqueta y termina en el primer encabezado que viene después.
+ * A file's rules, as a list of tags. The list of rules is located by the tags and not by its
+ * section's title, so translating the title doesn't make it disappear: it starts at the first tag
+ * and ends at the first heading that comes after it.
  *
- * Cada ítem de primer nivel (`- ` o `1. `) es una regla y tiene que tener al menos una etiqueta
- * justo arriba. Los ítems `- <...>` son huecos para que los complete el proyecto, no reglas.
+ * Each top-level item (`- ` or `1. `) is a rule and has to have at least one tag right above it.
+ * The `- <...>` items are gaps for the project to fill in, not rules.
  */
-function reglas(texto, rotulo, errores) {
-  const lineas = texto.split('\n');
-  const desde = lineas.findIndex((l) => ETIQUETA.test(l.trim()));
-  if (desde === -1) {
-    errores.push(`${rotulo}: no tiene ninguna etiqueta \`<!-- regla: … -->\`.`);
+function rules(text, label, errors) {
+  const lines = text.split('\n');
+  const from = lines.findIndex((l) => TAG.test(l.trim()));
+  if (from === -1) {
+    errors.push(`${label}: it has no \`<!-- regla: … -->\` tag.`);
     return [];
   }
-  const etiquetas = [];
-  let pendientes = [];
-  for (const linea of lineas.slice(desde)) {
-    if (/^#{1,6}\s/.test(linea)) break;
-    const m = linea.trim().match(ETIQUETA);
+  const tags = [];
+  let waiting = [];
+  for (const line of lines.slice(from)) {
+    if (/^#{1,6}\s/.test(line)) break;
+    const m = line.trim().match(TAG);
     if (m) {
-      pendientes.push(m[1]);
-    } else if (/^(- |\d+\. )/.test(linea) && !/^- </.test(linea)) {
-      if (pendientes.length === 0) {
-        errores.push(`${rotulo}: regla sin etiqueta:\n    «${linea.trim().slice(0, 70)}…»`);
+      waiting.push(m[1]);
+    } else if (/^(- |\d+\. )/.test(line) && !/^- </.test(line)) {
+      if (waiting.length === 0) {
+        errors.push(`${label}: rule without a tag:\n    "${line.trim().slice(0, 70)}…"`);
       }
-      etiquetas.push(...pendientes);
-      pendientes = [];
+      tags.push(...waiting);
+      waiting = [];
     }
   }
-  if (pendientes.length > 0) {
-    errores.push(`${rotulo}: etiqueta sin regla debajo: ${pendientes.join(', ')}.`);
+  if (waiting.length > 0) {
+    errors.push(`${label}: tag without a rule below it: ${waiting.join(', ')}.`);
   }
-  for (const e of new Set(etiquetas)) {
-    if (etiquetas.indexOf(e) !== etiquetas.lastIndexOf(e)) {
-      errores.push(`${rotulo}: la etiqueta «${e}» está repetida.`);
+  for (const t of new Set(tags)) {
+    if (tags.indexOf(t) !== tags.lastIndexOf(t)) {
+      errors.push(`${label}: the tag "${t}" is repeated.`);
     }
   }
-  return etiquetas;
+  return tags;
 }
 
-/** Filas de la tabla del ciclo: `| 4 | tasks.md | skill planning-tasks → workflow ... | ... |`. */
-function tablaDelCiclo(texto) {
-  const filas = new Map();
-  for (const linea of texto.split('\n')) {
-    const m = linea.match(/^\|\s*(\d+)\s*\|([^|]*)\|([^|]*)\|/);
+/** Rows of the cycle table: `| 4 | tasks.md | skill planning-tasks → workflow ... | ... |`. */
+function cycleTable(text) {
+  const rows = new Map();
+  for (const line of text.split('\n')) {
+    const m = line.match(/^\|\s*(\d+)\s*\|([^|]*)\|([^|]*)\|/);
     if (!m) continue;
-    const paso = Number(m[1]);
-    // El productor se identifica por los nombres entre backticks, no por la prosa que los rodea:
-    // el router dice «skill `specify`, fase 1» y la plantilla podría decirlo de otra forma.
-    const productores = [...m[3].matchAll(/`([^`]+)`/g)].map((x) => x[1]);
-    filas.set(paso, productores.join(' + '));
+    const step = Number(m[1]);
+    // The producer is identified by the names between backticks, not by the prose around them:
+    // the router says "skill `specify`, phase 1" and the template could say it another way.
+    const producers = [...m[3].matchAll(/`([^`]+)`/g)].map((x) => x[1]);
+    rows.set(step, producers.join(' + '));
   }
-  return filas;
+  return rows;
 }
 
-function diferenciaDeConjuntos(a, b) {
+function setDifference(a, b) {
   return [...a].filter((x) => !b.has(x));
 }
 
 function main() {
-  const errores = [];
+  const errors = [];
 
-  const textos = {
-    plantilla: leer(FUENTES.plantilla),
-    router: leer(FUENTES.router),
+  const texts = {
+    template: read(SOURCES.template),
+    router: read(SOURCES.router),
   };
 
-  // --- Reglas ---
-  const reglasPlantilla = new Set(reglas(textos.plantilla, FUENTES.plantilla.rotulo, errores));
-  const reglasRouter = new Set(reglas(textos.router, FUENTES.router.rotulo, errores));
-  for (const r of diferenciaDeConjuntos(reglasRouter, reglasPlantilla)) {
-    errores.push(`Regla «${r}» del router, falta en la plantilla.`);
+  // --- Rules ---
+  const templateRules = new Set(rules(texts.template, SOURCES.template.label, errors));
+  const routerRules = new Set(rules(texts.router, SOURCES.router.label, errors));
+  for (const r of setDifference(routerRules, templateRules)) {
+    errors.push(`Rule "${r}" of the router is missing from the template.`);
   }
 
-  // --- Tabla del ciclo ---
-  const tablaRouter = tablaDelCiclo(textos.router);
-  const tablaPlantilla = tablaDelCiclo(textos.plantilla);
-  const pasos = new Set([...tablaRouter.keys(), ...tablaPlantilla.keys()]);
-  for (const paso of [...pasos].sort((a, b) => a - b)) {
-    const enRouter = tablaRouter.get(paso);
-    const enPlantilla = tablaPlantilla.get(paso);
-    if (enRouter === undefined) {
-      errores.push(`Paso ${paso}: está en la plantilla y falta en el router.`);
-    } else if (enPlantilla === undefined) {
-      errores.push(`Paso ${paso}: está en el router y falta en la plantilla.`);
-    } else if (enRouter !== enPlantilla) {
-      errores.push(
-        `Paso ${paso}: productores distintos.\n    router:    ${enRouter}\n    plantilla: ${enPlantilla}`,
+  // --- Cycle table ---
+  const routerTable = cycleTable(texts.router);
+  const templateTable = cycleTable(texts.template);
+  const steps = new Set([...routerTable.keys(), ...templateTable.keys()]);
+  for (const step of [...steps].sort((a, b) => a - b)) {
+    const inRouter = routerTable.get(step);
+    const inTemplate = templateTable.get(step);
+    if (inRouter === undefined) {
+      errors.push(`Step ${step}: it is in the template and missing from the router.`);
+    } else if (inTemplate === undefined) {
+      errors.push(`Step ${step}: it is in the router and missing from the template.`);
+    } else if (inRouter !== inTemplate) {
+      errors.push(
+        `Step ${step}: different producers.\n    router:   ${inRouter}\n    template: ${inTemplate}`,
       );
     }
   }
 
-  if (errores.length > 0) {
-    console.error('Deriva entre la plantilla y el router:\n');
-    for (const e of errores) console.error(`  - ${e}`);
+  if (errors.length > 0) {
+    console.error('Drift between the template and the router:\n');
+    for (const e of errors) console.error(`  - ${e}`);
     console.error(
-      '\nUna regla que se arregla en un lado y no en el otro nace vieja en el próximo proyecto.',
+      '\nA rule fixed on one side and not the other is born old in the next project.',
     );
     process.exit(1);
   }
 
   console.log(
-    `Paridad de reglas: sin deriva (${reglasPlantilla.size} reglas en la plantilla, ${reglasRouter.size} etiquetas en el router, ${pasos.size} pasos del ciclo).`,
+    `Rule parity: no drift (${templateRules.size} rules in the template, ${routerRules.size} tags in the router, ${steps.size} steps in the cycle).`,
   );
 }
 
