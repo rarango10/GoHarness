@@ -15,8 +15,13 @@ import sys
 from pathlib import Path
 
 EARS_KW = ["WHEN", "IF", "THEN", "WHILE", "WHERE", "THE SYSTEM SHALL"]
-DESIGN_SECTIONS = ["Arquitectura", "Flujo de datos", "Interfaces",
-                   "Modelos de datos", "Manejo de errores", "Estrategia de testing"]
+# Los nombres que el chequeo busca, en los dos idiomas del harness: (español, inglés). Un
+# documento cumple con cualquiera de los dos. Los nombres en inglés son los de las plantillas en
+# inglés; si cambian ahí, cambian acá.
+DESIGN_SECTIONS = [("Arquitectura", "Architecture"), ("Flujo de datos", "Data flow"),
+                   ("Interfaces", "Interfaces"), ("Modelos de datos", "Data models"),
+                   ("Manejo de errores", "Error handling"),
+                   ("Estrategia de testing", "Testing strategy")]
 
 # Pistas de implementación que no deberían aparecer dentro de un criterio.
 #
@@ -53,7 +58,7 @@ def criterios_de(texto: str):
         if re.match(r"^####\s", linea):
             cerrar()
             buffer, num = [], None
-            en_bloque = "criterios de aceptaci" in linea.lower()
+            en_bloque = any(k in linea.lower() for k in ("criterios de aceptaci", "acceptance criteria"))
             continue
         if not en_bloque:
             continue
@@ -147,7 +152,8 @@ def revisar(run_dir: Path, root: Path):
         print(f"  user stories: {len(stories)}")
         print(f"  criterios detectados: {len(crit)}  |  que abren con keyword EARS: {len(con_kw)}")
         print(f"  keywords traducidas (DEBERÁ/CUANDO): {len(re.findall(r'DEBERÁ|CUANDO ', t))}")
-        print(f"  secciones Alcance/Supuestos: {'Alcance' in t}/{'Supuesto' in t}")
+        print(f"  secciones Alcance/Supuestos: {'Alcance' in t or 'Scope' in t}"
+              f"/{'Supuesto' in t or 'Assumption' in t}")
 
         fugas = filtraciones(crit)
         if fugas:
@@ -169,16 +175,17 @@ def revisar(run_dir: Path, root: Path):
 
     if des:
         t = des.read_text()
-        faltan = [s for s in DESIGN_SECTIONS if s.lower() not in t.lower()]
+        faltan = [es for es, en in DESIGN_SECTIONS
+                  if es.lower() not in t.lower() and en.lower() not in t.lower()]
         refs = sorted(set(re.findall(r"\bR\d+\.\d+\b", t)))
         print(f"\n[design.md]  secciones faltantes: {faltan or 'ninguna'}")
-        print(f"  menciones 'Cubre': {len(re.findall(r'Cubre', t))}")
+        print(f"  menciones 'Cubre': {len(re.findall(r'Cubre|Covers', t))}")
         print(f"  ids de criterio referenciados: {len(refs)}")
         if req:
             ids_req = {c[0] for c in criterios_de(req.read_text())}
             sin_cubrir = sorted(ids_req - set(refs))
             print(f"  criterios sin ninguna referencia en el design: {sin_cubrir or 'ninguno'}")
-        print(f"  tabla de alternativas descartadas: {'descart' in t.lower()}")
+        print(f"  tabla de alternativas descartadas: {'descart' in t.lower() or 'rejected alternatives' in t.lower()}")
 
     if not docs:
         print("\n(no se produjo ningún documento)")
