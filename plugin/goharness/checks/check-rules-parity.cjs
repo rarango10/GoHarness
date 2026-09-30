@@ -9,6 +9,7 @@
  *
  *   - The router's rules (`SKILL.md`)          ↔  the "Rules" of `CLAUDE.template.md`.
  *   - The router's cycle table                 ↔  the template's cycle table.
+ *   - Each template in `assets/es/`            ↔  its twin in `assets/en/`.
  *
  * A rule fixed on one side and not the other breaks nothing visible: the plugin still validates,
  * and the project seeded tomorrow is born with the old version. This script turns that into a red.
@@ -26,9 +27,17 @@
  * And a rule without a tag is a red: otherwise, a new rule written without a mark would stay out of
  * the comparison without anyone noticing.
  *
+ * The contract template exists in English and in Spanish, and the router is compared against both.
+ *
+ * **The two languages are compared by structure, not by wording.** The two contract templates have
+ * to carry the same `regla` and `ranura` marks in the same order, and the same cycle table. Every
+ * template has to have its twin in the other language, with the same skeleton: the same heading
+ * levels in the same order, and as many table rows and hidden comments. That catches the typical
+ * drift —a section added in one language and forgotten in the other— without pretending to judge a
+ * translation.
+ *
  * Up to 0.5.2 it also compared the repo's own `CLAUDE.md`, which was the calculator's contract.
- * That file stayed in `GoHarness-es`; the comparison between the English and the Spanish template
- * arrives in phase 4 of the move.
+ * That file stayed in `GoHarness-es`.
  *
  * Usage: node plugin/goharness/checks/check-rules-parity.cjs
  * Exits 0 if there is parity, 1 if not.
@@ -39,16 +48,21 @@ const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..', '..', '..');
 
+const SKILLS = path.join(ROOT, 'plugin/goharness/skills');
+const LANGS = ['en', 'es'];
+
 const SOURCES = {
-  template: {
-    label: 'CLAUDE.template.md (harness-init)',
-    file: path.join(ROOT, 'plugin/goharness/skills/harness-init/assets/es/CLAUDE.template.md'),
-  },
   router: {
     label: 'SKILL.md (router)',
     file: path.join(ROOT, 'plugin/goharness/SKILL.md'),
   },
 };
+for (const lang of LANGS) {
+  SOURCES[lang] = {
+    label: `${lang}/CLAUDE.template.md (harness-init)`,
+    file: path.join(SKILLS, 'harness-init/assets', lang, 'CLAUDE.template.md'),
+  };
+}
 
 const TAG = /^<!--\s*regla:\s*([\w-]+)\s*-->$/;
 
@@ -119,45 +133,120 @@ function cycleTable(text) {
   return rows;
 }
 
+/** The `regla` and `ranura` marks of a file, in order, as `regla:tdd`, `ranura:stack`… */
+function marks(raw) {
+  return [...raw.matchAll(/<!--\s*(regla|ranura):\s*([\w-]+)\s*-->/g)].map((m) => `${m[1]}:${m[2]}`);
+}
+
+/**
+ * What must match between a template and its twin: the heading levels in order, the table rows and
+ * the hidden comments. Lines inside code fences don't count as headings (`# comment` in bash).
+ */
+function skeleton(raw) {
+  let fenced = false;
+  const headings = [];
+  let tableRows = 0;
+  for (const line of raw.split('\n')) {
+    if (line.startsWith('```')) fenced = !fenced;
+    if (fenced) continue;
+    const h = line.match(/^(#{1,6})\s/);
+    if (h) headings.push(h[1].length);
+    if (line.startsWith('|')) tableRows++;
+  }
+  return {
+    headings: headings.join(' '),
+    tableRows,
+    comments: (raw.match(/<!--/g) || []).length,
+  };
+}
+
+/** Every `skills/<skill>/assets/<lang>/*.md`, as `<skill>/<file>` → set of languages it exists in. */
+function templatesByLang() {
+  const found = new Map();
+  for (const skill of fs.readdirSync(SKILLS)) {
+    for (const lang of LANGS) {
+      const dir = path.join(SKILLS, skill, 'assets', lang);
+      if (!fs.existsSync(dir)) continue;
+      for (const file of fs.readdirSync(dir).filter((x) => x.endsWith('.md'))) {
+        const key = `${skill}/${file}`;
+        if (!found.has(key)) found.set(key, new Set());
+        found.get(key).add(lang);
+      }
+    }
+  }
+  return found;
+}
+
 function setDifference(a, b) {
   return [...a].filter((x) => !b.has(x));
 }
 
 function main() {
   const errors = [];
+  const router = read(SOURCES.router);
+  const routerRules = new Set(rules(router, SOURCES.router.label, errors));
+  const routerTable = cycleTable(router);
+  let templateRules = 0;
 
-  const texts = {
-    template: read(SOURCES.template),
-    router: read(SOURCES.router),
-  };
+  // --- Router ↔ each contract template ---
+  for (const lang of LANGS) {
+    const source = SOURCES[lang];
+    const text = read(source);
+    const tRules = new Set(rules(text, source.label, errors));
+    templateRules = tRules.size;
+    for (const r of setDifference(routerRules, tRules)) {
+      errors.push(`Rule "${r}" of the router is missing from ${source.label}.`);
+    }
 
-  // --- Rules ---
-  const templateRules = new Set(rules(texts.template, SOURCES.template.label, errors));
-  const routerRules = new Set(rules(texts.router, SOURCES.router.label, errors));
-  for (const r of setDifference(routerRules, templateRules)) {
-    errors.push(`Rule "${r}" of the router is missing from the template.`);
+    const tTable = cycleTable(text);
+    const steps = new Set([...routerTable.keys(), ...tTable.keys()]);
+    for (const step of [...steps].sort((a, b) => a - b)) {
+      const inRouter = routerTable.get(step);
+      const inTemplate = tTable.get(step);
+      if (inRouter === undefined) {
+        errors.push(`Step ${step}: it is in ${source.label} and missing from the router.`);
+      } else if (inTemplate === undefined) {
+        errors.push(`Step ${step}: it is in the router and missing from ${source.label}.`);
+      } else if (inRouter !== inTemplate) {
+        errors.push(
+          `Step ${step}: different producers.\n    router:   ${inRouter}\n    ${lang}: ${inTemplate}`,
+        );
+      }
+    }
   }
 
-  // --- Cycle table ---
-  const routerTable = cycleTable(texts.router);
-  const templateTable = cycleTable(texts.template);
-  const steps = new Set([...routerTable.keys(), ...templateTable.keys()]);
-  for (const step of [...steps].sort((a, b) => a - b)) {
-    const inRouter = routerTable.get(step);
-    const inTemplate = templateTable.get(step);
-    if (inRouter === undefined) {
-      errors.push(`Step ${step}: it is in the template and missing from the router.`);
-    } else if (inTemplate === undefined) {
-      errors.push(`Step ${step}: it is in the router and missing from the template.`);
-    } else if (inRouter !== inTemplate) {
-      errors.push(
-        `Step ${step}: different producers.\n    router:   ${inRouter}\n    template: ${inTemplate}`,
-      );
+  // --- The two contract templates carry the same marks, in the same order ---
+  const [enMarks, esMarks] = LANGS.map((l) => marks(fs.readFileSync(SOURCES[l].file, 'utf8')));
+  if (enMarks.join() !== esMarks.join()) {
+    const onlyEn = enMarks.filter((m) => !esMarks.includes(m));
+    const onlyEs = esMarks.filter((m) => !enMarks.includes(m));
+    errors.push(
+      'The marks of the contract templates differ' +
+        (onlyEn.length || onlyEs.length
+          ? ` (only in en: ${onlyEn.join(', ') || '—'}; only in es: ${onlyEs.join(', ') || '—'}).`
+          : ': same marks, different order.'),
+    );
+  }
+
+  // --- Every template has its twin, with the same skeleton ---
+  const templates = templatesByLang();
+  for (const [key, langs] of templates) {
+    const missing = LANGS.filter((l) => !langs.has(l));
+    if (missing.length) {
+      errors.push(`${key}: it has no twin in ${missing.join(', ')}.`);
+      continue;
+    }
+    const [skill, file] = key.split('/');
+    const [en, es] = LANGS.map((l) =>
+      skeleton(fs.readFileSync(path.join(SKILLS, skill, 'assets', l, file), 'utf8')),
+    );
+    for (const k of Object.keys(en)) {
+      if (en[k] !== es[k]) errors.push(`${key}: different ${k} (en: ${en[k]} · es: ${es[k]}).`);
     }
   }
 
   if (errors.length > 0) {
-    console.error('Drift between the template and the router:\n');
+    console.error('Drift between the templates and the router:\n');
     for (const e of errors) console.error(`  - ${e}`);
     console.error(
       '\nA rule fixed on one side and not the other is born old in the next project.',
@@ -166,7 +255,7 @@ function main() {
   }
 
   console.log(
-    `Rule parity: no drift (${templateRules.size} rules in the template, ${routerRules.size} tags in the router, ${steps.size} steps in the cycle).`,
+    `Parity: no drift (${templateRules} rules in each contract template, ${routerRules.size} tags in the router, ${routerTable.size} steps in the cycle, ${templates.size} templates in en and es).`,
   );
 }
 
