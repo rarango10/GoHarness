@@ -43,6 +43,29 @@ a `hecho`.
 
 De lo que se anota, hay una categoría que no puede quedar en silencio: **el desvío respecto del design**. Si la implementación terminó haciendo algo distinto de lo diseñado, se registra en la tarea y `design.md` se enmienda con el skill `specify`, no a mano desde la tarea. Un desvío sin registrar rompe la trazabilidad sin que se note, porque el documento sigue leyéndose como si describiera lo que existe.
 
+## Glosario
+
+Estas palabras no son prosa: son señales entre agentes. Un agente escribe `cumple` y otro lo lee
+para pasar la tarea a `hecho`; si uno escribe una palabra y el otro espera otra, la cadena se corta
+sin ningún error visible. Por eso cada una tiene una forma **canónica, en inglés**, y un alias en
+español. Las dos formas significan exactamente lo mismo. **Por ahora, al escribir usá el alias en
+español**: es el que esperan hoy los demás agentes.
+
+| Canónica | Alias en español | Dónde vive |
+|---|---|---|
+| `pending` · `in progress` · `done` | `pendiente` · `en curso` · `hecho` | columna de estado del plan |
+| `meets` · `partially-meets` · `does-not-meet` · `unverifiable` | `cumple` · `cumple-parcial` · `no-cumple` · `no-verificable` | veredicto de `dod-checker` sobre la tarea |
+| `no-evidence` | `sin-evidencia` | veredicto de `dod-checker` sobre un criterio |
+| `pending approval` · `approved` · `amended` | `pendiente de aprobación` · `aprobado` · `enmendado` | encabezado de `requirements.md`, `design.md` y `tasks.md` |
+| `Status` · `Covers` · `Goal` · `First test (red)` · `Note` | `Estado` · `Cubre` · `Objetivo` · `Primer test (rojo)` · `Nota` | campos de una tarea |
+| `Covers none because` · `Ids issued` · `Criteria without a task` | `Por qué no cubre criterios` · `Ids emitidos` · `Criterios sin tarea asignada` | campos del plan |
+| `Log` · `Verification` · `Previous verification (superseded)` | `Registro` · `Verificación` · `Verificación previa (superada)` | lo que escribe quien implementa |
+| `Journal` · `Follow-ups` | `Bitácora` · `Pendientes` | títulos de sección de `tasks.md` |
+| `[step N]` · `[decide now]` · `[backlog]` | `[paso N]` · `[decidir ya]` · `[backlog]` | destinatario de un pendiente |
+
+`Registro` y `Bitácora` se dirían las dos «log» en inglés: por eso la sección es `Journal`. Y la
+sección `Pendientes` es `Follow-ups` para no chocar con el estado `pending` de una tarea.
+
 ## Archivos de este skill
 
 - `assets/tasks-template.md` — estructura de `tasks.md` (plan + bitácora + pendientes)
