@@ -1,63 +1,68 @@
 export const meta = {
   name: 'tasks-fanout',
-  description: 'Crea o itera el tasks.md de cualquier spec aprobado con fan-out: scout unico, un revisor por tarea en paralelo, un reducer que resuelve conflictos y un unico escritor.',
-  // Un {title} por cada llamada a phase(), matcheado EXACTO. Por eso los titulos son
-  // estaticos: meta tiene que ser un literal puro, asi que un titulo interpolado con
-  // ${...} no puede matchear nunca y la fase desaparece de la vista de progreso sin
-  // ningun error. Lo que varia por corrida va en el label; lo que estructura el
-  // workflow va en el title.
+  description: 'Creates or iterates the tasks.md of any approved spec with fan-out: a single scout, one reviewer per task in parallel, a reducer that resolves conflicts and a single writer.',
+  // One {title} per call to phase(), matched EXACTLY. That is why the titles are
+  // static: meta has to be a pure literal, so a title interpolated with ${...} can
+  // never match and the phase disappears from the progress view without any error.
+  // What varies per run goes in the label; what structures the workflow goes in the
+  // title.
   phases: [
-    { title: 'Reconocimiento del spec' },
-    { title: 'Plan inicial desde cero' },
-    { title: 'Revision de tareas' },
-    { title: 'Reduccion' },
-    { title: 'Chequeo de consistencia' },
-    { title: 'Escritura de tasks.md' },
+    { title: 'Spec survey' },
+    { title: 'Initial plan from scratch' },
+    { title: 'Task review' },
+    { title: 'Reduction' },
+    { title: 'Consistency check' },
+    { title: 'Writing tasks.md' },
   ],
 }
 
 // ---------------------------------------------------------------------------
-// Arquitectura
+// Architecture
 //
-//   scout (1 agente, lectura)  ->  router (JS puro)  ->  from scratch | iterativo
-//                                                              \        /
-//                                                        fan-out de revisores
-//                                                        (1 agente por tarea)
-//                                                                 |
-//                                                        reduce en JS (0 tokens)
-//                                                                 |
-//                                                        reducer (1 agente)
-//                                                                 |
-//                                            tareas nuevas? -> otra ronda de fan-out
-//                                                                 |
-//                                                        writer (1 agente, unico
-//                                                        que escribe tasks.md)
+//   scout (1 agent, read)  ->  router (pure JS)  ->  from scratch | iterative
+//                                                          \        /
+//                                                     reviewer fan-out
+//                                                     (1 agent per task)
+//                                                              |
+//                                                     reduce in JS (0 tokens)
+//                                                              |
+//                                                     reducer (1 agent)
+//                                                              |
+//                                          new tasks? -> another fan-out round
+//                                                              |
+//                                                     writer (1 agent, the only
+//                                                     one that writes tasks.md)
 //
-// El fan-out es posible porque el juicio esta separado de la escritura. Un planificador
-// que escribe tasks.md no se puede paralelizar: varios agentes editando el mismo archivo
-// son una condicion de carrera y gana el ultimo que guarda. Aca los revisores devuelven
-// veredictos tipados y nunca tocan el disco.
+// The fan-out is possible because judgment is separated from writing. A planner that
+// writes tasks.md can't be parallelized: several agents editing the same file are a race
+// condition and the last one to save wins. Here the reviewers return typed verdicts and
+// never touch the disk.
 //
-// Este es el UNICO camino por el que se escribe el PLAN de tasks.md en este proyecto (ver
-// CLAUDE.md y el skill planning-tasks, que es el que lo dispara). La otra region del archivo
-// -- el Estado y el Registro de cada tarea -- la escribe quien implementa, y el task-writer
-// la preserva en vez de pisarla.
+// This is the ONLY path by which the PLAN of tasks.md is written in this project (see
+// CLAUDE.md and the planning-tasks skill, which is the one that triggers it). The other
+// region of the file -- each task's Status and Log -- is written by whoever implements,
+// and the task-writer preserves it instead of overwriting it.
 //
-// REGLA INVARIANTE: de las cinco llamadas a agent() de este script, CUATRO usan un
-// agentType de solo lectura (spec-scout, plan-reducer, task-reviewer) y solo la ultima
-// (task-writer) puede escribir. Si agregas una llamada a agent(), declarale un agentType
-// de solo lectura: una llamada sin agentType hereda el toolset completo, incluido Write,
-// y reintroduce el segundo escritor que esta arquitectura existe para evitar.
+// INVARIANT RULE: of the five agent() calls in this script, FOUR use a read-only
+// agentType (spec-scout, plan-reducer, task-reviewer) and only the last one
+// (task-writer) can write. If you add an agent() call, give it a read-only agentType:
+// a call without agentType inherits the full toolset, Write included, and reintroduces
+// the second writer this architecture exists to avoid.
 //
-// NOMBRES DE AGENTE: cuando este workflow corre desde un plugin, sus agentes NO se
-// registran con el nombre pelado sino namespaceados -- 'mi-harness:spec-scout' en vez
-// de 'spec-scout' -- y las cinco llamadas fallan. El helper agentP() de abajo resuelve
-// ese prefijo UNA vez, leyendolo del propio mensaje de error, y lo reusa. Descubrirlo
-// en vez de asumirlo es lo que hace que renombrar el plugin no rompa el script.
+// AGENT NAMES: when this workflow runs from a plugin, its agents are NOT registered with
+// the bare name but namespaced -- 'my-harness:spec-scout' instead of 'spec-scout' -- and
+// the five calls fail. The agentP() helper below resolves that prefix ONCE, reading it
+// from the error message itself, and reuses it. Discovering it instead of assuming it is
+// what keeps a plugin rename from breaking the script.
+//
+// LANGUAGE: the prompts are in English; the documents are written in the project's
+// language (the one its CLAUDE.md is written in). The scout reads keywords in either
+// language and returns canonical values; the writer writes the project's form, following
+// the glossary in the task-format skill.
 // ---------------------------------------------------------------------------
 
-// Prefijo del plugin, descubierto en la primera llamada. null = todavia no se sabe;
-// '' = el nombre pelado resolvio (el harness vive en el proyecto, no en un plugin).
+// The plugin's prefix, discovered on the first call. null = not known yet;
+// '' = the bare name resolved (the harness lives in the project, not in a plugin).
 let AGENT_PREFIX = null
 
 async function agentP(prompt, opts) {
@@ -75,7 +80,7 @@ async function agentP(prompt, opts) {
     const hit = listed[1].split(/[,\s]+/).find((n) => n.endsWith(':' + base))
     if (!hit) throw e
     AGENT_PREFIX = hit.slice(0, hit.length - base.length)
-    log(`Agentes namespaceados por el plugin: se usa el prefijo "${AGENT_PREFIX}".`)
+    log(`Agents namespaced by the plugin: using the prefix "${AGENT_PREFIX}".`)
     return agent(prompt, { ...opts, agentType: AGENT_PREFIX + base })
   }
 }
@@ -89,7 +94,7 @@ const input =
 
 const SPEC_DIR_HINT = input.specDir || input.spec || input.folder || null
 const MAX_ROUNDS = Number(input.maxRounds) > 0 ? Number(input.maxRounds) : 3
-const FORCE = input.force === true // seguir aunque el spec no este aprobado
+const FORCE = input.force === true // continue even if the spec isn't approved
 
 // ---------------------------------------------------------------------------
 // Schemas
@@ -99,15 +104,15 @@ const TASK_DRAFT = {
   type: 'object',
   required: ['title', 'covers', 'objective', 'firstTest'],
   properties: {
-    title: { type: 'string', description: 'Que se logra, en una linea' },
+    title: { type: 'string', description: 'What is achieved, in one line' },
     covers: {
       type: 'array',
       items: { type: 'string' },
-      description: 'Ids de criterio (ej. R1.2). Vacio solo si es infraestructura o integracion',
+      description: 'Criterion ids (e.g. R1.2). Empty only if it is infrastructure or integration',
     },
-    coversNote: { type: 'string', description: 'Si covers esta vacio, por que la tarea existe igual' },
-    objective: { type: 'string', description: 'Que tiene que ser cierto cuando este terminada' },
-    firstTest: { type: 'string', description: 'El caso concreto con el que arranca el ciclo TDD' },
+    coversNote: { type: 'string', description: 'If covers is empty, why the task exists anyway' },
+    objective: { type: 'string', description: 'What has to be true when it is finished' },
+    firstTest: { type: 'string', description: 'The concrete case the TDD cycle starts with' },
   },
 }
 
@@ -115,14 +120,14 @@ const TASK_FULL = {
   type: 'object',
   required: ['id', 'title', 'covers', 'status', 'objective', 'firstTest'],
   properties: {
-    id: { type: 'string', description: 'Ej. T7. Nunca se reutiliza un id ya usado' },
+    id: { type: 'string', description: 'E.g. T7. An id already used is never reused' },
     title: { type: 'string' },
     covers: { type: 'array', items: { type: 'string' } },
     coversNote: { type: 'string' },
     status: { type: 'string', enum: ['pending', 'in progress', 'done'] },
     objective: { type: 'string' },
     firstTest: { type: 'string' },
-    note: { type: 'string', description: 'Ej. reemplaza a T4' },
+    note: { type: 'string', description: 'E.g. replaces T4' },
   },
 }
 
@@ -130,31 +135,31 @@ const SCOUT_SCHEMA = {
   type: 'object',
   required: ['specDir', 'featureName', 'requirementsStatus', 'designStatus', 'criteria', 'tasksExist', 'tasks', 'projectState'],
   properties: {
-    specDir: { type: 'string', description: 'Ruta real de la carpeta del spec' },
+    specDir: { type: 'string', description: 'Real path of the spec folder' },
     featureName: { type: 'string' },
     requirementsStatus: { type: 'string', enum: ['approved', 'pending approval', 'absent'] },
     designStatus: { type: 'string', enum: ['approved', 'pending approval', 'absent'] },
     criteria: {
       type: 'array',
-      description: 'TODOS los criterios de aceptacion de requirements.md, sin excepcion',
+      description: 'ALL the acceptance criteria of requirements.md, without exception',
       items: {
         type: 'object',
         required: ['id', 'summary'],
         properties: {
           id: { type: 'string' },
           summary: { type: 'string' },
-          obsolete: { type: 'boolean', description: 'true si requirements.md lo marca obsoleto por una enmienda' },
+          obsolete: { type: 'boolean', description: 'true if requirements.md marks it obsolete through an amendment' },
         },
       },
     },
     amendments: {
       type: 'string',
-      description: 'Contenido LITERAL de las secciones "## Enmiendas" de requirements.md y de design.md, cada una con su titulo. Cadena vacia si ninguno de los dos tiene enmiendas.',
+      description: 'LITERAL content of the "## Amendments" (or "## Enmiendas") sections of requirements.md and design.md, each with its title. Empty string if neither has amendments.',
     },
     tasksExist: { type: 'boolean' },
     maxIdIssued: {
       type: 'number',
-      description: 'Numero del id mas alto EMITIDO alguna vez, leido de la linea "Ids emitidos" del encabezado. 0 si esa linea no existe',
+      description: 'Number of the highest id EVER ISSUED, read from the "Ids issued" (or "Ids emitidos") line of the header. 0 if that line does not exist',
     },
     tasks: { type: 'array', items: TASK_FULL },
     unassignedCriteria: {
@@ -167,11 +172,11 @@ const SCOUT_SCHEMA = {
     },
     projectState: {
       type: 'string',
-      description: 'Resumen del estado real: rama y ultimos commits, estructura de src, y resultado literal de los comandos de verificacion',
+      description: 'Summary of the real state: branch and latest commits, structure of src, and literal result of the verification commands',
     },
     existingPendientes: {
       type: 'string',
-      description: 'Contenido LITERAL de la seccion "## Pendientes" de tasks.md, linea por linea, con el destinatario que ya traiga cada una. Cadena vacia si la seccion no existe o no tiene contenido real. La escribe quien implementa; esta corrida solo la transcribe para que el writer la preserve.',
+      description: 'LITERAL content of the "## Follow-ups" (or "## Pendientes") section of tasks.md, line by line, with the recipient each one already has. Empty string if the section does not exist or has no real content. Whoever implements writes it; this run only transcribes it so the writer preserves it.',
     },
   },
 }
@@ -200,7 +205,7 @@ const VERDICT_SCHEMA = {
     verdict: {
       type: 'string',
       enum: ['ok', 'resize', 'split', 'merge', 'remove', 'status'],
-      description: 'ok = queda como esta. resize = mismo id, ajustar alcance. split = reemplazarla por varias. merge = absorberla en otra. remove = sacarla. status = solo cambia el estado porque el codigo ya existe',
+      description: 'ok = stays as it is. resize = same id, adjust scope. split = replace it with several. merge = absorb it into another. remove = take it out. status = only the status changes because the code already exists',
     },
     rationale: { type: 'string' },
     newTitle: { type: 'string' },
@@ -208,9 +213,9 @@ const VERDICT_SCHEMA = {
     newObjective: { type: 'string' },
     newFirstTest: { type: 'string' },
     newStatus: { type: 'string', enum: ['pending', 'in progress', 'done'] },
-    mergeInto: { type: 'string', description: 'Id de la tarea que absorbe a esta' },
-    splitInto: { type: 'array', items: TASK_DRAFT, description: 'Sin id: los asigna el reducer' },
-    missingTasks: { type: 'array', items: TASK_DRAFT, description: 'Huecos de cobertura vecinos, sin id' },
+    mergeInto: { type: 'string', description: 'Id of the task that absorbs this one' },
+    splitInto: { type: 'array', items: TASK_DRAFT, description: 'Without id: the reducer assigns them' },
+    missingTasks: { type: 'array', items: TASK_DRAFT, description: 'Neighboring coverage gaps, without id' },
     specGaps: { type: 'array', items: { type: 'string' } },
   },
 }
@@ -219,7 +224,7 @@ const PLAN_SCHEMA = {
   type: 'object',
   required: ['tasks', 'changelog'],
   properties: {
-    tasks: { type: 'array', items: TASK_FULL, description: 'El plan COMPLETO y ordenado, no solo lo que cambio' },
+    tasks: { type: 'array', items: TASK_FULL, description: 'The COMPLETE, ordered plan, not only what changed' },
     unassignedCriteria: {
       type: 'array',
       items: {
@@ -245,7 +250,7 @@ const PLAN_SCHEMA = {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers deterministas (JS puro, cero tokens)
+// Deterministic helpers (pure JS, zero tokens)
 // ---------------------------------------------------------------------------
 
 const idNum = (id) => {
@@ -257,7 +262,7 @@ const coverageGaps = (criteria, tasks, unassigned) => {
   const covered = new Set()
   for (const t of tasks) for (const c of t.covers || []) covered.add(String(c).trim())
   const excused = new Set((unassigned || []).map((u) => String(u.id).trim()))
-  // L56 — un criterio obsoleto por una enmienda no necesita tarea: se reemplazo por otro id.
+  // L56 — a criterion made obsolete by an amendment needs no task: it was replaced by another id.
   return criteria.filter((c) => !c.obsolete).map((c) => c.id).filter((id) => !covered.has(id) && !excused.has(id))
 }
 
@@ -275,67 +280,71 @@ const duplicateIds = (tasks) => {
 }
 
 const summarize = (t) =>
-  `${t.id} — ${t.title} [cubre: ${(t.covers || []).join(', ') || '—'}] [estado: ${t.status}]`
+  `${t.id} — ${t.title} [covers: ${(t.covers || []).join(', ') || '—'}] [status: ${t.status}]`
 
 // ---------------------------------------------------------------------------
-// Fase 1 — Scout: un unico agente lee todo y corre la verificacion una sola vez
+// Phase 1 — Scout: a single agent reads everything and runs the verification once
 // ---------------------------------------------------------------------------
 
-phase('Reconocimiento del spec')
+phase('Spec survey')
 
 const scout = await agentP(
   `${SPEC_DIR_HINT
-    ? `Carpeta del spec: ${SPEC_DIR_HINT}.`
-    : `No te dieron carpeta de spec. Buscá bajo docs/ la carpeta con formato AAAA-MM-DD-<feature> más reciente que tenga requirements.md, y usá esa.`}
+    ? `Spec folder: ${SPEC_DIR_HINT}.`
+    : `You weren't given a spec folder. Look under docs/ for the most recent folder with the format YYYY-MM-DD-<feature> that has a requirements.md, and use that one.`}
 
-Relevá el estado completo del spec y del proyecto. Es la única vez que alguien va a hacer esto:
-todos los revisores que vienen después trabajan con lo que devuelvas vos.
+Survey the complete state of the spec and of the project. It is the only time anyone is going to do
+this: every reviewer that comes afterwards works with what you return.
 
-Los estados los devolvés en su forma canónica del glosario del skill task-format, esté
-el archivo en el idioma que esté: "aprobado" o "approved" es approved; "pendiente de aprobación"
-o "pending approval" es pending approval; "pendiente", "en curso", "hecho" (o "pending",
-"in progress", "done") son pending, in progress, done. Lo demás se transcribe tal cual.
+The documents may be in English or in Spanish. Return the statuses in their canonical form from the
+glossary of the task-format skill, whatever the file's language: "approved" or "aprobado" is
+approved; "pending approval" or "pendiente de aprobación" is pending approval; "pending",
+"in progress", "done" (or "pendiente", "en curso", "hecho") are pending, in progress, done.
+Everything else is transcribed as it is.
 
-1. Leé requirements.md y design.md. Reportá el estado del encabezado de cada uno
-   (approved / pending approval), o absent si el archivo no existe. Un encabezado
-   "aprobado (fecha) · enmendado (fecha): <ids>" es approved: la enmienda ya tuvo su sí.
-   Transcribí en amendments el contenido LITERAL de la sección "## Enmiendas" de cada documento,
-   con su título; cadena vacía si ninguno tiene.
-2. Extraé TODOS los criterios de aceptación de requirements.md con su id (R<n>.<m>) y un resumen
-   de una línea. Que no falte ninguno: el chequeo de cobertura de todo el workflow se hace contra
-   esta lista, y un criterio que no listes es un criterio que nadie va a notar que falta. Los que
-   requirements.md marca obsoletos van igual, con obsolete = true.
-3. Si existe tasks.md, transcribí su tabla de Plan completa, y para cada tarea traé también,
-   desde su sección de Bitácora: Objetivo, Primer test, y —si están— las líneas
-   "Por qué no cubre criterios:" (va en coversNote) y "Nota:" (va en note). Esos dos campos son
-   opcionales y solo existen en algunas tareas. En archivos viejos el coversNote puede venir
-   embebido en la propia línea "Cubre:" (formato "Cubre: ninguno — <motivo>" o
-   "Cubre: — (<motivo>)"); en ese caso extraé solo el motivo, sin el "ninguno", el guion ni los
-   paréntesis que lo envolvían. Si no los transcribís se pierden para
-   siempre: una tarea que se queda sin coversNote se relee como alcance que nadie pidió, y una
-   sin note pierde el rastro de a qué tarea reemplazó. Si no existe tasks.md, tasksExist = false
-   y tasks = []. Transcribí también "Criterios sin tarea asignada" si tiene contenido real, y el
-   contenido LITERAL de la sección "## Pendientes" en existingPendientes — línea por línea, con el
-   destinatario que ya traiga cada una, sin resumir ni reordenar. Es la región de quien implementa,
-   no la tuya: si no la transcribís tal cual, el writer no tiene con qué preservarla.
-4. Del encabezado de tasks.md, transcribí el número de la línea "Ids emitidos: hasta T<n>" en
-   maxIdIssued. Si esa línea no está —archivos escritos antes de que existiera— devolvé 0: el
-   workflow cae al cálculo de siempre. Esa línea es la memoria de qué ids ya se repartieron,
-   incluidos los de tareas que después desaparecieron del plan; sin ella un id se puede reutilizar
-   y romper una referencia hecha desde un commit o desde una bitácora.
-5. Relevá el estado real del proyecto: rama actual, últimos commits (git log --oneline -15),
-   git status, la estructura del código fuente (src/ o la que haya), y corré los comandos que
-   CLAUDE.md declara en su sección "Comandos de verificación" — los de este proyecto, no una lista
-   fija. Pegá el resultado literal: pasa/falla y cuántos tests. Si CLAUDE.md no declara comandos,
-   o el manifiesto de dependencias del proyecto no existe, decilo explícitamente en vez de
-   inventar un comando.
+1. Read requirements.md and design.md. Report the status of each one's header
+   (approved / pending approval), or absent if the file doesn't exist. A header
+   "approved (date) · amended (date): <ids>" (in Spanish, "aprobado (fecha) · enmendado (fecha)")
+   is approved: the amendment already had its yes. Transcribe in amendments the LITERAL content of
+   each document's "## Amendments" section ("## Enmiendas" in Spanish), with its title; empty string
+   if neither has one.
+2. Extract ALL the acceptance criteria of requirements.md with their id (R<n>.<m>) and a one-line
+   summary. None may be missing: the whole workflow's coverage check is done against this list, and
+   a criterion you don't list is a criterion nobody will notice is missing. The ones requirements.md
+   marks obsolete go in anyway, with obsolete = true.
+3. If tasks.md exists, transcribe its complete Plan table, and for each task also bring, from its
+   journal section: Goal, First test, and —if present— the lines "Covers none because:" (in
+   Spanish "Por qué no cubre criterios:"; it goes in coversNote) and "Note:" ("Nota:"; it goes in
+   note). Those two fields are optional and only exist in some tasks. In old files the coversNote
+   may come embedded in the "Cubre:" line itself (format "Cubre: ninguno — <reason>" or
+   "Cubre: — (<reason>)"); in that case extract only the reason, without the "ninguno", the dash or
+   the parentheses that wrapped it. If you don't transcribe them they are lost forever: a task left
+   without coversNote is reread as scope nobody asked for, and one without note loses track of which
+   task it replaced. If tasks.md doesn't exist, tasksExist = false and tasks = []. Also transcribe
+   "Criteria without a task" ("Criterios sin tarea asignada") if it has real content, and the
+   LITERAL content of the "## Follow-ups" section ("## Pendientes") in existingPendientes — line by
+   line, with the recipient each one already has, without summarizing or reordering. It is the
+   region of whoever implements, not yours: if you don't transcribe it as it is, the writer has
+   nothing to preserve it with.
+4. From the header of tasks.md, transcribe the number of the line "Ids issued: up to T<n>" (in
+   Spanish "Ids emitidos: hasta T<n>") in maxIdIssued. If that line isn't there —files written
+   before it existed— return 0: the workflow falls back to the usual calculation. That line is the
+   memory of which ids were already handed out, including those of tasks that later disappeared
+   from the plan; without it an id can be reused and break a reference made from a commit or from a
+   journal.
+5. Survey the real state of the project: current branch, latest commits (git log --oneline -15),
+   git status, the structure of the source code (src/ or whatever there is), and run the commands
+   CLAUDE.md declares in its verification commands section ("Comandos de verificación" in a Spanish
+   project) — this project's, not a fixed list. Paste the literal result: pass/fail and how many
+   tests. If CLAUDE.md declares no commands, or the project's dependency manifest doesn't exist, say
+   so explicitly instead of inventing a command.
 
-No modifiques ningún archivo.`,
+Don't modify any file.`,
   { schema: SCOUT_SCHEMA, agentType: 'spec-scout', model: 'sonnet', label: 'scout' },
 )
 
 if (!scout) {
-  return { error: 'El scout falló: no se pudo leer el spec. No se tocó ningún archivo.' }
+  return { error: 'The scout failed: the spec could not be read. No file was touched.' }
 }
 
 const specDir = scout.specDir
@@ -343,31 +352,31 @@ const existingPendientes = scout.existingPendientes || ''
 
 if (!FORCE && (scout.requirementsStatus !== 'approved' || scout.designStatus !== 'approved')) {
   return {
-    error: 'Precondición no cumplida: requirements.md y design.md tienen que estar aprobados.',
+    error: 'Precondition not met: requirements.md and design.md have to be approved.',
     specDir,
     requirementsStatus: scout.requirementsStatus,
     designStatus: scout.designStatus,
-    sugerencia: 'Corré el skill `specify` (fases 1 y 2) primero. Para forzar igual: pasá {"specDir":"...","force":true}.',
+    suggestion: 'Run the `specify` skill (phases 1 and 2) first. To force it anyway: pass {"specDir":"...","force":true}.',
   }
 }
 
-log(`Spec: ${specDir} — ${scout.criteria.length} criterios, ${scout.tasks.length} tareas existentes`)
+log(`Spec: ${specDir} — ${scout.criteria.length} criteria, ${scout.tasks.length} existing tasks`)
 
-// Contexto compartido: todos los agentes lo reciben identico, para que no diverjan.
-const SHARED = `Carpeta del spec: ${specDir} (requirements.md, design.md, tasks.md).
+// Shared context: every agent receives it identical, so they don't diverge.
+const SHARED = `Spec folder: ${specDir} (requirements.md, design.md, tasks.md).
 
-Criterios de aceptación de requirements.md:
-${scout.criteria.map((c) => `- ${c.id}: ${c.summary}${c.obsolete ? ' (OBSOLETO: ninguna tarea tiene que cubrirlo; una que lo cubra está desactualizada)' : ''}`).join('\n')}
+Acceptance criteria of requirements.md:
+${scout.criteria.map((c) => `- ${c.id}: ${c.summary}${c.obsolete ? ' (OBSOLETE: no task has to cover it; one that covers it is out of date)' : ''}`).join('\n')}
 ${scout.amendments ? `
-Enmiendas del spec (el spec cambió después de aprobado; una tarea cuyo Cubre toca estos ids puede
-haber quedado desalineada con el criterio vigente):
+Spec amendments (the spec changed after being approved; a task whose Covers touches these ids may
+have become misaligned with the current criterion):
 ${scout.amendments}
 ` : ''}
-Estado real del proyecto (ya relevado, no lo vuelvas a correr):
+Real state of the project (already surveyed, don't run it again):
 ${scout.projectState}`
 
 // ---------------------------------------------------------------------------
-// Fase 2 — Router (JS puro, cero tokens): desde cero o modo iterativo
+// Phase 2 — Router (pure JS, zero tokens): from scratch or iterative mode
 // ---------------------------------------------------------------------------
 
 let plan = scout.tasks.slice()
@@ -377,35 +386,35 @@ const specGaps = []
 let agentsSpent = 1
 
 if (!scout.tasksExist || plan.length === 0) {
-  phase('Plan inicial desde cero')
-  log('No hay tasks.md: se dibuja el plan inicial y después entra al mismo loop iterativo.')
+  phase('Initial plan from scratch')
+  log('There is no tasks.md: the initial plan is drawn and then it enters the same iterative loop.')
 
   const draft = await agentP(
     `${SHARED}
 
-Todavía no existe tasks.md. Dibujá el plan inicial COMPLETO de tareas para esta feature,
-siguiendo assets/tasks-template.md del skill task-format.
+tasks.md doesn't exist yet. Draw the COMPLETE initial task plan for this feature, following
+assets/tasks-template.md from the task-format skill.
 
-Reglas:
-- Una tarea = un ciclo de TDD completo (test que falla → implementar → test que pasa), del tamaño
-  que se pueda terminar de una sentada. Si una tarea necesita tres tests no relacionados para
-  tener sentido, son tres tareas.
-- Ordenalas de forma que cada tarea deje el repo funcionando y con los tests en verde: tiene que
-  poder pararse en cualquier punto sin quedar a mitad de camino.
-- Toda tarea cubre al menos un criterio, salvo infraestructura inicial o integración final — y
-  en ese caso explicá por qué en coversNote.
-- Todo criterio de la lista de arriba tiene que estar cubierto por alguna tarea, o figurar en
-  unassignedCriteria con su motivo.
-- No propongas ids: el orden del array es el orden del plan.
-- Respetá design.md: no inventes módulos ni dependencias que el diseño no haya definido.
+Rules:
+- One task = one complete TDD cycle (failing test → implement → passing test), of a size that can be
+  finished in one sitting. If a task needs three unrelated tests to make sense, it is three tasks.
+- Order them so each task leaves the repo working and with the tests green: it has to be possible to
+  stop at any point without being left halfway.
+- Every task covers at least one criterion, except initial infrastructure or final integration — and
+  in that case explain why in coversNote.
+- Every criterion in the list above has to be covered by some task, or appear in
+  unassignedCriteria with its reason.
+- Don't propose ids: the order of the array is the order of the plan.
+- Respect design.md: don't invent modules or dependencies the design didn't define.
+- Write titles, goals and first tests in the language the spec is written in.
 
-No escribas ningún archivo. Devolvé solo el JSON.`,
-    { schema: DRAFT_SCHEMA, agentType: 'plan-reducer', model: 'opus', label: 'plan inicial' },
+Don't write any file. Return only the JSON.`,
+    { schema: DRAFT_SCHEMA, agentType: 'plan-reducer', model: 'opus', label: 'initial plan' },
   )
   agentsSpent++
 
   if (!draft || !draft.tasks || draft.tasks.length === 0) {
-    return { error: 'No se pudo generar el plan inicial. No se tocó ningún archivo.', specDir }
+    return { error: 'The initial plan could not be generated. No file was touched.', specDir }
   }
 
   plan = draft.tasks.map((t, i) => ({
@@ -418,64 +427,64 @@ No escribas ningún archivo. Devolvé solo el JSON.`,
     firstTest: t.firstTest,
   }))
   unassigned = draft.unassignedCriteria || []
-  for (const t of plan) changelog.push({ taskId: t.id, action: 'add', detail: 'plan inicial' })
-  log(`Plan inicial: ${plan.length} tareas. Ninguna revisada todavía — entran todas al fan-out.`)
+  for (const t of plan) changelog.push({ taskId: t.id, action: 'add', detail: 'initial plan' })
+  log(`Initial plan: ${plan.length} tasks. None reviewed yet — they all enter the fan-out.`)
 }
 
 // ---------------------------------------------------------------------------
-// Fase 3 — Loop de rondas: fan-out de revisores -> reduce en JS -> reducer
+// Phase 3 — Round loop: reviewer fan-out -> reduce in JS -> reducer
 // ---------------------------------------------------------------------------
 
-// El maximo entre lo que el archivo registra como emitido y lo que el plan vivo muestra. Tomar
-// solo el plan vivo reutiliza el id de una tarea eliminada, que es justo lo que la regla de
-// numeracion prohibe: ese id puede estar citado en un commit o en una bitacora.
+// The maximum between what the file records as issued and what the living plan shows. Taking
+// only the living plan reuses the id of a deleted task, which is exactly what the numbering
+// rule forbids: that id may be quoted in a commit or in a journal.
 let maxId = Math.max(
   Number(scout.maxIdIssued) || 0,
   plan.reduce((m, t) => Math.max(m, idNum(t.id)), 0),
 )
-let queue = plan.map((t) => t.id) // ronda 1: todas
+let queue = plan.map((t) => t.id) // round 1: all of them
 let round = 0
 
 while (queue.length > 0 && round < MAX_ROUNDS) {
   round++
   const toReview = plan.filter((t) => queue.includes(t.id))
   if (toReview.length === 0) {
-    log(`Ronda ${round}: la cola apunta a tareas que ya no existen en el plan. Se cierra el loop.`)
+    log(`Round ${round}: the queue points to tasks that no longer exist in the plan. The loop closes.`)
     queue = []
     break
   }
-  phase('Revision de tareas')
-  log(`Ronda ${round}: revisando ${toReview.length} tarea(s).`)
+  phase('Task review')
+  log(`Round ${round}: reviewing ${toReview.length} task(s).`)
 
   const tableForReviewers = plan.map(summarize).join('\n')
 
-  // Fan-out. parallel() y no pipeline(): el reducer necesita TODOS los veredictos a la vez
-  // para poder resolver merges cruzados, splits que se superponen y numeracion nueva.
+  // Fan-out. parallel() and not pipeline(): the reducer needs ALL the verdicts at once
+  // to be able to resolve crossed merges, overlapping splits and new numbering.
   const verdicts = await parallel(
     toReview.map((task) => () =>
       agentP(
         `${SHARED}
 
-Plan completo actual (contexto — NO lo revises entero):
+Current complete plan (context — do NOT review it all):
 ${tableForReviewers}
 
-Te toca revisar UNA sola tarea:
+You get to review ONE single task:
 
   ${summarize(task)}
-  Objetivo: ${task.objective || '(sin objetivo escrito)'}
-  Primer test: ${task.firstTest || '(sin primer test escrito)'}
+  Goal: ${task.objective || '(no goal written)'}
+  First test: ${task.firstTest || '(no first test written)'}
 
-Emití tu veredicto sobre ella y solo sobre ella. Podés mirar sus vecinas inmediatas para decidir
-un merge o detectar un hueco, pero no emitas veredictos sobre otras tareas.
+Issue your verdict on it and only on it. You may look at its immediate neighbors to decide a merge
+or detect a gap, but don't issue verdicts on other tasks.
 
-Recordá: no escribís archivos, no proponés ids (el reducer numera), y ante la duda el veredicto
-es "ok".`,
+Remember: you don't write files, you don't propose ids (the reducer numbers), and when in doubt the
+verdict is "ok".`,
         {
           schema: VERDICT_SCHEMA,
           model: 'sonnet',
           agentType: 'task-reviewer',
-          label: `${task.id} · ronda ${round}`,
-          phase: 'Revision de tareas',
+          label: `${task.id} · round ${round}`,
+          phase: 'Task review',
         },
       ),
     ),
@@ -484,21 +493,21 @@ es "ok".`,
 
   const valid = verdicts.filter(Boolean)
   if (valid.length < verdicts.length) {
-    log(`Aviso: ${verdicts.length - valid.length} revisor(es) fallaron; esas tareas quedan sin revisar en esta ronda.`)
+    log(`Warning: ${verdicts.length - valid.length} reviewer(s) failed; those tasks stay unreviewed this round.`)
   }
   if (valid.length === 0) {
-    log('Ninguna revisión válida en esta ronda. Se corta el loop.')
+    log('No valid review this round. The loop is cut.')
     break
   }
 
-  // Reduce en JS: cero tokens.
+  // Reduce in JS: zero tokens.
   const changed = valid.filter((v) => v.verdict !== 'ok')
   for (const v of valid) for (const g of v.specGaps || []) if (!specGaps.includes(g)) specGaps.push(g)
 
   const newDrafts = valid.reduce((n, v) => n + (v.splitInto || []).length + (v.missingTasks || []).length, 0)
   const gapsNow = coverageGaps(scout.criteria, plan, unassigned)
 
-  log(`Ronda ${round}: ${valid.length} veredictos — ${valid.length - changed.length} ok, ${changed.length} con cambios, ${newDrafts} tarea(s) propuesta(s), ${gapsNow.length} criterio(s) sin cubrir.`)
+  log(`Round ${round}: ${valid.length} verdicts — ${valid.length - changed.length} ok, ${changed.length} with changes, ${newDrafts} task(s) proposed, ${gapsNow.length} criterion(s) uncovered.`)
 
   if (changed.length === 0 && newDrafts === 0 && gapsNow.length === 0) {
     for (const v of valid) changelog.push({ taskId: v.taskId, action: 'ok', detail: v.rationale })
@@ -506,51 +515,51 @@ es "ok".`,
     break
   }
 
-  // Reducer: el unico que ve el plan entero y todos los veredictos juntos.
+  // Reducer: the only one that sees the whole plan and all the verdicts together.
   const reduced = await agentP(
     `${SHARED}
 
-Sos el reducer del plan de tareas. Recibís el plan actual y los veredictos de revisores que
-trabajaron en paralelo, cada uno mirando UNA tarea sin ver lo que decidieron los otros. Tu trabajo
-es resolver esos veredictos en un único plan coherente.
+You are the reducer of the task plan. You receive the current plan and the verdicts of reviewers who
+worked in parallel, each looking at ONE task without seeing what the others decided. Your job is to
+resolve those verdicts into a single coherent plan.
 
-PLAN ACTUAL (${plan.length} tareas, en orden):
+CURRENT PLAN (${plan.length} tasks, in order):
 ${JSON.stringify(plan, null, 2)}
 
-VEREDICTOS DE ESTA RONDA:
+VERDICTS OF THIS ROUND:
 ${JSON.stringify(valid, null, 2)}
 
-CHEQUEOS DETERMINISTAS YA HECHOS:
-- Criterios sin cubrir por ninguna tarea: ${gapsNow.length ? gapsNow.join(', ') : 'ninguno'}
-- Tareas sin criterio ni justificación: ${orphanTasks(plan).join(', ') || 'ninguna'}
-- Ids duplicados: ${duplicateIds(plan).join(', ') || 'ninguno'}
-- Id más alto usado hasta ahora: T${maxId}
+DETERMINISTIC CHECKS ALREADY DONE:
+- Criteria not covered by any task: ${gapsNow.length ? gapsNow.join(', ') : 'none'}
+- Tasks with neither criterion nor justification: ${orphanTasks(plan).join(', ') || 'none'}
+- Duplicate ids: ${duplicateIds(plan).join(', ') || 'none'}
+- Highest id used so far: T${maxId}
 
-REGLAS DE RESOLUCIÓN:
-1. Numeración: toda tarea nueva (de un split, de un missingTasks, o para tapar un hueco de
-   cobertura) toma el próximo id libre a partir de T${maxId + 1}. NUNCA reutilices ni renumeres un
-   id existente, aunque la tarea original desaparezca: ese id puede estar citado en un commit o
-   en la bitácora. En una tarea que reemplaza a otra, poné en "note" a cuál reemplaza.
-2. Merges cruzados: si A pide fusionarse en B y B pide fusionarse en A, fusionalos una sola vez
-   en el id más bajo y dejalo asentado en el changelog.
-3. Splits superpuestos: si dos veredictos proponen tareas que hacen lo mismo, quedate con una.
-4. Cobertura: todo criterio de la lista tiene que quedar cubierto por alguna tarea o figurar en
-   unassignedCriteria con un motivo real. Un hueco se tapa agregando una tarea al final.
-5. Las tareas que no fueron revisadas en esta ronda van tal cual al plan final, sin tocar.
-6. Orden: cada tarea debería dejar el repo funcionando y con los tests en verde. Si un split
-   rompe ese orden, reubicá las partes nuevas donde corresponda.
-7. Un veredicto sin razón concreta se descarta: dejá la tarea como estaba.
+RESOLUTION RULES:
+1. Numbering: every new task (from a split, from a missingTasks, or to fill a coverage gap) takes
+   the next free id starting at T${maxId + 1}. NEVER reuse or renumber an existing id, even if the
+   original task disappears: that id may be quoted in a commit or in the journal. In a task that
+   replaces another, put in "note" which one it replaces.
+2. Crossed merges: if A asks to merge into B and B asks to merge into A, merge them only once into
+   the lowest id and record it in the changelog.
+3. Overlapping splits: if two verdicts propose tasks that do the same thing, keep one.
+4. Coverage: every criterion in the list has to end up covered by some task or appear in
+   unassignedCriteria with a real reason. A gap is filled by adding a task at the end.
+5. The tasks that weren't reviewed this round go into the final plan as they are, untouched.
+6. Order: each task should leave the repo working and with the tests green. If a split breaks that
+   order, relocate the new parts where they belong.
+7. A verdict without a concrete reason is discarded: leave the task as it was.
 
-Devolvé el plan COMPLETO y ordenado (todas las tareas, no solo las que cambiaron), el changelog
-de lo que hiciste con cada tarea revisada, y los huecos de spec acumulados.
+Return the COMPLETE, ordered plan (all the tasks, not only the ones that changed), the changelog of
+what you did with each reviewed task, and the accumulated spec gaps.
 
-No escribas ningún archivo. Devolvé solo el JSON.`,
-    { schema: PLAN_SCHEMA, agentType: 'plan-reducer', model: 'opus', label: `reducer ronda ${round}`, phase: 'Reduccion' },
+Don't write any file. Return only the JSON.`,
+    { schema: PLAN_SCHEMA, agentType: 'plan-reducer', model: 'opus', label: `reducer round ${round}`, phase: 'Reduction' },
   )
   agentsSpent++
 
   if (!reduced || !reduced.tasks || reduced.tasks.length === 0) {
-    log(`El reducer falló en la ronda ${round}. Se conserva el plan de la ronda anterior y se corta el loop.`)
+    log(`The reducer failed in round ${round}. The previous round's plan is kept and the loop is cut.`)
     break
   }
 
@@ -563,51 +572,51 @@ No escribas ningún archivo. Devolvé solo el JSON.`,
   for (const e of reduced.changelog || []) changelog.push(e)
   for (const g of reduced.specGaps || []) if (!specGaps.includes(g)) specGaps.push(g)
 
-  // La cola de la proxima ronda: lo que nadie reviso todavia.
-  //  - tareas nuevas (ids que no existian)
-  //  - tareas viejas cuyo alcance cambio sin que un revisor las mirara (ej. absorbieron un merge)
+  // The next round's queue: what nobody has reviewed yet.
+  //  - new tasks (ids that didn't exist)
+  //  - old tasks whose scope changed without a reviewer looking at them (e.g. they absorbed a merge)
   queue = plan
     .filter((t) => {
       if (!before.has(t.id)) return true
-      if (queue.includes(t.id)) return false // ya la revisamos en esta ronda
+      if (queue.includes(t.id)) return false // already reviewed this round
       const old = beforeById.get(t.id)
       return old && (old.title !== t.title || (old.covers || []).join(',') !== (t.covers || []).join(','))
     })
     .map((t) => t.id)
 
   if (queue.length) {
-    log(`Ronda ${round} cerrada: ${plan.length} tareas. Pendientes de revisar: ${queue.join(', ')}`)
+    log(`Round ${round} closed: ${plan.length} tasks. Waiting for review: ${queue.join(', ')}`)
   }
 }
 
 if (queue.length > 0) {
-  log(`Techo de ${MAX_ROUNDS} rondas alcanzado con ${queue.length} tarea(s) sin revisar (${queue.join(', ')}). Un plan que no converge después de tantas vueltas necesita ojo humano, no más iteraciones.`)
+  log(`Ceiling of ${MAX_ROUNDS} rounds reached with ${queue.length} task(s) unreviewed (${queue.join(', ')}). A plan that doesn't converge after that many rounds needs human eyes, not more iterations.`)
 }
 
 // ---------------------------------------------------------------------------
-// Fase 4 — Chequeo final determinista (JS puro, cero tokens)
+// Phase 4 — Final deterministic check (pure JS, zero tokens)
 // ---------------------------------------------------------------------------
 
-phase('Chequeo de consistencia')
+phase('Consistency check')
 
 const finalGaps = coverageGaps(scout.criteria, plan, unassigned)
 const finalOrphans = orphanTasks(plan)
 const finalDupes = duplicateIds(plan)
 
-if (finalGaps.length) log(`Quedan criterios sin cubrir: ${finalGaps.join(', ')}`)
-if (finalOrphans.length) log(`Quedan tareas sin criterio ni justificación: ${finalOrphans.join(', ')}`)
-if (finalDupes.length) log(`Quedan ids duplicados: ${finalDupes.join(', ')}`)
+if (finalGaps.length) log(`Criteria still uncovered: ${finalGaps.join(', ')}`)
+if (finalOrphans.length) log(`Tasks still with neither criterion nor justification: ${finalOrphans.join(', ')}`)
+if (finalDupes.length) log(`Duplicate ids remain: ${finalDupes.join(', ')}`)
 
 // ---------------------------------------------------------------------------
-// Fase 5 — Writer: el unico agente que toca tasks.md en todo el workflow
+// Phase 5 — Writer: the only agent that touches tasks.md in the whole workflow
 // ---------------------------------------------------------------------------
 
-phase('Escritura de tasks.md')
+phase('Writing tasks.md')
 
-// L10 — Re-planificar no debe desaprobar un plan que no cambio. Se compara el plan final contra
-// el que leyo el scout: ids, orden, titulo, Cubre y los encabezados de bitacora, que son la region
-// del workflow. El Estado queda FUERA de la comparacion a proposito: lo escribe quien implementa,
-// y una tarea que paso a hecho no es un cambio de plan. Aritmetica, cero tokens.
+// L10 — Re-planning must not unapprove a plan that didn't change. The final plan is compared
+// against the one the scout read: ids, order, title, Covers and the journal headings, which are
+// the workflow's region. Status is left OUT of the comparison on purpose: whoever implements
+// writes it, and a task that moved to done isn't a plan change. Arithmetic, zero tokens.
 const samePlan = (a, b) =>
   a.id === b.id &&
   a.title === b.title &&
@@ -621,95 +630,98 @@ const planUnchanged =
   scout.tasks.every((t, i) => samePlan(t, plan[i]))
 
 if (planUnchanged) {
-  log('El plan final es identico al que ya estaba: se preserva el encabezado de Estado.')
+  log('The final plan is identical to the one already there: the Status header is preserved.')
 }
 
 const written = await agentP(
-  `Carpeta del spec: ${specDir}.
+  `Spec folder: ${specDir}.
 
-Escribí ${specDir}/tasks.md con esta tabla de Plan final. Es la fuente de verdad: no agregues,
-no saques, no reordenes y no renumeres nada.
+Write ${specDir}/tasks.md with this final Plan table. It is the source of truth: don't add, don't
+remove, don't reorder and don't renumber anything.
 
-Los estados del plan vienen en su forma canónica (pending, in progress, done). En el archivo se
-escriben en el idioma del proyecto (el de su CLAUDE.md), según el glosario del skill
-task-format: la canónica en inglés; en español, pendiente, en curso, hecho.
+LANGUAGE: the file is written in the project's language (the one its CLAUDE.md is written in).
+Section titles, field names, statuses and recipients follow the glossary of the task-format skill:
+the canonical form in an English project, the Spanish alias in a Spanish one. The plan's statuses
+come in canonical form (pending, in progress, done); in Spanish they are pendiente, en curso, hecho.
+The recipients below come in canonical form too ([decide now]); in Spanish, [decidir ya].
 
-PLAN FINAL (${plan.length} tareas, en orden):
+FINAL PLAN (${plan.length} tasks, in order):
 ${JSON.stringify(plan, null, 2)}
 
-CRITERIOS SIN TAREA ASIGNADA:
-${unassigned.length ? JSON.stringify(unassigned, null, 2) : 'ninguno'}
+CRITERIA WITHOUT A TASK:
+${unassigned.length ? JSON.stringify(unassigned, null, 2) : 'none'}
 
-PENDIENTES — fusioná, no reemplaces:
+FOLLOW-UPS — merge, don't replace:
 
-Lo que ya estaba en la sección "## Pendientes" del archivo. **Preservalo tal cual, línea por
-línea, con el destinatario que ya tenía cada una** — es la región de quien implementa, no tuya, y
-una re-planificación no es el momento de decidir si una advertencia sigue vigente:
-${existingPendientes ? existingPendientes : '(la sección no existía o no tenía contenido real)'}
+What was already in the file's follow-ups section ("## Follow-ups", or "## Pendientes" in Spanish).
+**Preserve it as it is, line by line, with the recipient each one already had** — it is the region
+of whoever implements, not yours, and a re-plan isn't the moment to decide whether a warning is
+still current:
+${existingPendientes ? existingPendientes : '(the section did not exist or had no real content)'}
 
-Sumale, como líneas nuevas, los huecos de spec que esta corrida detectó — necesitan que una
-persona decida, así que van con destinatario [decidir ya] salvo que digan otra cosa. No repitas
-una si una línea ya existente dice lo mismo:
-${specGaps.length ? specGaps.map((g) => `- [decidir ya] ${g}`).join('\n') : '(ninguno detectado en esta pasada)'}
-${finalGaps.length ? `- [decidir ya] Criterios que quedaron sin cubrir: ${finalGaps.join(', ')}` : ''}
-${finalDupes.length ? `- [decidir ya] Ids duplicados sin resolver: ${finalDupes.join(', ')}` : ''}
+Add, as new lines, the spec gaps this run detected — they need a person to decide, so they go with
+recipient [decide now] unless they say otherwise. Don't repeat one if an existing line already says
+the same:
+${specGaps.length ? specGaps.map((g) => `- [decide now] ${g}`).join('\n') : '(none detected in this pass)'}
+${finalGaps.length ? `- [decide now] Criteria left uncovered: ${finalGaps.join(', ')}` : ''}
+${finalDupes.length ? `- [decide now] Unresolved duplicate ids: ${finalDupes.join(', ')}` : ''}
 
-Dónde van los campos opcionales, cuando la tarea los trae (seguí assets/tasks-template.md del
-skill task-format):
-- "coversNote" → en la tabla, la columna "Cubre" lleva un guion largo; el texto va en la bitácora
-  de esa tarea, en una línea que empieza con **Por qué no cubre criterios:**
-- "note" → en la bitácora de esa tarea, en una línea que empieza con **Nota:**
-No los pongas en la tabla ni los mezcles dentro de otro campo: la próxima corrida los lee de esas
-dos líneas exactas para poder devolvértelos, y lo que quede en cualquier otro lado se pierde.
+Where the optional fields go, when the task brings them (follow assets/tasks-template.md from the
+task-format skill):
+- "coversNote" → in the table, the Covers column carries an em dash; the text goes in that task's
+  journal, in a line that starts with **Covers none because:** (in Spanish, **Por qué no cubre criterios:**)
+- "note" → in that task's journal, in a line that starts with **Note:** (in Spanish, **Nota:**)
+Don't put them in the table or mix them into another field: the next run reads them from those two
+exact lines to be able to give them back to you, and whatever ends up anywhere else is lost.
 
-En el encabezado, después de la línea de Estado, escribí:
+In the header, after the Status line, write:
 
-  > Ids emitidos: hasta T${maxId}
+  > Ids issued: up to T${maxId}
 
-Es la memoria de qué ids ya se repartieron, incluidos los de tareas que después desaparecieron del
-plan. Sin esa línea, una corrida futura calcula el próximo id libre mirando solo las tareas vivas y
-puede reutilizar uno ya usado, que es exactamente lo que la regla de numeración prohíbe: ese id
-puede estar citado en un commit o en una bitácora.
+(in Spanish, "> Ids emitidos: hasta T${maxId}"). It is the memory of which ids were already handed
+out, including those of tasks that later disappeared from the plan. Without that line, a future run
+computes the next free id looking only at the living tasks and may reuse one already used, which is
+exactly what the numbering rule forbids: that id may be quoted in a commit or in a journal.
 
 ${planUnchanged
-  ? `ENCABEZADO DE ESTADO: el plan final es idéntico al que ya estaba en el archivo — mismos ids, mismo
-orden, mismos títulos, mismo Cubre y mismos encabezados de bitácora. **Preservá la línea de Estado
-tal como está**, incluido un "aprobado" con su fecha. Esta corrida verificó que el plan sigue en
-pie; no lo cambió, así que no hay nada que volver a aprobar.`
-  : `ENCABEZADO DE ESTADO: el plan cambió respecto del que estaba en el archivo, así que dejá el
-encabezado en "pendiente de aprobación". Lo aprueba una persona, no vos.`}
+  ? `STATUS HEADER: the final plan is identical to the one already in the file — same ids, same
+order, same titles, same Covers and same journal headings. **Preserve the Status line as it is**,
+including an "approved" with its date. This run checked that the plan still stands; it didn't change
+it, so there is nothing to approve again.`
+  : `STATUS HEADER: the plan changed with respect to the one in the file, so leave the header in
+"pending approval" ("pendiente de aprobación" in Spanish). A person approves it, not you.`}
 
-Acordate de preservar textualmente todo Registro de bitácora que ya tenga contenido real.`,
+Remember to preserve verbatim every journal Log that already has real content.`,
   { agentType: 'task-writer', model: 'opus', label: 'tasks.md' },
 )
 agentsSpent++
 
 // ---------------------------------------------------------------------------
-// Resultado: lo unico que entra al contexto de la sesion principal
+// Result: the only thing that enters the main session's context
 // ---------------------------------------------------------------------------
 
 const count = (a) => changelog.filter((e) => e.action === a).length
 
 return {
   specDir,
-  archivo: `${specDir}/tasks.md`,
-  estado: 'pendiente de aprobación — lo aprueba una persona, no este workflow',
-  tareasFinales: plan.length,
-  rondas: round,
-  agentes: agentsSpent,
-  resumen: {
-    sinCambios: count('ok'),
-    redimensionadas: count('resize'),
-    divididas: count('split'),
-    fusionadas: count('merge'),
-    eliminadas: count('remove'),
-    estadoActualizado: count('status'),
-    agregadas: count('add'),
+  file: `${specDir}/tasks.md`,
+  status: 'pending approval — a person approves it, not this workflow',
+  finalTasks: plan.length,
+  rounds: round,
+  agents: agentsSpent,
+  summary: {
+    unchanged: count('ok'),
+    resized: count('resize'),
+    split: count('split'),
+    merged: count('merge'),
+    removed: count('remove'),
+    statusUpdated: count('status'),
+    added: count('add'),
   },
-  criteriosSinCubrir: finalGaps,
-  idsDuplicados: finalDupes,
-  tareasSinRevisar: queue,
-  huecosDeSpec: specGaps,
+  uncoveredCriteria: finalGaps,
+  duplicateIds: finalDupes,
+  unreviewedTasks: queue,
+  specGaps,
   plan: plan.map(summarize),
-  escritura: written || 'El escritor falló: revisá tasks.md a mano.',
+  writing: written || 'The writer failed: check tasks.md by hand.',
 }
