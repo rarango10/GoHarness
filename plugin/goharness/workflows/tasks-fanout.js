@@ -631,8 +631,8 @@ Escribí ${specDir}/tasks.md con esta tabla de Plan final. Es la fuente de verda
 no saques, no reordenes y no renumeres nada.
 
 Los estados del plan vienen en su forma canónica (pending, in progress, done). En el archivo se
-escriben con su alias en español del glosario del skill formato-de-tareas: pendiente, en curso,
-hecho.
+escriben en el idioma del proyecto (el de su CLAUDE.md), según el glosario del skill
+formato-de-tareas: la canónica en inglés; en español, pendiente, en curso, hecho.
 
 PLAN FINAL (${plan.length} tareas, en orden):
 ${JSON.stringify(plan, null, 2)}

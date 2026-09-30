@@ -48,8 +48,9 @@ De lo que se anota, hay una categoría que no puede quedar en silencio: **el des
 Estas palabras no son prosa: son señales entre agentes. Un agente escribe `cumple` y otro lo lee
 para pasar la tarea a `hecho`; si uno escribe una palabra y el otro espera otra, la cadena se corta
 sin ningún error visible. Por eso cada una tiene una forma **canónica, en inglés**, y un alias en
-español. Las dos formas significan exactamente lo mismo. **Por ahora, al escribir usá el alias en
-español**: es el que esperan hoy los demás agentes.
+español. Las dos formas significan exactamente lo mismo. **Al escribir, usá la forma del idioma del
+proyecto** —el idioma en que está escrito su `CLAUDE.md`—: la canónica en un proyecto en inglés,
+el alias en uno en español. Al leer, aceptá las dos.
 
 | Canónica | Alias en español | Dónde vive |
 |---|---|---|
