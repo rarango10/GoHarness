@@ -1,220 +1,226 @@
 ---
 name: harness-init
-description: "Siembra el CLAUDE.md de un proyecto para que el harness pueda trabajar ahí: parte de una plantilla y completa sus ranuras entrevistando, nunca decidiendo solo. Es el paso 0 del ciclo. Usalo cuando la persona diga 'armemos el contrato', 'preparemos el proyecto', 'iniciemos el harness acá', 'no hay CLAUDE.md', o cuando quiera arrancar una feature en un repo que todavía no tiene uno. Si ya existe un CLAUDE.md, no lo pisa: lo revisa contra lo que el harness necesita y propone los arreglos. Siembra además los configs que codifican memoria del harness (excluir end2end/ del runner de unidad, retries 0 en Playwright), y no siembra las plantillas de documentos, que viajan en los skills que las usan."
+description: "Seeds a project's CLAUDE.md so the harness can work there: it starts from a template and fills its slots by interviewing, never by deciding alone. It is step 0 of the cycle. Use it when the person says 'let's write the contract / armemos el contrato', 'let's set up the project / preparemos el proyecto', 'start the harness here / iniciemos el harness acá', 'there's no CLAUDE.md / no hay CLAUDE.md', or wants to start a feature in a repo that doesn't have one yet. If a CLAUDE.md already exists, it doesn't overwrite it: it reviews it against what the harness needs and proposes the fixes. It also seeds the configs that encode the harness's memory (excluding end2end/ from the unit runner, retries 0 in Playwright), and it does not seed the document templates, which travel in the skills that use them."
 ---
 
 # Harness Init
 
-El paso 0, y durante mucho tiempo el único sin dueño. Los siete pasos del ciclo tienen cada uno su
-productor; **el contrato del proyecto no tenía ninguno**, y la única salida que ofrecía el router
-era «hacelo con `/init` o a mano».
+Step 0, and for a long time the only one without an owner. The seven steps of the cycle each have
+their producer; **the project's contract had none**, and the only way out the router offered was
+"do it with `/init` or by hand".
 
-Eso lo volvía trabajo manual justo donde debería ser un comando: `CLAUDE.md` es lo único que hay que
-adaptar para llevar el harness a otro repo, o sea **el paso que más se va a repetir**. En un proyecto
-que ya existe no se nota; en uno nuevo es lo primero que se topa.
+That made it manual work exactly where it should be a command: `CLAUDE.md` is the only thing that
+has to be adapted to take the harness to another repo, that is, **the step that will be repeated
+the most**. In a project that already exists it goes unnoticed; in a new one it is the first thing
+you run into.
 
-`/init` no alcanza: sobre una carpeta vacía no tiene nada que analizar, y no conoce las ranuras que
-el harness necesita.
+`/init` is not enough: on an empty folder it has nothing to analyze, and it doesn't know the slots
+the harness needs.
 
-## Las dos mitades, y por qué hacen falta las dos
+## The two halves, and why both are needed
 
-**La plantilla restringe por estructura, no por prosa.** Es lo que la hace valiosa: casi todo el
-harness son compuertas de instrucción, que se cumplen porque el modelo las lee. La plantilla no.
+**The template constrains by structure, not by prose.** That is what makes it valuable: almost all
+of the harness is instruction gates, which are obeyed because the model reads them. The template
+isn't.
 
-- No tiene sección «Estructura», así que esa sección **no existe** — y meter un árbol de archivos en
-  el contrato, que es territorio del `design.md`, pasa de improbable a imposible.
-- Tiene **dos ranuras de comandos rotuladas por separado**, corrección e higiene, así que
-  conflacionarlas también deja de estar disponible.
+- It has no "Structure" section, so that section **doesn't exist** — and putting a file tree in the
+  contract, which is `design.md`'s territory, goes from unlikely to impossible.
+- It has **two command slots labeled separately**, correctness and hygiene, so conflating them is
+  no longer available either.
 
-**La entrevista llena las ranuras.** Y acá está el mecanismo que importa: **una ranura sin llenar es
-una pregunta visible.** Un `<stack: preguntá antes de completar>` que quedó sin tocar se ve en el
-archivo, y cualquiera que lo abra sabe que falta algo. Una generación libre que decidió sola no deja
-ninguna marca — y ya pasó: se escribió un stack entero sin preguntar, con la consulta pedida
-explícitamente en el prompt, y el archivo resultante no tenía forma de delatarlo.
+**The interview fills the slots.** And here is the mechanism that matters: **an unfilled slot is a
+visible question.** A `<stack: preguntá antes de completar>` left untouched shows in the file, and
+anyone who opens it knows something is missing. A free generation that decided alone leaves no mark
+— and it has happened: a whole stack was written without asking, with the question explicitly
+requested in the prompt, and the resulting file had no way to give it away.
 
-## Si ya existe un `CLAUDE.md`
+## If a `CLAUDE.md` already exists
 
-**No lo pises.** Este skill no es «regenerá el contrato»; sobre un repo que ya tiene uno, su trabajo
-es revisarlo contra lo que el harness necesita y **proponer** los arreglos, uno por uno, para que la
-persona decida.
+**Don't overwrite it.** This skill is not "regenerate the contract"; on a repo that already has one,
+its job is to review it against what the harness needs and **propose** the fixes, one by one, for
+the person to decide.
 
-**Antes de las cinco comprobaciones, leé el archivo entero buscando afirmaciones que el repo
-contradiga — las que ya están y las que vas a proponer vos.** Toda frase sobre el estado del
-proyecto —qué existe, qué falta, qué funciona, cuántos pasos tiene el ciclo— se contrasta contra el
-repo real, no contra lo que el archivo dice de sí mismo. Una afirmación falsa en el contrato es peor
-que una ausente: la leen todos los agentes y la tratan como cierta. **Antes de presentar un cambio,
-releé tu propio texto con el mismo criterio** — una frase nueva puede ser falsa desde el día en que
-se escribe. Y cuando una frase de estado haga falta, escribila en condicional («si no están
-instalados, `npx playwright install chromium` los instala»): una afirmación de estado envejece, una
-condicional no. **Lo mismo vale para las reglas propias del proyecto: una regla dice qué se hace o
-qué no se hace, no qué hay.** «No se mantiene un resumen del sistema de diseño en el repo» sobrevive
-a que una feature porte el código del sistema; «el repo no tiene una copia del sistema» se vuelve
-falsa con el primer commit que hace lo que el skill de diseño manda, y nadie lo nota. Las cinco
-comprobaciones de abajo son lo mínimo que el harness necesita, no la lista completa de lo que puede
-estar mal.
+**Before the five checks, read the whole file looking for claims the repo contradicts — the ones
+already there and the ones you are going to propose.** Every sentence about the state of the
+project —what exists, what is missing, what works, how many steps the cycle has— is checked against
+the real repo, not against what the file says about itself. A false claim in the contract is worse
+than a missing one: every agent reads it and treats it as true. **Before presenting a change,
+reread your own text with the same criterion** — a new sentence can be false from the day it is
+written. And when a sentence about state is needed, write it as a conditional ("if they aren't
+installed, `npx playwright install chromium` installs them"): a statement of state ages, a
+conditional doesn't. **The same goes for the project's own rules: a rule says what is done or not
+done, not what there is.** "No summary of the design system is kept in the repo" survives a feature
+porting the system's code; "the repo has no copy of the system" becomes false with the first commit
+that does what the design skill asks, and nobody notices. The five checks below are the minimum the
+harness needs, not the complete list of what can be wrong.
 
-Mirá cinco cosas:
+Look at five things:
 
-1. **Las dos ranuras de comandos** están rotuladas y separadas. Si hay una sola lista de comandos,
-   ese es el hallazgo más caro de los cinco: sin la separación, `implement-task` y `close-feature`
-   no tienen contra qué bindear, y un lint adentro del comando de corrección hace fallar la
-   verificación de una tarea por una queja de formato.
-2. **No hay sección de estructura** ni nombres de archivos concretos.
-3. **La tabla del ciclo** nombra a los productores actuales de cada paso.
-4. **Los configs** de la sección «Qué sembrar» existen, dicen lo que tienen que decir, **y su
-   dependencia está instalada** — corré el doctor de la sección de abajo, no lo inspecciones a ojo.
-5. **Cada casillero de la plantilla existe en el contrato, con su marca.** La plantilla marca los
-   casilleros que leen los pasos del ciclo con un comentario invisible, `<!-- ranura: auditor -->`.
-   Buscá cada marca de `assets/CLAUDE.template.md` en el `CLAUDE.md` del proyecto: si falta, ese
-   casillero no existe todavía —la plantilla lo sumó después de que se escribió el contrato— y se
-   propone, con su marca, como cualquier otro arreglo. Si el casillero está pero sin marca (escrito
-   con otra forma, por ejemplo una tabla), se propone solo la marca: la redacción del proyecto no se
-   toca.
+1. **The two command slots** are labeled and separate. If there is a single list of commands, that
+   is the most expensive finding of the five: without the separation, `implement-task` and
+   `close-feature` have nothing to bind to, and a lint inside the correctness command makes a
+   task's verification fail over a formatting complaint.
+2. **There is no structure section** and no concrete file names.
+3. **The cycle table** names the current producers of each step.
+4. **The configs** from the "What to seed" section exist, say what they have to say, **and their
+   dependency is installed** — run the doctor from the section below, don't inspect it by eye.
+5. **Every slot of the template exists in the contract, with its mark.** The template marks the
+   slots that the cycle's steps read with an invisible comment, `<!-- ranura: auditor -->`. Look
+   for every mark of `assets/CLAUDE.template.md` in the project's `CLAUDE.md`: if one is missing,
+   that slot doesn't exist yet —the template added it after the contract was written— and it is
+   proposed, with its mark, like any other fix. If the slot is there but without the mark (written
+   in another form, for example a table), only the mark is proposed: the project's wording is not
+   touched.
 
-Un cambio al `CLAUDE.md` de un proyecto que ya trabaja es un cambio de contrato: se propone y se
-espera el sí. No lo apliques de corrido.
+A change to the `CLAUDE.md` of a project that is already working is a change of contract: it is
+proposed and the yes is awaited. Don't apply it in one go.
 
-## La entrevista
+## The interview
 
-Antes de preguntar nada, **mirá lo que ya está**: `package.json`, `pyproject.toml`, `go.mod`, un
-`Makefile`, los archivos que haya. Una pregunta cuya respuesta está en el repo es una pregunta que
-gasta la paciencia de la persona sin comprar nada.
+Before asking anything, **look at what's already there**: `package.json`, `pyproject.toml`,
+`go.mod`, a `Makefile`, whatever files there are. A question whose answer is in the repo is a
+question that spends the person's patience without buying anything.
 
-**Primera ronda — lo que no depende de nada:**
+**First round — what doesn't depend on anything:**
 
-- Nombre del proyecto y qué es, en una línea.
-- **El stack.** Esta es la que nunca se saltea, ni siquiera cuando la respuesta parece obvia. Si
-  tenés una recomendación, dala — pero **etiquetada**: «lo decidí yo, decime si va». Lo que no se
-  puede es escribirla en el archivo como si la hubieran pedido.
-- **¿Va a haber una interfaz navegable?** Una URL o un `file://` que alguien pueda abrir — web, un
-  dashboard, cualquier cosa que Playwright pueda visitar. Mirá el repo antes de preguntar y
-  **proponé la respuesta**: un `index.html`, un `vite.config`, un framework de UI en
-  `package.json` la sugieren sola; un proyecto de CLI o de librería, también. Esta respuesta decide
-  si en «Qué sembrar» instalás Playwright ahora o no instalás nada todavía — no decide si *esta*
-  feature en particular la va a tener: eso lo declara cada `design.md`, por separado.
+- The project's name and what it is, in one line.
+- **The stack.** This is the one that is never skipped, not even when the answer seems obvious. If
+  you have a recommendation, give it — but **labeled**: "I decided this, tell me if it works". What
+  you can't do is write it in the file as if it had been asked for.
+- **Will there be a navigable interface?** A URL or a `file://` someone can open — web, a
+  dashboard, anything Playwright can visit. Look at the repo before asking and **propose the
+  answer**: an `index.html`, a `vite.config`, a UI framework in `package.json` suggest it on their
+  own; so does a CLI or library project. This answer decides whether in "What to seed" you install
+  Playwright now or install nothing yet — it doesn't decide whether *this* particular feature will
+  have one: each `design.md` declares that, separately.
 
-**Segunda ronda — lo que depende del stack:**
+**Second round — what depends on the stack:**
 
-- **Si hay interfaz con JavaScript de cliente, el DOM de pruebas.** Un clic que cambia lo que se ve
-  es un criterio de *efecto*, y en el paso 5 necesita un DOM para probarse; el e2e llega recién
-  después de que todas las tareas están en `hecho`, así que no lo reemplaza. En `typescript-node`
-  el default es jsdom, y `vitest.config.ts` trae la línea comentada. Si la respuesta es sí, sumalo
-  al Stack y a la instalación con el mismo sí que Playwright. Una interfaz de HTML estático, sin
-  comportamiento en el cliente, no lo necesita.
-- **El comando de corrección**: typecheck y tests. Nada más.
-- **El comando de higiene**: lint, formato, build, e2e — lo que exista. Si el proyecto todavía no
-  tiene ninguno, la ranura se llena repitiendo los de corrección **y se dice que es provisorio**. La
-  ranura vacía no se borra: existe porque el paso 8 la va a buscar.
-- **El auditor de dependencias**: el del ecosistema (`npm audit`, `pip-audit`, `govulncheck`…) o
-  «ninguno», dicho explícitamente. `close-feature` lo corre para ver qué vulnerabilidades **trajo**
-  cada feature; sin la ranura, tendría que adivinar el ecosistema. No va adentro de la higiene: un
-  aviso heredado de una dependencia de desarrollo no puede bloquear el cierre de una feature que
-  no lo trajo.
+- **If there is an interface with client-side JavaScript, the test DOM.** A click that changes what
+  is shown is an *effect* criterion, and in step 5 it needs a DOM to be tested; e2e only arrives
+  after every task is `done`, so it doesn't replace it. In `typescript-node` the default is jsdom,
+  and `vitest.config.ts` brings the line commented out. If the answer is yes, add it to the Stack
+  and to the install with the same yes as Playwright. A static HTML interface, with no client-side
+  behavior, doesn't need it.
+- **The correctness command**: typecheck and tests. Nothing else.
+- **The hygiene command**: lint, format, build, e2e — whatever exists. If the project doesn't have
+  any yet, the slot is filled by repeating the correctness ones **and saying it is provisional**. The
+  empty slot is not deleted: it exists because step 8 will look for it.
+- **The dependency auditor**: the ecosystem's (`npm audit`, `pip-audit`, `govulncheck`…) or
+  "none", said explicitly. `close-feature` runs it to see which vulnerabilities each feature
+  **brought**; without the slot, it would have to guess the ecosystem. It doesn't go inside hygiene:
+  an inherited warning from a development dependency can't block closing a feature that didn't
+  bring it.
 
-Si el repo ya declara scripts, **proponelos en vez de preguntar en abstracto**: «saqué estos de tu
-`package.json`, ¿los confirmás?». Es más rápido y deja el origen a la vista.
+If the repo already declares scripts, **propose them instead of asking in the abstract**: "I took
+these from your `package.json`, do you confirm them?". It's faster and leaves the origin in view.
 
-**Reglas propias del proyecto:** preguntá si hay alguna que valga para *toda* feature. Si no hay,
-la línea se borra en vez de inventarse una.
+**The project's own rules:** ask whether there is one that holds for *every* feature. If there
+isn't, the line is deleted instead of inventing one.
 
-**El backlog:** ¿el proyecto ya usa un tracker (GitHub Issues, Jira)? Si sí, el contrato lo nombra;
-si no, queda el default, `docs/pendientes.md`. Es donde va lo que aparece en una feature y le
-corresponde a otra, y el router lo necesita escrito para que ese hallazgo tenga adónde ir.
+**The backlog:** does the project already use a tracker (GitHub Issues, Jira)? If so, the contract
+names it; if not, the default stays, `docs/pendientes.md`. It is where whatever shows up in one
+feature and belongs to another goes, and the router needs it written down so that finding has
+somewhere to go.
 
-**Etiquetá el origen de cada cosa que quede escrita**: «lo pediste» · «lo decidí yo, decime si va» ·
-«lo asumí porque X». Un supuesto declarado es honesto; uno silencioso se convierte en regla del
-contrato y de ahí en más nadie lo vuelve a cuestionar.
+**Label the origin of everything that ends up written**: "you asked for it" · "I decided it, tell
+me if it works" · "I assumed it because X". A stated assumption is honest; a silent one becomes a
+rule of the contract and from then on nobody questions it again.
 
-## Escribir el archivo
+## Writing the file
 
-Copiá `assets/CLAUDE.template.md` a `CLAUDE.md` en la raíz del proyecto y completá las ranuras con
-lo que salió de la entrevista. La tabla del ciclo y las reglas del harness **vienen ya escritas**:
-son memoria del método, no decisiones del proyecto, y no se reabren en cada init. **Las marcas
-`<!-- ranura: … -->` se quedan**: son invisibles al leer, y son lo que permite, en una revisión
-futura, saber qué casilleros sumó la plantilla después.
+Copy `assets/CLAUDE.template.md` to `CLAUDE.md` at the project root and fill the slots with what
+came out of the interview. The cycle table and the harness's rules **come already written**: they
+are the method's memory, not the project's decisions, and they are not reopened on every init.
+**The `<!-- ranura: … -->` marks stay**: they are invisible when reading, and they are what lets a
+future review know which slots the template added later.
 
-**El chequeo antes de dar el paso por terminado**, y es mecánico a propósito:
+**The check before calling the step finished**, and it is mechanical on purpose:
 
 ```bash
 grep -n "preguntá antes de completar" CLAUDE.md
 ```
 
-Si devuelve algo, hay una ranura sin llenar. Puede estar bien —a veces falta un dato que la persona
-no tiene ahora— pero entonces **decilo con todas las letras** en vez de dejarlo pasar: el archivo
-queda con una pregunta abierta y adentro, que es exactamente lo que la plantilla vino a lograr.
-Nunca la tapes completando por tu cuenta.
+If it returns something, there is an unfilled slot. That can be fine —sometimes a piece of data is
+missing that the person doesn't have right now— but then **say it plainly** instead of letting it
+pass: the file stays with an open question inside, which is exactly what the template came to
+achieve. Never cover it up by filling it in on your own.
 
-## Qué sembrar además del `CLAUDE.md`
+## What to seed besides `CLAUDE.md`
 
-Los configs que codifican conocimiento del harness y que un proyecto nuevo no va a redescubrir.
-Están en `assets/stacks/<stack>/`, y hoy hay uno solo, `typescript-node`. **Es a propósito: se
-arranca con un stack y se agregan a medida que aparezcan**, en vez de inventar configs para stacks
-que nadie usó todavía.
+The configs that encode the harness's knowledge and that a new project won't rediscover. They are
+in `assets/stacks/<stack>/`, and today there is only one, `typescript-node`. **That is on purpose:
+start with one stack and add more as they show up**, instead of inventing configs for stacks nobody
+has used yet.
 
-**Regla: un config se siembra junto con su dependencia, o no se siembra.** Un `playwright.config.ts`
-sin `@playwright/test` instalado es el mismo problema que un archivo sin dueño, solo que disfrazado:
-el config tiene productor (este skill), la dependencia no tiene a nadie a cargo, y nada lo nota hasta
-el paso 7 — al final de toda una feature, no al principio del proyecto.
+**Rule: a config is seeded together with its dependency, or it isn't seeded.** A
+`playwright.config.ts` without `@playwright/test` installed is the same problem as a file without an
+owner, only disguised: the config has a producer (this skill), the dependency has nobody in charge,
+and nothing notices it until step 7 — at the end of a whole feature, not at the start of the
+project.
 
-| Archivo | Qué codifica | Dependencia |
+| File | What it encodes | Dependency |
 |---|---|---|
-| `vitest.config.ts` | Excluye `end2end/` del runner de unidad. Sin esto, los dos runners se pelean por los `.spec.ts` — y el fallo aparece recién cuando el ciclo e2e puebla la carpeta, invalidando veredictos de tareas que nadie tocó. | `vitest` |
-| `playwright.config.ts` | `retries: 0`. Un caso que pasa al segundo intento es un hallazgo, no un caso resuelto, y el triager lo tiene que ver así. | `@playwright/test` + Chromium |
+| `vitest.config.ts` | Excludes `end2end/` from the unit runner. Without this, the two runners fight over the `.spec.ts` files — and the failure only shows up when the e2e cycle populates the folder, invalidating verdicts of tasks nobody touched. | `vitest` |
+| `playwright.config.ts` | `retries: 0`. A case that passes on the second attempt is a finding, not a resolved case, and the triager has to see it that way. | `@playwright/test` + Chromium |
 
-**`playwright.config.ts` se siembra solo si la entrevista respondió que va a haber interfaz
-navegable.** Si es así, sembralo junto con su dependencia, en el mismo momento, con un solo sí:
+**`playwright.config.ts` is seeded only if the interview answered that there will be a navigable
+interface.** If so, seed it together with its dependency, at the same moment, with a single yes:
 
 ```bash
 npm i -D @playwright/test
 npx playwright install chromium
 ```
 
-Es la misma instalación que antes se pedía en el paso 7, movida acá: ahí costaba una feature entera
-de espera, acá cuesta una línea. **Si la respuesta fue que no va a haber interfaz —o que todavía no
-se sabe—, no siembres el config ni la pata `e2e` del comando de higiene.** La ranura de higiene se
-completa sin esa pata, y lo decís en condicional al escribirla («si aparece una interfaz, esta
-ranura suma `npx playwright test`»): la primera feature que declare superficie navegable en su
-`design.md` va a traer de vuelta a este skill, en modo revisión, a sembrar lo que hoy falta.
+It is the same install that used to be asked for in step 7, moved here: there it cost a whole
+feature of waiting, here it costs one line. **If the answer was that there won't be an interface —or
+that it isn't known yet—, don't seed the config or the `e2e` leg of the hygiene command.** The
+hygiene slot is filled without that leg, and you say so as a conditional when writing it ("if an
+interface shows up, this slot adds `npx playwright test`"): the first feature that declares a
+navigable surface in its `design.md` will bring this skill back, in review mode, to seed what is
+missing today.
 
-**Copialos con sus comentarios.** Los comentarios *son* el contenido: explican por qué el archivo
-existe, y sin ellos el primero que los lea va a borrar la exclusión por parecer arbitraria.
+**Copy them with their comments.** The comments *are* the content: they explain why the file
+exists, and without them the first person to read them will delete the exclusion because it looks
+arbitrary.
 
-Si el stack no es ninguno de los que hay en `assets/stacks/`, **no improvises los configs**: decí
-qué problema resuelven —los de la tabla— y dejá que la persona decida cómo se traduce a su stack. Un
-config inventado para un runner que no conocés es peor que ninguno.
+If the stack is none of the ones in `assets/stacks/`, **don't improvise the configs**: say which
+problem they solve —the ones in the table— and let the person decide how it translates to their
+stack. A config invented for a runner you don't know is worse than none.
 
-**Si sembraste Playwright, corré el doctor al terminar**, junto al chequeo de ranuras sin llenar de
-más arriba: `node <ruta-de-verify-e2e>/scripts/e2e-doctor.cjs`, con la ruta del proyecto. Confirma
-que la dependencia y el browser efectivamente quedaron instalados — no que el comando se corrió sin
-error, que no es lo mismo si la instalación falló a mitad de camino.
+**If you seeded Playwright, run the doctor at the end**, next to the unfilled-slots check above:
+`node <verify-e2e-path>/scripts/e2e-doctor.cjs`, with the project's path. It confirms that the
+dependency and the browser actually got installed — not that the command ran without error, which is
+not the same thing if the install failed halfway.
 
-**Ofrecé `git init` si el repo no lo es.** El método pide un commit por tarea, y sin repo eso no
-existe. Pasó: un proyecto entero se hizo sin repo porque nadie lo corrió y nada en el método lo
-pedía.
+**Offer `git init` if the repo isn't one.** The method asks for one commit per task, and without a
+repo that doesn't exist. It happened: a whole project was done without a repo because nobody ran it
+and nothing in the method asked for it.
 
-## Qué NO sembrar
+## What NOT to seed
 
-- **Las plantillas de documentos** (`requirements-template.md`, `design-template.md`,
-  `tasks-template.md`, `e2e-tests-plan-template.md`). Ya viajan en `assets/` de los skills que las
-  usan, y varios agentes las conocen por precarga. Copiarlas al proyecto crea dos copias y la
-  pregunta de cuál gana, que es la misma trampa de tener el mismo workflow en dos lugares.
-- **La carpeta `docs/`.** La crea `specify` cuando la necesita.
-- **`docs/pendientes.md`.** Lo crea `close-feature` la primera vez que una feature deja algo para
-  otra. Un backlog vacío sembrado de antemano es un archivo sin contenido que todos leen.
-- **Código, scaffolding o una app de ejemplo.** Este paso escribe el contrato, no el proyecto.
+- **The document templates** (`requirements-template.md`, `design-template.md`,
+  `tasks-template.md`, `e2e-tests-plan-template.md`). They already travel in the `assets/` of the
+  skills that use them, and several agents know them by preloading. Copying them into the project
+  creates two copies and the question of which one wins, which is the same trap as having the same
+  workflow in two places.
+- **The `docs/` folder.** `specify` creates it when it needs it.
+- **`docs/pendientes.md`.** `close-feature` creates it the first time a feature leaves something for
+  another one. An empty backlog seeded in advance is a file without content that everyone reads.
+- **Code, scaffolding or an example app.** This step writes the contract, not the project.
 
-## Al terminar
+## When finished
 
-**Commiteá lo que sembraste**: el `CLAUDE.md`, los configs, y el `package.json`/`package-lock.json`
-si instalaste algo — quien recibe el sí de un documento o de una instalación lo commitea. Sin esto,
-el contrato queda flotando hasta el commit de la primera tarea, mezclado con trabajo de otro paso.
+**Commit what you seeded**: the `CLAUDE.md`, the configs, and the `package.json`/`package-lock.json`
+if you installed something — whoever receives the yes for a document or an install commits it.
+Without this, the contract stays floating until the first task's commit, mixed with another step's
+work.
 
-Contá en tres líneas qué quedó: el stack acordado, los dos comandos, y qué configs sembraste (y si
-Playwright quedó afuera porque todavía no hay interfaz). Después
-nombrá el **paso 1**, el skill `brainstorming`: es por donde entra la primera feature. No lo
-arranques vos.
+Say in three lines what was left: the agreed stack, the two commands, and which configs you seeded
+(and whether Playwright stayed out because there is no interface yet). Then name **step 1**, the
+`brainstorming` skill: it is where the first feature comes in. Don't start it yourself.
 
-## Archivos de este skill
+## This skill's files
 
-- `assets/CLAUDE.template.md` — la plantilla del contrato, con sus ranuras.
-- `assets/stacks/typescript-node/` — los configs que codifican memoria del harness para ese stack.
+- `assets/CLAUDE.template.md` — the contract template, with its slots.
+- `assets/stacks/typescript-node/` — the configs that encode the harness's memory for that stack.
