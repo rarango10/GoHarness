@@ -83,34 +83,45 @@ sigue — solo lo nombra.
 
 ## Reglas
 
+<!-- regla: one-feature-at-a-time -->
 - Una feature a la vez. No abrir frentes en paralelo.
+<!-- regla: tdd -->
 - TDD: test que falla → implementar → test que pasa.
+<!-- regla: no-needless-deps -->
 - No agregar dependencias sin necesidad.
+<!-- regla: single-producer -->
 - **El plan lo escribe solo el workflow `tasks-fanout`**, nunca a mano ni con otro subagente: qué
   tareas existen, sus ids, su orden, su título y su `Cubre`. El workflow revisa en paralelo con
   agentes de solo lectura y materializa con un único escritor; planificar por afuera reintroduce el
   segundo escritor que eso elimina.
+<!-- regla: progress-by-implementer -->
 - **El avance lo escribe quien implementa**, y solo en las regiones de la tarea que está haciendo:
   su celda de `Estado` y su bloque de `Registro` — más el encabezado de aprobación de `tasks.md`,
   una vez, cuando la persona confirma el plan. Son regiones distintas con dueños distintos. Lo único
   prohibido es implementar mientras hay una corrida de `tasks-fanout` en vuelo: entre que el scout
   lee y el escritor guarda, tu `hecho` se pierde.
+<!-- regla: done-means-verified -->
 - **`hecho` significa verificado.** Una tarea pasa a `hecho` solo cuando `dod-checker` devolvió
   `cumple` y su `Registro` deja asentado ese veredicto; cualquier resultado menor la deja en
   `en curso`. Ese es el **DoD** del proyecto. La columna `Estado` es el registro durable de qué está
   terminado de verdad.
+<!-- regla: task-is-the-unit -->
 - **La unidad del paso 5 es la tarea, no la fase.** Once tareas son once ciclos. La compuerta entre
   tareas se renuncia solo con el vocabulario de `implement-task` (`--modo corrido`), nunca por
   inferencia; que cada tarea se verifique y que un veredicto menor corte la corrida no se renuncian
   en ningún modo. Y la segunda ronda de una misma tarea —cuando un veredicto salió menor que
   `cumple`— también espera el sí, siempre, en cualquier modo: no es «la tarea siguiente», así que
   `--modo corrido` no la alcanza.
+<!-- regla: one-commit-per-task -->
 - **Un commit por tarea, con su id en el mensaje.**
+<!-- regla: verdict-on-a-state -->
 - **Un veredicto se toma sobre un estado.** El `cumple` de `dod-checker` vale para el repo tal como
   estaba al tomarlo, y puede volverse falso sin que la tarea cambie una línea. Por eso el paso 8
   corre la higiene sobre el estado final, y un rojo ahí reabre la tarea afectada.
+<!-- regla: e2e-does-not-fix-code -->
 - **El ciclo e2e no repara código.** `e2e-triager` diagnostica y rutea; si la causa es el código, la
   tarea baja a `en curso` y se arregla con el TDD de siempre.
+<!-- regla: change-enters-at-top -->
 - **Un cambio entra por el documento más alto que toca.** Lo que a mitad de camino obliga a volver
   atrás —un criterio mal, un design que ya no describe lo que existe, una tarea que falta— no se
   arregla donde apareció: se clasifica y entra por el productor de ese documento (`specify` con una

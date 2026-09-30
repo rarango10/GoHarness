@@ -4,29 +4,33 @@
 /**
  * Guarda de paridad (L42).
  *
- * Dos reglas del método viven escritas en más de un lugar, y nada comprobaba que dijeran lo
- * mismo:
+ * Dos cosas del método viven escritas en más de un lugar, y nada comprobaba que dijeran lo mismo:
  *
- *   - «Reglas del harness» del `CLAUDE.md` de este repo  ↔  «Reglas» de `CLAUDE.template.md`.
- *   - La tabla del ciclo del router (`SKILL.md`)         ↔  la tabla del ciclo de la plantilla.
- *   - Los casilleros de la plantilla (`<!-- ranura: … -->`) ↔  los del `CLAUDE.md` de este repo (L57).
+ *   - Las reglas del router (`SKILL.md`)      ↔  las «Reglas» de `CLAUDE.template.md`.
+ *   - La tabla del ciclo del router            ↔  la tabla del ciclo de la plantilla.
  *
- * El tercero existe porque el `CLAUDE.md` del repo cumple dos papeles: es el contrato del ejemplo y
- * es lo que carga toda sesión de mantenedor. Cuando la plantilla suma un casillero (el auditor, el
- * backlog), el del repo se queda atrás sin que nada lo note, y quien clona hereda un contrato más
- * viejo que el método que el repo publica. Se compara por marca y no por redacción: el repo escribe
- * sus comandos en una tabla y la plantilla en bloques, y los dos están bien.
+ * Una regla que se arregla en un lado y no en el otro no rompe nada visible: el plugin sigue
+ * validando, y el proyecto que se siembre mañana nace con la versión vieja. Este script convierte
+ * eso en un rojo.
  *
- * Una regla que se arregla en un lado y no en el otro no rompe nada visible: el repo sigue
- * funcionando, el plugin sigue validando, y el proyecto que se siembre mañana nace con la
- * versión vieja. Este script convierte eso en un rojo.
+ * **Las reglas se comparan por etiqueta, no por redacción.** Cada regla lleva arriba un comentario
+ * invisible, `<!-- regla: done-means-verified -->`, igual que los casilleros llevan
+ * `<!-- ranura: … -->`. Antes la identidad era el título en negrita, y eso alcanzaba mientras todo
+ * estuviera en un idioma; al traducir, «`hecho` significa verificado» y «`done` means verified»
+ * serían dos reglas distintas. La etiqueta no se traduce nunca.
  *
- * No compara prosa palabra por palabra —las dos copias se redactan distinto a propósito, una
- * habla de este repo y la otra del proyecto que se siembra—. Compara el *conjunto de reglas
- * que existen* y el *productor de cada paso del ciclo*.
+ * El router resume: tiene 4 reglas y la plantilla 11, y su cuarta junta dos de la plantilla (por
+ * eso lleva dos etiquetas). Así que la comparación va en una sola dirección: toda etiqueta del
+ * router tiene que existir en la plantilla.
  *
- * Uso: node plugin/goharness/checks/check-rules-parity.cjs [ruta-del-CLAUDE.md]
- * Sin argumento, compara el `CLAUDE.md` de la raíz del repo.
+ * Y una regla sin etiqueta es un rojo: si no, una regla nueva escrita sin marca quedaría afuera de
+ * la comparación sin que nadie lo note.
+ *
+ * Hasta la 0.5.2 comparaba además el `CLAUDE.md` del repo, que era el contrato de la calculadora.
+ * Ese archivo se quedó en `GoHarness-es`; la comparación entre la plantilla en inglés y en español
+ * llega en la fase 4 de la mudanza.
+ *
+ * Uso: node plugin/goharness/checks/check-rules-parity.cjs
  * Sale 0 si hay paridad, 1 si no.
  */
 
@@ -36,18 +40,9 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..', '..', '..');
 
 const FUENTES = {
-  repo: {
-    rotulo: 'CLAUDE.md (este repo)',
-    archivo: process.argv[2] ? path.resolve(process.argv[2]) : path.join(ROOT, 'CLAUDE.md'),
-    seccionReglas: 'Reglas del harness',
-  },
   plantilla: {
     rotulo: 'CLAUDE.template.md (harness-init)',
-    archivo: path.join(
-      ROOT,
-      'plugin/goharness/skills/harness-init/assets/CLAUDE.template.md',
-    ),
-    seccionReglas: 'Reglas',
+    archivo: path.join(ROOT, 'plugin/goharness/skills/harness-init/assets/CLAUDE.template.md'),
   },
   router: {
     rotulo: 'SKILL.md (router)',
@@ -55,77 +50,58 @@ const FUENTES = {
   },
 };
 
-/** Los nombres de las marcas `<!-- ranura: nombre -->`, leídas del texto crudo, con comentarios. */
-function ranuras(fuente) {
-  const texto = fs.readFileSync(fuente.archivo, 'utf8');
-  return new Set([...texto.matchAll(/<!--\s*ranura:\s*([\w-]+)\s*-->/g)].map((m) => m[1]));
-}
+const ETIQUETA = /^<!--\s*regla:\s*([\w-]+)\s*-->$/;
 
 function leer(fuente) {
   if (!fs.existsSync(fuente.archivo)) {
     throw new Error(`No existe ${path.relative(ROOT, fuente.archivo)}`);
   }
   const texto = fs.readFileSync(fuente.archivo, 'utf8');
-  // Los comentarios HTML se descartan antes de parsear. La plantilla cierra su sección de reglas
-  // con un bloque `<!-- Qué NO va en este archivo -->` que tiene sus propios bullets: son notas
-  // para quien edita la plantilla, no reglas del método, y sin esto entran al conjunto y el
-  // chequeo reporta tres reglas inexistentes en su primera corrida.
-  return texto.replace(/<!--[\s\S]*?-->/g, '');
-}
-
-/** Devuelve las líneas de una sección `## <titulo>`, hasta el próximo encabezado del mismo nivel. */
-function seccion(texto, titulo) {
-  const lineas = texto.split('\n');
-  const desde = lineas.findIndex((l) => l.trim() === `## ${titulo}`);
-  if (desde === -1) return null;
-  const resto = lineas.slice(desde + 1);
-  const hasta = resto.findIndex((l) => /^##\s/.test(l));
-  return (hasta === -1 ? resto : resto.slice(0, hasta)).join('\n');
+  // Los comentarios HTML se descartan antes de parsear, salvo las etiquetas de regla. La plantilla
+  // cierra su sección de reglas con un bloque `<!-- Qué NO va en este archivo -->` que tiene sus
+  // propios bullets: son notas para quien edita la plantilla, no reglas del método.
+  return texto.replace(/<!--(?!\s*regla:)[\s\S]*?-->/g, '');
 }
 
 /**
- * Junta los bullets de primer nivel de una sección en una regla por bullet, con sus líneas de
- * continuación pegadas. Descarta las ranuras de la plantilla (`- <...>`), que son huecos para
- * que los complete el proyecto, no reglas del método.
+ * Las reglas de un archivo, como lista de etiquetas. La lista de reglas se ubica por las etiquetas
+ * y no por el título de su sección, para que traducir el título no la haga desaparecer: arranca en
+ * la primera etiqueta y termina en el primer encabezado que viene después.
+ *
+ * Cada ítem de primer nivel (`- ` o `1. `) es una regla y tiene que tener al menos una etiqueta
+ * justo arriba. Los ítems `- <...>` son huecos para que los complete el proyecto, no reglas.
  */
-function bullets(textoSeccion) {
-  const reglas = [];
-  for (const linea of textoSeccion.split('\n')) {
-    if (/^- /.test(linea)) {
-      reglas.push(linea.slice(2).trim());
-    } else if (reglas.length > 0 && /^\s+\S/.test(linea)) {
-      reglas[reglas.length - 1] += ` ${linea.trim()}`;
-    } else if (linea.trim() === '') {
-      // un renglón en blanco no corta el bullet: puede haber un párrafo adentro
+function reglas(texto, rotulo, errores) {
+  const lineas = texto.split('\n');
+  const desde = lineas.findIndex((l) => ETIQUETA.test(l.trim()));
+  if (desde === -1) {
+    errores.push(`${rotulo}: no tiene ninguna etiqueta \`<!-- regla: … -->\`.`);
+    return [];
+  }
+  const etiquetas = [];
+  let pendientes = [];
+  for (const linea of lineas.slice(desde)) {
+    if (/^#{1,6}\s/.test(linea)) break;
+    const m = linea.trim().match(ETIQUETA);
+    if (m) {
+      pendientes.push(m[1]);
+    } else if (/^(- |\d+\. )/.test(linea) && !/^- </.test(linea)) {
+      if (pendientes.length === 0) {
+        errores.push(`${rotulo}: regla sin etiqueta:\n    «${linea.trim().slice(0, 70)}…»`);
+      }
+      etiquetas.push(...pendientes);
+      pendientes = [];
     }
   }
-  return reglas.filter((r) => !r.startsWith('<'));
-}
-
-/**
- * La identidad de una regla: el texto por el que se decide si dos bullets, escritos distinto en
- * cada archivo, son *la misma regla*.
- *
- * La decisión es esta: **si el bullet arranca con un título en negrita, la clave es ese título y
- * nada más.** Es el nombre de la regla, y es lo que las dos copias mantienen idéntico a
- * propósito; lo que sigue es explicación, y ahí el repo y la plantilla se redactan distinto
- * —«Cada tarea es su propio ciclo de TDD» contra «Once tareas son once ciclos»— sin que eso sea
- * deriva. Comparar el cuerpo daría rojo en cada corrida y el chequeo se volvería ruido que se
- * aprende a ignorar, que es peor que no tenerlo.
- *
- * Si no hay negrita, la clave es el bullet entero. Los tres bullets sin título —«Una feature a la
- * vez», «TDD», «No agregar dependencias»— son una línea corta y completa, sin cuerpo que pueda
- * diferir, así que compararlos enteros no cuesta nada y es más estricto.
- */
-function claveDeRegla(bullet) {
-  const conNegrita = bullet.match(/^\*\*(.+?)\*\*/s);
-  const bruto = conNegrita ? conNegrita[1] : bullet;
-  return bruto
-    .replace(/`/g, '')          // los backticks son formato, no contenido
-    .replace(/\s+/g, ' ')       // el salto de línea del markdown no es una diferencia
-    .trim()
-    .replace(/[.,;:]+$/, '')    // un punto final de más no es una regla distinta
-    .toLowerCase();
+  if (pendientes.length > 0) {
+    errores.push(`${rotulo}: etiqueta sin regla debajo: ${pendientes.join(', ')}.`);
+  }
+  for (const e of new Set(etiquetas)) {
+    if (etiquetas.indexOf(e) !== etiquetas.lastIndexOf(e)) {
+      errores.push(`${rotulo}: la etiqueta «${e}» está repetida.`);
+    }
+  }
+  return etiquetas;
 }
 
 /** Filas de la tabla del ciclo: `| 4 | tasks.md | skill planning-tasks → workflow ... | ... |`. */
@@ -150,33 +126,16 @@ function diferenciaDeConjuntos(a, b) {
 function main() {
   const errores = [];
 
-  // --- Reglas ---
   const textos = {
-    repo: leer(FUENTES.repo),
     plantilla: leer(FUENTES.plantilla),
     router: leer(FUENTES.router),
   };
 
-  const reglas = {};
-  for (const lado of ['repo', 'plantilla']) {
-    const sec = seccion(textos[lado], FUENTES[lado].seccionReglas);
-    if (sec === null) {
-      errores.push(
-        `${FUENTES[lado].rotulo}: no encuentro la sección «${FUENTES[lado].seccionReglas}».`,
-      );
-      reglas[lado] = new Set();
-      continue;
-    }
-    reglas[lado] = new Set(bullets(sec).map(claveDeRegla));
-  }
-
-  const soloRepo = diferenciaDeConjuntos(reglas.repo, reglas.plantilla);
-  const soloPlantilla = diferenciaDeConjuntos(reglas.plantilla, reglas.repo);
-  for (const r of soloRepo) {
-    errores.push(`Regla solo en ${FUENTES.repo.rotulo}, falta en la plantilla:\n    «${r}»`);
-  }
-  for (const r of soloPlantilla) {
-    errores.push(`Regla solo en ${FUENTES.plantilla.rotulo}, falta en el repo:\n    «${r}»`);
+  // --- Reglas ---
+  const reglasPlantilla = new Set(reglas(textos.plantilla, FUENTES.plantilla.rotulo, errores));
+  const reglasRouter = new Set(reglas(textos.router, FUENTES.router.rotulo, errores));
+  for (const r of diferenciaDeConjuntos(reglasRouter, reglasPlantilla)) {
+    errores.push(`Regla «${r}» del router, falta en la plantilla.`);
   }
 
   // --- Tabla del ciclo ---
@@ -197,19 +156,8 @@ function main() {
     }
   }
 
-  // --- Casilleros del contrato ---
-  const ranurasPlantilla = ranuras(FUENTES.plantilla);
-  const ranurasRepo = ranuras(FUENTES.repo);
-  for (const r of diferenciaDeConjuntos(ranurasPlantilla, ranurasRepo)) {
-    errores.push(
-      `Casillero «${r}» de la plantilla, sin su marca en ${FUENTES.repo.rotulo}.\n` +
-        '    No se agrega a mano: ponelo al día con `harness-init` en modo revisión, en una sesión\n' +
-        '    que ya cargue la versión nueva del plugin.',
-    );
-  }
-
   if (errores.length > 0) {
-    console.error('Deriva entre el contrato del repo, la plantilla y el router:\n');
+    console.error('Deriva entre la plantilla y el router:\n');
     for (const e of errores) console.error(`  - ${e}`);
     console.error(
       '\nUna regla que se arregla en un lado y no en el otro nace vieja en el próximo proyecto.',
@@ -218,7 +166,7 @@ function main() {
   }
 
   console.log(
-    `Paridad de reglas: sin deriva (${reglas.repo.size} reglas, ${pasos.size} pasos del ciclo, ${ranurasPlantilla.size} casilleros).`,
+    `Paridad de reglas: sin deriva (${reglasPlantilla.size} reglas en la plantilla, ${reglasRouter.size} etiquetas en el router, ${pasos.size} pasos del ciclo).`,
   );
 }
 

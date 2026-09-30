@@ -50,16 +50,19 @@ justo lo que hacía que llevar el harness a otro repo fuera trabajo manual.
 
 ## Las cuatro reglas que sostienen el ciclo
 
+<!-- regla: single-producer -->
 1. **Un solo productor por documento.** El plan de `tasks.md` lo escribe únicamente el workflow
    `tasks-fanout`; los tests e2e, únicamente `e2e-test-writer`; el reporte e2e, únicamente
    `e2e-triager`. Nunca a mano, nunca con otro subagente.
 
+<!-- regla: progress-by-implementer -->
 2. **El avance lo escribe quien implementa**, y solo en las regiones de la tarea que está
    haciendo: su celda de `Estado` y su bloque de `Registro` — más el encabezado de aprobación de
    `tasks.md`, una vez, cuando la persona confirma el plan. No es una excepción a la regla
    anterior — son regiones distintas con dueños distintos. Lo único prohibido es implementar
    mientras hay una corrida de `tasks-fanout` en vuelo.
 
+<!-- regla: task-is-the-unit -->
 3. **La unidad del paso 5 es la tarea, no la fase.** Once tareas son once ciclos, cada uno
    cerrado por un veredicto de `dod-checker` y su aprobación. La compuerta entre tareas se
    renuncia solo con el vocabulario de `implement-task` (`--modo corrido`), nunca por inferencia;
@@ -67,6 +70,8 @@ justo lo que hacía que llevar el harness a otro repo fuera trabajo manual.
    segunda ronda de una misma tarea —cuando un veredicto salió menor que `cumple`— también espera
    el sí, siempre: no es «la tarea siguiente», así que `--modo corrido` no la alcanza.
 
+<!-- regla: done-means-verified -->
+<!-- regla: verdict-on-a-state -->
 4. **`hecho` significa verificado, y sobre un estado.** Una tarea pasa a `hecho` solo cuando
    `dod-checker` devolvió `cumple` y ese veredicto quedó asentado en su `Registro`; cualquier
    resultado menor la deja en `en curso`. Y ese `cumple` vale para el repo tal como estaba al
