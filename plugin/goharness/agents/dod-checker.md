@@ -88,11 +88,12 @@ claims of results, not about your own configuration.
      someone breaks the wiring, the tests stay green. "The e2e confirms it" doesn't count either:
      step 7 starts with every task `done`, so it can't be the evidence for a step 6 `meets`.
 
-     **Look at the task's diff**, not only the final state: `git log --oneline --grep='<id>'` and
-     `git show` of those commits. A test that didn't change in the task's commit, or an assertion
-     that doesn't touch the code the task added, is a signal to look at closely. It doesn't prove the
-     test was written first —nothing in the repo proves that—, but it does show what it really
-     protects.
+     **Look at the task's diff**, not only the final state:
+     `git log --oneline --grep='^<id>:' -- <spec path>/tasks.md` and `git show` of those commits.
+     Ids restart at T1 in every feature: the path is what keeps another feature's T3 out. A test
+     that didn't change in the task's commit, or an assertion that doesn't touch the code the task
+     added, is a signal to look at closely. It doesn't prove the test was written first —nothing in
+     the repo proves that—, but it does show what it really protects.
    - **Does the implementation satisfy it — the letter and the intent?** This is where the work is.
      The typical failure is meeting the words and missing the point: a criterion that says "reject an
      amount less than or equal to 0", implemented as `if (amount < 0)`, meets the letter and fails at

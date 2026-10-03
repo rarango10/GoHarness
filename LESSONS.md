@@ -44,7 +44,7 @@ and for the same reason. The resolved L1–L57 are in the
 | [L61](#l61--the-compound-criterion-detector-only-knows-spanish--ready-to-apply) | The compound-criterion detector only knows Spanish | **`ready to apply`** | `check_specs.py` |
 | [L62](#l62--an-eval-script-shorter-than-the-conversation-leaves-expectations-unevaluated--ready-to-apply) | An eval script shorter than the conversation leaves expectations unevaluated | **`ready to apply`** | `run_evals.py`, script of brainstorming 5 |
 | [L63](#l63--the-contract-marks-are-still-in-spanish--open) | The contract marks are still in Spanish | `open` | requested by the maintainer; after phase 6 |
-| [L64](#l64--dod-checker-can-read-the-previous-features-commit--ready-to-apply) | `dod-checker` can read the previous feature's commit | **`ready to apply`** | blocks 0.6.0 · `agents/dod-checker.md` |
+| [L64](#l64--dod-checker-can-read-the-previous-features-commit--resolved) | `dod-checker` can read the previous feature's commit | `resolved` | phase 6 fixes · the search is narrowed to the feature's `tasks.md` |
 | [L65](#l65--a-triagers-json-value-escaped-into-an-english-report--ready-to-apply) | A triager's JSON value escaped into an English report | **`ready to apply`** | blocks 0.6.0 · `agents/e2e-triager.md`, glossary |
 | [L66](#l66--a-closing-with-nothing-to-commit-leaves-no-trace--ready-to-apply) | A closing with nothing to commit leaves no trace | **`ready to apply`** | blocks 0.6.0 · `close-feature`, `tasks-template.md` |
 | [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--ready-to-apply) | `harness-init` installs a dependency nobody was asked about | **`ready to apply`** | `harness-init`: extends the rule of L47 |
@@ -536,7 +536,7 @@ and are merged. The fixes are planned in
 
 ---
 
-## L64 · `dod-checker` can read the previous feature's commit · `ready to apply`
+## L64 · `dod-checker` can read the previous feature's commit · `resolved`
 
 **What happened.** Task ids restart at T1 in every feature. `dod-checker` finds the task's commit
 with `git log --oneline --grep='<id>'`, so from the second feature on, `--grep='T3'` returned both
@@ -552,6 +552,8 @@ nothing on screen says so.
 `tasks.md` (checked on all 16 task commits of the run), so the search only needs narrowing —
 `git log --oneline --grep='^<id>:' -- <spec folder>/tasks.md`. Checked on the run's repo: it returns
 only `e95def6`. It is the only `--grep=` in the plugin.
+
+**Applied** in `agents/dod-checker.md` ("Look at the task's diff"), as written above.
 
 ---
 
