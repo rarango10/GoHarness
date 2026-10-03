@@ -51,7 +51,7 @@ and for the same reason. The resolved L1–L57 are in the
 | [L68](#l68--the-workflow-discovers-the-agent-prefix-by-failing-every-run--resolved) | The workflow discovers the agent prefix by failing, every run | `resolved` | phase 6 fixes · confirmed: the run got the prefix, no agent failed |
 | [L69](#l69--a-feature-that-needs-to-change-the-contract-has-no-route--open) | A feature that needs to change the contract has no route | `open` | 1 of 2 runs · the Spanish run took the right route without it; candidate: a ninth class of change |
 | [L70](#l70--the-plan-creates-guard-tasks--open) | The plan creates guard tasks | `open` | 3 of 4 features; in the third, `dod-checker` itself pointed it out · merge them, or accept it |
-| [L71](#l71--the-person-is-offered-the-look-after-saying-close--ready-to-apply) | The person is offered the look after saying "close" | **`ready to apply`** | 4 of 4 features · `verify-e2e`'s handoff |
+| [L71](#l71--the-person-is-offered-the-look-after-saying-close--resolved) | The person is offered the look after saying "close" | `resolved` | phase 6 fixes · `verify-e2e` offers the look; checked on the next navigable feature |
 
 ### Applied, not yet exercised by a real run
 
@@ -728,7 +728,7 @@ maintainer and seen in all four features of phase 6.
 
 ---
 
-## L71 · The person is offered the look after saying "close" · `ready to apply`
+## L71 · The person is offered the look after saying "close" · `resolved`
 
 **What happened.** Step 2 of `close-feature` is the look: if the feature is navigable, the person
 looks at it before the hygiene, and it isn't optional. It ran, but always late. In the English run,
@@ -746,6 +746,9 @@ know the harness won't ask for it.
 (`verify-e2e`, when everything is green), if the surface is navigable, offer to bring the app up so
 the person looks at it, and name the closing after their answer. `close-feature` keeps step 2, and a
 look already given in the session counts — as both Spanish closings already did.
+
+**Applied** as written: one sentence in `verify-e2e` (the green handoff) and one in step 2 of
+`close-feature`. It shows on the next feature with a screen.
 
 ---
 

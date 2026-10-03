@@ -77,6 +77,9 @@ lost — each task already has its commit with its id, so the work done is saved
    - **Guiding or none:** it's enough to look at it and ask yourself whether you'd show it to whoever
      asked for the feature.
 
+   **If they already looked at it in this session, after step 7, that look counts**: don't ask
+   again, go on with what they found.
+
    **The person decides, and you wait for their answer before continuing.** If you can take
    screenshots, they help, but they don't replace their eyes. A design written before the
    `## Visual reference` section existed doesn't have it: ask whether there was something it had to

@@ -154,7 +154,10 @@ A case in `indeterminado` isn't routed anywhere: it is counted and taken to the 
 destination of an ambiguous failure costs more than asking.
 
 If everything came out green, say so and name **step 8**, the `close-feature` skill: it runs the
-full hygiene on the final state and makes the closing commit. Don't start it yourself. And say it
+full hygiene on the final state and makes the closing commit. Don't start it yourself. **If the
+surface is navigable, first offer to bring the app up so the person looks at it** —it is the look
+of step 8—, and name the closing after their answer: asked to say "close" before being offered to
+look, they decide to close first and look as a formality. And say it
 when closing, not afterwards, because this cycle is exactly the one that can invalidate an old
 verdict — populating `end2end/` once already turned red the command a task declared green, without
 that task changing anything. The report stays as the durable record of this run.
