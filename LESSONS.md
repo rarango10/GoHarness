@@ -39,18 +39,19 @@ and for the same reason. The resolved L1–L57 are in the
 | [L50](#l50--a-requested-domain-skill-wasnt-invoked-the-contract-pointed-to-its-copy--open) | A requested domain skill wasn't invoked: the contract pointed to its copy | `open` | outside the harness for now: the generic part is in L49 |
 | [L53](#l53--dependency-security-has-no-step-it-was-seen-by-accident--partially-resolved) | Dependency security has no step: it was seen by accident | **`partially resolved`** | batch 14 · `close-feature` + a slot in the template. The baseline looks at the manifest, not the transitive tree |
 | [L58](#l58--an-approval-that-carries-a-verb-to-start-starts-the-next-step--watching) | An approval that carries a verb to start starts the next step | `watching` | 2 of 2 in the 0.5.2 baseline, passed once in English |
-| [L59](#l59--one-question-at-a-time-announced-four-asked--watching) | "One question at a time", announced; four asked | `watching` | 1 of 1 in the baseline; passed in the phase 3 evals and in the English run (six questions, one at a time) |
+| [L59](#l59--one-question-at-a-time-announced-four-asked--watching) | "One question at a time", announced; four asked | `watching` | 1 of 1 in the baseline; four passes since: the phase 3 evals and both features of each phase 6 run |
 | [L60](#l60--the-task-writer-carries-over-spec-gaps-already-resolved--open) | The task writer carries over spec gaps already resolved | `open` | seen in the phase 2 workflow test |
 | [L61](#l61--the-compound-criterion-detector-only-knows-spanish--ready-to-apply) | The compound-criterion detector only knows Spanish | **`ready to apply`** | `check_specs.py` |
 | [L62](#l62--an-eval-script-shorter-than-the-conversation-leaves-expectations-unevaluated--ready-to-apply) | An eval script shorter than the conversation leaves expectations unevaluated | **`ready to apply`** | `run_evals.py`, script of brainstorming 5 |
 | [L63](#l63--the-contract-marks-are-still-in-spanish--open) | The contract marks are still in Spanish | `open` | requested by the maintainer; after phase 6 |
-| [L64](#l64--dod-checker-can-read-the-previous-features-commit--resolved) | `dod-checker` can read the previous feature's commit | `resolved` | phase 6 fixes · the search is narrowed to the feature's `tasks.md` |
+| [L64](#l64--dod-checker-can-read-the-previous-features-commit--resolved) | `dod-checker` can read the previous feature's commit | `resolved` | phase 6 fixes · used by the Spanish run's first feature; the search only matters from a task's second round |
 | [L65](#l65--a-triagers-json-value-escaped-into-an-english-report--resolved) | A triager's JSON value escaped into an English report | `resolved` | phase 6 fixes · mapping in the triager and the glossary; checked on the next English feature |
-| [L66](#l66--a-closing-with-nothing-to-commit-leaves-no-trace--resolved) | A closing with nothing to commit leaves no trace | `resolved` | phase 6 fixes · `· closed (date)` in the status header; checked on a second feature |
-| [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--resolved) | `harness-init` installs a dependency nobody was asked about | `resolved` | phase 6 fixes · extends the rule of L47; checked on the next project seeded from scratch |
-| [L68](#l68--the-workflow-discovers-the-agent-prefix-by-failing-every-run--resolved) | The workflow discovers the agent prefix by failing, every run | `resolved` | phase 6 fixes · `agentPrefix` in the args; checked on the next `tasks-fanout` run |
-| [L69](#l69--a-feature-that-needs-to-change-the-contract-has-no-route--open) | A feature that needs to change the contract has no route | `open` | 1 of 1 · candidate: a ninth class of change in the router |
-| [L70](#l70--the-plan-creates-guard-tasks--open) | The plan creates guard tasks | `open` | 2 of 2 features · merge them, or accept it |
+| [L66](#l66--a-closing-with-nothing-to-commit-leaves-no-trace--resolved) | A closing with nothing to commit leaves no trace | `resolved` | phase 6 fixes · confirmed: the Spanish run's second brainstorming saw the first feature closed |
+| [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--resolved) | `harness-init` installs a dependency nobody was asked about | `resolved` | phase 6 fixes · confirmed: six dependencies installed, six in the Stack |
+| [L68](#l68--the-workflow-discovers-the-agent-prefix-by-failing-every-run--resolved) | The workflow discovers the agent prefix by failing, every run | `resolved` | phase 6 fixes · confirmed: the run got the prefix, no agent failed |
+| [L69](#l69--a-feature-that-needs-to-change-the-contract-has-no-route--open) | A feature that needs to change the contract has no route | `open` | 1 of 2 runs · the Spanish run took the right route without it; candidate: a ninth class of change |
+| [L70](#l70--the-plan-creates-guard-tasks--open) | The plan creates guard tasks | `open` | 3 of 4 features; in the third, `dod-checker` itself pointed it out · merge them, or accept it |
+| [L71](#l71--the-person-is-offered-the-look-after-saying-close--ready-to-apply) | The person is offered the look after saying "close" | **`ready to apply`** | 4 of 4 features · `verify-e2e`'s handoff |
 
 ### Applied, not yet exercised by a real run
 
@@ -58,10 +59,6 @@ Carried over from the Spanish repo. Each one is in the plugin; none has run on a
 
 - **[L49]** (batch 11), the visual reference — its natural test is a redesign with a binding
   mockup.
-- **[L56]** (batch 12), the way back — a small feature where, in the middle of step 5, a criterion
-  already covered by a `done` task gets amended. It has to go through `specify`, leave the header
-  `amended` and `## Amendments`, and `implement-task` has to detect the task to reopen when it
-  starts, and reopen it only with the yes.
 - **[L51]** and **L12** (batch 13) — the next feature with client-side JavaScript.
 - **[L55]** (batch 15) — in a new session, invoke each agent with a minimal prompt: its first
   message must not mention a skill that isn't its own.
@@ -71,6 +68,14 @@ Carried over from the Spanish repo. Each one is in the plugin; none has run on a
 opened P1, the second closing wrote it); the closing's contract reread of [L52] and dependency audit
 of [L53] (both closings); the dependency subtraction of [L24] (twelve verdicts on `@types/node`);
 and `harness-init` seeding from scratch and in review mode.
+
+**Exercised by the Spanish run of phase 6** (2026-10-03, see [its notes](#the-spanish-run-of-phase-6)),
+and out of this list: the way back of [L56], across features — the second feature changed what
+Enter does, so R1.2 of the first, already closed, was marked obsolete through `specify` and its e2e
+case amended, each with the person's yes. The other half of L56 —a `done` task reopened in the
+middle of step 5— still has no run. And [L52] caught a real case: the second feature made the
+contract's description false without touching it, and the closing stopped and sent it to
+`harness-init`, which rewrote it so it won't age again ("operates on two integers").
 
 **What no run has exercised yet:** the routing of the e2e cycle (`causa: test` / `codigo` /
 `spec`) — every e2e run so far was green —, the detection of an aged verdict of [L33], and an A/B
@@ -457,6 +462,9 @@ repeat before touching anything.
 **Since then, two passes in a row:** the phase 3 evals, and the English run of phase 6, whose
 brainstorming asked six questions one at a time. Still `watching`.
 
+**And two more** in the Spanish run of phase 6: both brainstormings listed the open decisions and
+asked them one at a time.
+
 *Evidence: [baseline](bench/results/2026-09-29-baseline-0.5.2/README.md).*
 
 ---
@@ -555,6 +563,13 @@ only `e95def6`. It is the only `--grep=` in the plugin.
 
 **Applied** in `agents/dod-checker.md` ("Look at the task's diff"), as written above.
 
+**In the Spanish run** the first feature used the new search (`--grep='^T4:' -- docs/…/tasks.md`);
+the second didn't search at all, and looked at `git diff`. The reason, which this entry missed:
+`implement-task` verifies **before** it commits, so in a task's first round there is no commit to
+find, and the search only matters from the second round on. No second round happened in that
+feature, so the collision case is still unexercised. No new rule: `dod-checker` read the diff that
+existed.
+
 ---
 
 ## L65 · A triager's JSON value escaped into an English report · `resolved`
@@ -603,6 +618,9 @@ Touches `close-feature`, the `tasks-template.md` header in `en` and `es`, and th
 `cerrado` entered the glossary. It shows on the next feature after a closing with nothing else to
 commit.
 
+**Confirmed in the Spanish run:** both closings wrote `Estado: aprobado (…) · cerrado (…)`, and the
+second feature's brainstorming started with "the feature `suma` is closed (commit `718cff1`)".
+
 ---
 
 ## L67 · `harness-init` installs a dependency nobody was asked about · `resolved`
@@ -627,6 +645,9 @@ should read `<stack: ask before filling in>`, like the template.
 
 **Applied** as written: one sentence after the rule of L47, and the example slot in English.
 
+**Confirmed in the Spanish run:** six dev dependencies installed in step 0, six in the Stack,
+`@types/node` with the reason it is there. No verdict flagged a dependency.
+
 ---
 
 ## L68 · The workflow discovers the agent prefix by failing, every run · `resolved`
@@ -647,6 +668,9 @@ call fails, the script reads the right prefix (or the bare name) from the error,
 with a stubbed `agent()` on six cases (prefix right, wrong or absent; with and without a plugin; an
 unrelated error, which is still thrown): with the prefix right, no call fails.
 
+**Confirmed in the Spanish run:** the run's record shows `args` with `"agentPrefix": "goharness:"`
+and 11 agents — 1 scout, 1 initial plan, 8 reviewers, 1 writer — with no failed call.
+
 ---
 
 ## L69 · A feature that needs to change the contract has no route · `open`
@@ -666,6 +690,12 @@ it skips the only step that checks it against the repo ([L39]).
 **What should be done.** To be decided. Candidate: a ninth class in the router —"the contract has to
 change"— whose path is `harness-init` in review mode, before the step that needs it.
 
+**In the Spanish run it didn't repeat**, and the evidence cuts both ways. No task edited `CLAUDE.md`:
+the one config a task changed (`playwright.config.ts`, to start Vite) was decided in the approved
+design. And when the second feature made the contract's description false, the closing caught it and
+sent it to `harness-init` in review mode — the right route, but found at step 8, as this entry
+predicted.
+
 ---
 
 ## L70 · The plan creates guard tasks · `open`
@@ -681,6 +711,41 @@ person approves four tasks where two were work.
 
 **What should be done.** To be decided. Candidate: the reviewers merge a task whose first test would
 already pass into the task that completes its criterion. Or accept it, and say so.
+
+**In the Spanish run**, a third feature with one: T2 of `suma` only added tests, because T1 had
+already implemented the validation (it was in its goal). This time `dod-checker` pointed it out on
+its own: "T2 could have been merged with T1". The verifier sees it; the plan's reviewers still don't.
+
+---
+
+## The Spanish run of phase 6
+
+The Spanish half of phase 6 ran on 2026-10-03, with 0.5.3 installed from the marketplace: the same
+calculator from an empty folder, two features (`suma`, `resta`), all nine steps each, green, and no
+keyword escaped into English. It confirmed L66, L67 and L68 (see each entry), added evidence to L59,
+L64, L69 and L70, and exercised L56 and L52 for the first time. It found one new thing, raised by the
+maintainer and seen in all four features of phase 6.
+
+---
+
+## L71 · The person is offered the look after saying "close" · `ready to apply`
+
+**What happened.** Step 2 of `close-feature` is the look: if the feature is navigable, the person
+looks at it before the hygiene, and it isn't optional. It ran, but always late. In the English run,
+step 7 ended with "say *let's close the feature*", and the look was asked for only after the person
+said it. In the Spanish run, step 7 ended the same way ("decime *cerremos la feature*"), and both
+times the person had to ask first: "before closing, can I see the result and try it myself?". The
+closing then took the look as done (in the first feature, because the session told it so).
+
+**Why it matters.** "Close" sounds like the end, not like a review: the person is asked to decide to
+close before being offered to look. The look is the only point of the cycle where someone sees what
+was built ([L49]); offered after the decision, it reads as a formality — and a person who doesn't
+know the harness won't ask for it.
+
+**What should be done.** Move the invitation, not the step. At the end of step 7
+(`verify-e2e`, when everything is green), if the surface is navigable, offer to bring the app up so
+the person looks at it, and name the closing after their answer. `close-feature` keeps step 2, and a
+look already given in the session counts — as both Spanish closings already did.
 
 ---
 

@@ -241,17 +241,18 @@ it is fragile reads as if it weren't. The full record is in [`LESSONS.md`](LESSO
 
 - **The visual reference hasn't run on a real feature yet.** It was born from a redesign that closed
   all green and far from its mockup.
-- **The routing of the e2e cycle has never been exercised.** It ran three times and all three were
-  green, so the failure path —`causa: test` / `codigo` / `spec`— still has zero runs.
+- **The routing of the e2e cycle has never been exercised.** It ran seven times —the last four in
+  phase 6— and all were green, so the failure path —`causa: test` / `codigo` / `spec`— still has zero runs.
 - **There is no independent evidence of TDD order.** The commit per task proves the task was a unit
   of work, not that the test was written first: it brings both together.
 - **The approval gates are instructions, not mechanisms.** No tool-call boundary means "the plan was
   approved" — except that the `Workflow` tool's return is an exact boundary, and `planning-tasks`
   uses it.
-- **English has a full run; Spanish only has evals so far.** A calculator built from an empty
-  folder, in English, ran two features through all nine steps, green, and its findings are being
-  fixed ([L64–L70](LESSONS.md#the-english-run-of-phase-6)). The evals run on a Spanish project, but
-  a full Spanish feature from the marketplace is still to come: it is the gate before 0.6.0.
+- **Both languages have a full run, on a small project.** A calculator built from an empty folder
+  and installed from the marketplace ran two features in English and two in Spanish, all nine steps
+  each, green, with no keyword escaping into the other language. What they found is in
+  [`LESSONS.md`](LESSONS.md#the-english-run-of-phase-6) (L64–L71). A bigger project, or a binding
+  visual reference, hasn't run yet.
 
 ---
 
