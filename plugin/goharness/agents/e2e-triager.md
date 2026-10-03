@@ -51,7 +51,9 @@ equivalent—: a missing dependency or browser is something that gets reported, 
 
 4. **Write `e2e-test-report.md`**, in the project's language: the literal run, one block per case
    with its result, cause, evidence and reason, and the resulting routing. It is meant for a person
-   to read without running anything again.
+   to read without running anything again. Result and cause are words of the project's language,
+   not the JSON's: in English `pass` · `fail` · `did-not-run` and `test` · `code` · `spec` ·
+   `undetermined`; in Spanish, the JSON's own. A case that passes has no cause.
 
 ## The two rules that matter most
 

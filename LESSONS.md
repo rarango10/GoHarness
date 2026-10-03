@@ -45,7 +45,7 @@ and for the same reason. The resolved L1–L57 are in the
 | [L62](#l62--an-eval-script-shorter-than-the-conversation-leaves-expectations-unevaluated--ready-to-apply) | An eval script shorter than the conversation leaves expectations unevaluated | **`ready to apply`** | `run_evals.py`, script of brainstorming 5 |
 | [L63](#l63--the-contract-marks-are-still-in-spanish--open) | The contract marks are still in Spanish | `open` | requested by the maintainer; after phase 6 |
 | [L64](#l64--dod-checker-can-read-the-previous-features-commit--resolved) | `dod-checker` can read the previous feature's commit | `resolved` | phase 6 fixes · the search is narrowed to the feature's `tasks.md` |
-| [L65](#l65--a-triagers-json-value-escaped-into-an-english-report--ready-to-apply) | A triager's JSON value escaped into an English report | **`ready to apply`** | blocks 0.6.0 · `agents/e2e-triager.md`, glossary |
+| [L65](#l65--a-triagers-json-value-escaped-into-an-english-report--resolved) | A triager's JSON value escaped into an English report | `resolved` | phase 6 fixes · mapping in the triager and the glossary; checked on the next English feature |
 | [L66](#l66--a-closing-with-nothing-to-commit-leaves-no-trace--ready-to-apply) | A closing with nothing to commit leaves no trace | **`ready to apply`** | blocks 0.6.0 · `close-feature`, `tasks-template.md` |
 | [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--ready-to-apply) | `harness-init` installs a dependency nobody was asked about | **`ready to apply`** | `harness-init`: extends the rule of L47 |
 | [L68](#l68--the-workflow-discovers-the-agent-prefix-by-failing-every-run--ready-to-apply) | The workflow discovers the agent prefix by failing, every run | **`ready to apply`** | `planning-tasks`, `tasks-fanout.js` |
@@ -557,7 +557,7 @@ only `e95def6`. It is the only `--grep=` in the plugin.
 
 ---
 
-## L65 · A triager's JSON value escaped into an English report · `ready to apply`
+## L65 · A triager's JSON value escaped into an English report · `resolved`
 
 **What happened.** Both English e2e reports wrote the triager's JSON values into the document:
 `### E1 — pasa`, `- Result: pasa`, and next to them an invented `Cause: none`. The values
@@ -572,6 +572,11 @@ of 2 reports did it, so it isn't a slip.
 `agents/e2e-triager.md`): result and cause in the project's language in the report, literal in the
 JSON. Add the two rows to the glossary in `task-format` too, so the canonical list stays complete.
 The English words are decided with the maintainer.
+
+**Applied** with the maintainer's words: result `pass` · `fail` · `did-not-run`, cause `test` ·
+`code` · `spec` · `undetermined`, in step 4 of the triager and as two rows of the glossary. A case
+that passes has no cause, so `Cause: none` isn't invented again. It is checked on the next English
+e2e report.
 
 ---
 

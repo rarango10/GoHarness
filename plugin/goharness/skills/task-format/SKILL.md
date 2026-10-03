@@ -96,6 +96,8 @@ project, the alias in a Spanish one. When reading, accept both.
 | `Log` · `Verification` · `Previous verification (superseded)` | `Registro` · `Verificación` · `Verificación previa (superada)` | what whoever implements writes |
 | `Journal` · `Follow-ups` | `Bitácora` · `Pendientes` | section titles of `tasks.md` |
 | `[step N]` · `[decide now]` · `[backlog]` | `[paso N]` · `[decidir ya]` · `[backlog]` | recipient of a follow-up |
+| `pass` · `fail` · `did-not-run` | `pasa` · `falla` · `no-corrio` | result of an e2e case in `e2e-test-report.md` |
+| `test` · `code` · `spec` · `undetermined` | `test` · `codigo` · `spec` · `indeterminado` | cause of an e2e failure in `e2e-test-report.md` |
 
 `Registro` and `Bitácora` would both be "log" in English: that is why the section is `Journal`. And
 the `Pendientes` section is `Follow-ups` so it doesn't clash with a task's `pending` status.
