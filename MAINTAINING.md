@@ -195,7 +195,8 @@ It is the **status index** at the top of [`LESSONS.md`](LESSONS.md). The statuse
 the subagents as `goharness:spec-scout`. The bare name stops resolving, and that breaks in two
 places: when launching the workflow —`planning-tasks` reads the `Available:` list from the error
 itself and relaunches— and inside the script, in the five subagent calls, where `tasks-fanout.js`
-discovers the prefix from the error message and caches it.
+receives the prefix from `planning-tasks` (`agentPrefix`) and, without it, discovers it from the
+error message and caches it.
 
 The pattern holds for anything you package: **discover the prefix by reading it from the error,
 never hardcode it.**

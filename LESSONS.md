@@ -48,7 +48,7 @@ and for the same reason. The resolved L1–L57 are in the
 | [L65](#l65--a-triagers-json-value-escaped-into-an-english-report--resolved) | A triager's JSON value escaped into an English report | `resolved` | phase 6 fixes · mapping in the triager and the glossary; checked on the next English feature |
 | [L66](#l66--a-closing-with-nothing-to-commit-leaves-no-trace--resolved) | A closing with nothing to commit leaves no trace | `resolved` | phase 6 fixes · `· closed (date)` in the status header; checked on a second feature |
 | [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--resolved) | `harness-init` installs a dependency nobody was asked about | `resolved` | phase 6 fixes · extends the rule of L47; checked on the next project seeded from scratch |
-| [L68](#l68--the-workflow-discovers-the-agent-prefix-by-failing-every-run--ready-to-apply) | The workflow discovers the agent prefix by failing, every run | **`ready to apply`** | `planning-tasks`, `tasks-fanout.js` |
+| [L68](#l68--the-workflow-discovers-the-agent-prefix-by-failing-every-run--resolved) | The workflow discovers the agent prefix by failing, every run | `resolved` | phase 6 fixes · `agentPrefix` in the args; checked on the next `tasks-fanout` run |
 | [L69](#l69--a-feature-that-needs-to-change-the-contract-has-no-route--open) | A feature that needs to change the contract has no route | `open` | 1 of 1 · candidate: a ninth class of change in the router |
 | [L70](#l70--the-plan-creates-guard-tasks--open) | The plan creates guard tasks | `open` | 2 of 2 features · merge them, or accept it |
 
@@ -629,7 +629,7 @@ should read `<stack: ask before filling in>`, like the template.
 
 ---
 
-## L68 · The workflow discovers the agent prefix by failing, every run · `ready to apply`
+## L68 · The workflow discovers the agent prefix by failing, every run · `resolved`
 
 **What happened.** Each `tasks-fanout` run shows one agent in red in `/workflows`: the script calls
 `spec-scout` by its bare name, fails, reads `goharness:` from the error and retries ([L19]). It
@@ -641,6 +641,11 @@ the maintainer.
 **What should be done.** `planning-tasks` passes the prefix with the folder
 (`{"specDir": "docs/…", "agentPrefix": "goharness:"}`) and `tasks-fanout.js` starts `AGENT_PREFIX`
 from it. The discovery by error stays as the fallback for a harness that runs without a plugin.
+
+**Applied** as written, with one addition: the prefix received is a hint, not an order — if the
+call fails, the script reads the right prefix (or the bare name) from the error, as before. Checked
+with a stubbed `agent()` on six cases (prefix right, wrong or absent; with and without a plugin; an
+unrelated error, which is still thrown): with the prefix right, no call fails.
 
 ---
 

@@ -86,8 +86,14 @@ Plugins register their workflows namespaced with the plugin's name, so the bare 
 resolve. Relaunch with the full name exactly as it appears in the list:
 
 ```
-Workflow(<what-appears-in-Available>, args: "docs/YYYY-MM-DD-<feature>")
+Workflow(<what-appears-in-Available>,
+         args: {"specDir": "docs/YYYY-MM-DD-<feature>", "agentPrefix": "<the prefix>"})
 ```
+
+The prefix is what comes before `tasks-fanout` in that name, colon included (`my-harness:`). Pass
+it in `agentPrefix`: the workflow's agents are namespaced the same way, and without it the script
+discovers the prefix by making one agent fail on every run — a red in `/workflows` that teaches
+people to ignore reds.
 
 Don't hardcode the prefix or guess it: take it from the list. The plugin's name changes depending
 on how it's installed, and a local copy of the workflow coexists with the plugin's under different

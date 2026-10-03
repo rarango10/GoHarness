@@ -51,9 +51,11 @@ export const meta = {
 //
 // AGENT NAMES: when this workflow runs from a plugin, its agents are NOT registered with
 // the bare name but namespaced -- 'my-harness:spec-scout' instead of 'spec-scout' -- and
-// the five calls fail. The agentP() helper below resolves that prefix ONCE, reading it
-// from the error message itself, and reuses it. Discovering it instead of assuming it is
-// what keeps a plugin rename from breaking the script.
+// the five calls fail. The agentP() helper below resolves that prefix ONCE and reuses it.
+// planning-tasks passes it as `agentPrefix` (it launched the namespaced workflow, so it
+// knows it); without it, or if it is wrong, it is read from the error message itself.
+// Receiving or discovering it instead of assuming it is what keeps a plugin rename from
+// breaking the script.
 //
 // LANGUAGE: the prompts are in English; the documents are written in the project's
 // language (the one declared in its CLAUDE.md). The scout reads keywords in either
@@ -61,25 +63,35 @@ export const meta = {
 // the glossary in the task-format skill.
 // ---------------------------------------------------------------------------
 
-// The plugin's prefix, discovered on the first call. null = not known yet;
-// '' = the bare name resolved (the harness lives in the project, not in a plugin).
+// The plugin's prefix. null = not known yet; '' = the bare name resolved (the harness
+// lives in the project, not in a plugin).
 let AGENT_PREFIX = null
+
+// Reads the prefix from an "Available agents:" error: '' if the bare name is listed,
+// null if the error lists no form of `base` (then it isn't a naming problem).
+function prefixFromError(e, base) {
+  const listed = String((e && e.message) || e).match(/Available agents:\s*(.+)/)
+  const names = listed ? listed[1].split(/[,\s]+/) : []
+  if (names.includes(base)) return ''
+  const hit = names.find((n) => n.endsWith(':' + base))
+  return hit ? hit.slice(0, hit.length - base.length) : null
+}
 
 async function agentP(prompt, opts) {
   const base = opts.agentType
   if (AGENT_PREFIX !== null) {
     return agent(prompt, { ...opts, agentType: AGENT_PREFIX + base })
   }
+  // The prefix planning-tasks passed is a hint, not an order: if it is wrong, discover it.
+  const hint = typeof input.agentPrefix === 'string' ? input.agentPrefix : ''
   try {
-    const out = await agent(prompt, opts)
-    AGENT_PREFIX = ''
+    const out = await agent(prompt, { ...opts, agentType: hint + base })
+    AGENT_PREFIX = hint
     return out
   } catch (e) {
-    const listed = String((e && e.message) || e).match(/Available agents:\s*(.+)/)
-    if (!listed) throw e
-    const hit = listed[1].split(/[,\s]+/).find((n) => n.endsWith(':' + base))
-    if (!hit) throw e
-    AGENT_PREFIX = hit.slice(0, hit.length - base.length)
+    const found = prefixFromError(e, base)
+    if (found === null || found === hint) throw e
+    AGENT_PREFIX = found
     log(`Agents namespaced by the plugin: using the prefix "${AGENT_PREFIX}".`)
     return agent(prompt, { ...opts, agentType: AGENT_PREFIX + base })
   }
