@@ -248,8 +248,10 @@ it is fragile reads as if it weren't. The full record is in [`LESSONS.md`](LESSO
 - **The approval gates are instructions, not mechanisms.** No tool-call boundary means "the plan was
   approved" — except that the `Workflow` tool's return is an exact boundary, and `planning-tasks`
   uses it.
-- **Spanish is proven by evals; English isn't yet.** The evals run on a Spanish project. A full
-  feature in each language is the gate before 0.6.0.
+- **English has a full run; Spanish only has evals so far.** A calculator built from an empty
+  folder, in English, ran two features through all nine steps, green, and its findings are being
+  fixed ([L64–L70](LESSONS.md#the-english-run-of-phase-6)). The evals run on a Spanish project, but
+  a full Spanish feature from the marketplace is still to come: it is the gate before 0.6.0.
 
 ---
 

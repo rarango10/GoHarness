@@ -39,11 +39,18 @@ and for the same reason. The resolved L1–L57 are in the
 | [L50](#l50--a-requested-domain-skill-wasnt-invoked-the-contract-pointed-to-its-copy--open) | A requested domain skill wasn't invoked: the contract pointed to its copy | `open` | outside the harness for now: the generic part is in L49 |
 | [L53](#l53--dependency-security-has-no-step-it-was-seen-by-accident--partially-resolved) | Dependency security has no step: it was seen by accident | **`partially resolved`** | batch 14 · `close-feature` + a slot in the template. The baseline looks at the manifest, not the transitive tree |
 | [L58](#l58--an-approval-that-carries-a-verb-to-start-starts-the-next-step--watching) | An approval that carries a verb to start starts the next step | `watching` | 2 of 2 in the 0.5.2 baseline, passed once in English |
-| [L59](#l59--one-question-at-a-time-announced-four-asked--watching) | "One question at a time", announced; four asked | `watching` | 1 of 1 in the baseline, passed once in English |
+| [L59](#l59--one-question-at-a-time-announced-four-asked--watching) | "One question at a time", announced; four asked | `watching` | 1 of 1 in the baseline; passed in the phase 3 evals and in the English run (six questions, one at a time) |
 | [L60](#l60--the-task-writer-carries-over-spec-gaps-already-resolved--open) | The task writer carries over spec gaps already resolved | `open` | seen in the phase 2 workflow test |
 | [L61](#l61--the-compound-criterion-detector-only-knows-spanish--ready-to-apply) | The compound-criterion detector only knows Spanish | **`ready to apply`** | `check_specs.py` |
 | [L62](#l62--an-eval-script-shorter-than-the-conversation-leaves-expectations-unevaluated--ready-to-apply) | An eval script shorter than the conversation leaves expectations unevaluated | **`ready to apply`** | `run_evals.py`, script of brainstorming 5 |
 | [L63](#l63--the-contract-marks-are-still-in-spanish--open) | The contract marks are still in Spanish | `open` | requested by the maintainer; after phase 6 |
+| [L64](#l64--dod-checker-can-read-the-previous-features-commit--ready-to-apply) | `dod-checker` can read the previous feature's commit | **`ready to apply`** | blocks 0.6.0 · `agents/dod-checker.md` |
+| [L65](#l65--a-triagers-json-value-escaped-into-an-english-report--ready-to-apply) | A triager's JSON value escaped into an English report | **`ready to apply`** | blocks 0.6.0 · `agents/e2e-triager.md`, glossary |
+| [L66](#l66--a-closing-with-nothing-to-commit-leaves-no-trace--ready-to-apply) | A closing with nothing to commit leaves no trace | **`ready to apply`** | blocks 0.6.0 · `close-feature`, `tasks-template.md` |
+| [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--ready-to-apply) | `harness-init` installs a dependency nobody was asked about | **`ready to apply`** | `harness-init`: extends the rule of L47 |
+| [L68](#l68--the-workflow-discovers-the-agent-prefix-by-failing-every-run--ready-to-apply) | The workflow discovers the agent prefix by failing, every run | **`ready to apply`** | `planning-tasks`, `tasks-fanout.js` |
+| [L69](#l69--a-feature-that-needs-to-change-the-contract-has-no-route--open) | A feature that needs to change the contract has no route | `open` | 1 of 1 · candidate: a ninth class of change in the router |
+| [L70](#l70--the-plan-creates-guard-tasks--open) | The plan creates guard tasks | `open` | 2 of 2 features · merge them, or accept it |
 
 ### Applied, not yet exercised by a real run
 
@@ -51,19 +58,23 @@ Carried over from the Spanish repo. Each one is in the plugin; none has run on a
 
 - **[L49]** (batch 11), the visual reference — its natural test is a redesign with a binding
   mockup.
-- **[L56]** and **[L54]** (batch 12), the way back and the backlog — a small feature where, in the
-  middle of step 5, a criterion already covered by a `done` task gets amended. It has to go through
-  `specify`, leave the header `amended` and `## Amendments`, and `implement-task` has to detect the
-  task to reopen when it starts, and reopen it only with the yes. The backlog's test is the next
-  feature of a project that has one: it has to start by reading `docs/pendientes.md`.
+- **[L56]** (batch 12), the way back — a small feature where, in the middle of step 5, a criterion
+  already covered by a `done` task gets amended. It has to go through `specify`, leave the header
+  `amended` and `## Amendments`, and `implement-task` has to detect the task to reopen when it
+  starts, and reopen it only with the yes.
 - **[L51]** and **L12** (batch 13) — the next feature with client-side JavaScript.
-- **[L52]** and **L53** (batch 14) — the next closing of any feature.
 - **[L55]** (batch 15) — in a new session, invoke each agent with a minimal prompt: its first
   message must not mention a skill that isn't its own.
 
+**Exercised by the English run of phase 6** (2026-10-02, see
+[L64–L70](#the-english-run-of-phase-6)), and out of this list: the backlog of [L54] (`dod-checker`
+opened P1, the second closing wrote it); the closing's contract reread of [L52] and dependency audit
+of [L53] (both closings); the dependency subtraction of [L24] (twelve verdicts on `@types/node`);
+and `harness-init` seeding from scratch and in review mode.
+
 **What no run has exercised yet:** the routing of the e2e cycle (`causa: test` / `codigo` /
-`spec`), the dependency subtraction of [L24], the detection of an aged verdict of [L33],
-`harness-init` seeding from scratch, and an A/B comparison of *same input, different harness*.
+`spec`) — every e2e run so far was green —, the detection of an aged verdict of [L33], and an A/B
+comparison of *same input, different harness*.
 
 ---
 
@@ -443,6 +454,9 @@ gets decided by the model. That is how [L16] and [L17] started.
 **What should be done.** Same as [L58](#l58--an-approval-that-carries-a-verb-to-start-starts-the-next-step--watching):
 repeat before touching anything.
 
+**Since then, two passes in a row:** the phase 3 evals, and the English run of phase 6, whose
+brainstorming asked six questions one at a time. Still `watching`.
+
 *Evidence: [baseline](bench/results/2026-09-29-baseline-0.5.2/README.md).*
 
 ---
@@ -508,6 +522,144 @@ what it means, and the harness claims to be in English.
 bench fixture's `CLAUDE.md` (which means a new baseline). **To be decided:** how contracts seeded
 before the change are read — accepting both forms when reading, the same way the glossary does with
 keywords, is the obvious candidate.
+
+---
+
+## The English run of phase 6
+
+L64–L70 come from the English half of phase 6 (2026-10-02): a calculator built from an empty folder
+with the plugin installed from the real marketplace, two features (`add-two-integers`,
+`subtract-two-integers`), all nine steps each, green. The evidence is in that local project (its
+`docs/`, `git log` and `docs/pendientes.md`), not in this repo. Several observations shared a cause
+and are merged. The fixes are planned in
+[`docs/2026-10-02-phase6-fixes/`](docs/2026-10-02-phase6-fixes/plan.md).
+
+---
+
+## L64 · `dod-checker` can read the previous feature's commit · `ready to apply`
+
+**What happened.** Task ids restart at T1 in every feature. `dod-checker` finds the task's commit
+with `git log --oneline --grep='<id>'`, so from the second feature on, `--grep='T3'` returned both
+features' T3 (`f680ff2` from `add-two-integers`, `e95def6` from `subtract-two-integers`); the same
+for T1, T2 and T4. `dod-checker` raised it itself, as P1 of the project's backlog, proposing to
+change the commit convention in the contract.
+
+**Why it matters.** The diff check of [L12](#l12--dod-checker-trusts-that-a-passing-test-proves-what-it-claims--partially-resolved)
+reads the task's commit. If it reads the wrong one, the verdict is about another task's code, and
+nothing on screen says so.
+
+**What should be done.** No contract change: every task commit touches its own feature's
+`tasks.md` (checked on all 16 task commits of the run), so the search only needs narrowing —
+`git log --oneline --grep='^<id>:' -- <spec folder>/tasks.md`. Checked on the run's repo: it returns
+only `e95def6`. It is the only `--grep=` in the plugin.
+
+---
+
+## L65 · A triager's JSON value escaped into an English report · `ready to apply`
+
+**What happened.** Both English e2e reports wrote the triager's JSON values into the document:
+`### E1 — pasa`, `- Result: pasa`, and next to them an invented `Cause: none`. The values
+(`pasa | falla | no-corrio`, `test | codigo | spec | indeterminado`) are contract and stay literal
+in the JSON, but nothing gives their English form for the report, and `e2e-triager` preloads no
+skill, so it never sees the glossary.
+
+**Why it matters.** It fails the gate of phase 6: a keyword escaped into the other language. And 2
+of 2 reports did it, so it isn't a slip.
+
+**What should be done.** Put the mapping where the triager writes the report (step 4 of
+`agents/e2e-triager.md`): result and cause in the project's language in the report, literal in the
+JSON. Add the two rows to the glossary in `task-format` too, so the canonical list stays complete.
+The English words are decided with the maintainer.
+
+---
+
+## L66 · A closing with nothing to commit leaves no trace · `ready to apply`
+
+**What happened.** `close-feature` of the first feature found nothing left to commit and, as its
+instructions say, made no empty commit. That the step ran stayed in the chat only. The next feature's
+`brainstorming` read `git log`, saw step 7 (`1d2c06e`) as the last commit, concluded the feature was
+still open and offered to close it again ("one feature at a time"). The second closing did commit
+(`59c208d`), because it had backlog to write.
+
+**Why it matters.** The next step reads the repo, not the chat. A step that only exists in the chat
+didn't happen, for whoever comes after — the same as [L21].
+
+**What should be done.** The closing always writes one line in the header of `tasks.md` (for example
+`> Closed: YYYY-MM-DD · hygiene green`) and commits it: that commit isn't empty, it is the record.
+Touches `close-feature`, the `tasks-template.md` header in `en` and `es`, and the glossary if
+`Closed` becomes a keyword. The exact form is decided with the maintainer.
+
+---
+
+## L67 · `harness-init` installs a dependency nobody was asked about · `ready to apply`
+
+**What happened.** Step 0 installed five dev dependencies. Four came from an answer; `@types/node`
+was never mentioned: it came with a `tsconfig.json` (`"types": ["node"]`) that `harness-init` wrote on
+its own and that isn't in `assets/stacks/typescript-node/`. The Stack didn't list it, so:
+`dod-checker` flagged it on every task (twelve verdicts — the subtraction of [L24] working); the
+implementer offered to edit `CLAUDE.md` itself; and `close-feature` saw it but classified it as "an
+omission, not a falsehood". It was fixed through `harness-init` review mode (`6568fd8`), and the
+note disappeared in the second feature.
+
+**Why it matters.** The contract said something false about the project from step 0, and three
+agents noticed without any of them owning the fix. Twelve identical notes teach the person to skip
+the note.
+
+**What should be done.** One line, extending the rule of [L47] ("a config is seeded together with
+its dependency, or it isn't seeded"): **every dependency you install is named in the question that
+installs it and listed in the Stack.** That covers the closing and the verifier without touching
+them. In the same file, a translation slip: the example slot `<stack: preguntá antes de completar>`
+should read `<stack: ask before filling in>`, like the template.
+
+---
+
+## L68 · The workflow discovers the agent prefix by failing, every run · `ready to apply`
+
+**What happened.** Each `tasks-fanout` run shows one agent in red in `/workflows`: the script calls
+`spec-scout` by its bare name, fails, reads `goharness:` from the error and retries ([L19]). It
+works, but `planning-tasks` already launched `goharness:tasks-fanout` and knows the prefix. Raised by
+the maintainer.
+
+**Why it matters.** A red agent on every run teaches people to ignore red agents.
+
+**What should be done.** `planning-tasks` passes the prefix with the folder
+(`{"specDir": "docs/…", "agentPrefix": "goharness:"}`) and `tasks-fanout.js` starts `AGENT_PREFIX`
+from it. The discovery by error stays as the fallback for a harness that runs without a plugin.
+
+---
+
+## L69 · A feature that needs to change the contract has no route · `open`
+
+**What happened.** The first feature's T9 added a build, so the contract's hygiene and e2e commands
+had to change. The design said the change was "applied with its own yes, in the task that introduces
+it", so the plan gave `implement-task` an edit of `CLAUDE.md` — whose producer is `harness-init`
+(`db66d1a`, `d95db42`). The router's eight classes of change don't include "the feature changes the
+contract". `close-feature` would catch it only at step 8, while step 7 already runs the contract's
+e2e command — and it passed by luck, with a build left on disk ([L33]). In the same spirit, the
+implementer offered to fix the Stack of [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--ready-to-apply)
+itself.
+
+**Why it matters.** The contract is the one document every feature trusts. Edited from inside a task,
+it skips the only step that checks it against the repo ([L39]).
+
+**What should be done.** To be decided. Candidate: a ninth class in the router —"the contract has to
+change"— whose path is `harness-init` in review mode, before the step that needs it.
+
+---
+
+## L70 · The plan creates guard tasks · `open`
+
+**What happened.** In both features, two tasks passed on their first run with no code change (T5 and
+T8 in the first, T3 and T4 in the second), and their goals said so in advance: they pin a criterion
+that an earlier task already completed. The implementer handled them well, breaking the code on
+purpose to see the red.
+
+**Why it matters.** `task-format` rule 4 says a criterion belongs to the task that completes it
+([L27]), and the reviewers didn't apply it. Each guard task costs a full verification cycle, and the
+person approves four tasks where two were work.
+
+**What should be done.** To be decided. Candidate: the reviewers merge a task whose first test would
+already pass into the task that completes its criterion. Or accept it, and say so.
 
 ---
 
