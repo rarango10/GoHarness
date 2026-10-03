@@ -4,6 +4,9 @@
 > Status: pending approval | approved (YYYY-MM-DD)
 > Ids issued: up to T<n>
 
+<When the feature is closed, `close-feature` adds to the Status line: `approved (YYYY-MM-DD) ·
+closed (YYYY-MM-DD)`. It is the durable record that step 8 ran.>
+
 <The "Ids issued" line is the memory of which ids were already handed out, **including those of
 tasks that later disappeared from the plan**. The workflow writes it. Without it, a future run would
 compute the next free id looking only at the live tasks, and would reuse the number of a removed

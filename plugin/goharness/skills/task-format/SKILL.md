@@ -91,6 +91,7 @@ project, the alias in a Spanish one. When reading, accept both.
 | `meets` · `partially-meets` · `does-not-meet` · `unverifiable` | `cumple` · `cumple-parcial` · `no-cumple` · `no-verificable` | `dod-checker`'s verdict on the task |
 | `no-evidence` | `sin-evidencia` | `dod-checker`'s verdict on a criterion |
 | `pending approval` · `approved` · `amended` | `pendiente de aprobación` · `aprobado` · `enmendado` | header of `requirements.md`, `design.md` and `tasks.md` |
+| `closed` | `cerrado` | header of `tasks.md`, written by `close-feature` |
 | `Status` · `Covers` · `Goal` · `First test (red)` · `Note` | `Estado` · `Cubre` · `Objetivo` · `Primer test (rojo)` · `Nota` | fields of a task |
 | `Covers none because` · `Ids issued` · `Criteria without a task` | `Por qué no cubre criterios` · `Ids emitidos` · `Criterios sin tarea asignada` | fields of the plan |
 | `Log` · `Verification` · `Previous verification (superseded)` | `Registro` · `Verificación` · `Verificación previa (superada)` | what whoever implements writes |

@@ -4,6 +4,9 @@
 > Estado: pendiente de aprobación | aprobado (AAAA-MM-DD)
 > Ids emitidos: hasta T<n>
 
+<Al cerrar la feature, `close-feature` le agrega a la línea de Estado: `aprobado (AAAA-MM-DD) ·
+cerrado (AAAA-MM-DD)`. Es el registro durable de que el paso 8 corrió.>
+
 <La línea "Ids emitidos" es la memoria de qué ids ya se repartieron, **incluidos los de tareas que
 después desaparecieron del plan**. La escribe el workflow. Sin ella, una corrida futura calcularía
 el próximo id libre mirando solo las tareas vivas, y reutilizaría el número de una tarea eliminada

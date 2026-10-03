@@ -46,7 +46,7 @@ and for the same reason. The resolved L1–L57 are in the
 | [L63](#l63--the-contract-marks-are-still-in-spanish--open) | The contract marks are still in Spanish | `open` | requested by the maintainer; after phase 6 |
 | [L64](#l64--dod-checker-can-read-the-previous-features-commit--resolved) | `dod-checker` can read the previous feature's commit | `resolved` | phase 6 fixes · the search is narrowed to the feature's `tasks.md` |
 | [L65](#l65--a-triagers-json-value-escaped-into-an-english-report--resolved) | A triager's JSON value escaped into an English report | `resolved` | phase 6 fixes · mapping in the triager and the glossary; checked on the next English feature |
-| [L66](#l66--a-closing-with-nothing-to-commit-leaves-no-trace--ready-to-apply) | A closing with nothing to commit leaves no trace | **`ready to apply`** | blocks 0.6.0 · `close-feature`, `tasks-template.md` |
+| [L66](#l66--a-closing-with-nothing-to-commit-leaves-no-trace--resolved) | A closing with nothing to commit leaves no trace | `resolved` | phase 6 fixes · `· closed (date)` in the status header; checked on a second feature |
 | [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--ready-to-apply) | `harness-init` installs a dependency nobody was asked about | **`ready to apply`** | `harness-init`: extends the rule of L47 |
 | [L68](#l68--the-workflow-discovers-the-agent-prefix-by-failing-every-run--ready-to-apply) | The workflow discovers the agent prefix by failing, every run | **`ready to apply`** | `planning-tasks`, `tasks-fanout.js` |
 | [L69](#l69--a-feature-that-needs-to-change-the-contract-has-no-route--open) | A feature that needs to change the contract has no route | `open` | 1 of 1 · candidate: a ninth class of change in the router |
@@ -580,7 +580,7 @@ e2e report.
 
 ---
 
-## L66 · A closing with nothing to commit leaves no trace · `ready to apply`
+## L66 · A closing with nothing to commit leaves no trace · `resolved`
 
 **What happened.** `close-feature` of the first feature found nothing left to commit and, as its
 instructions say, made no empty commit. That the step ran stayed in the chat only. The next feature's
@@ -595,6 +595,13 @@ didn't happen, for whoever comes after — the same as [L21].
 `> Closed: YYYY-MM-DD · hygiene green`) and commits it: that commit isn't empty, it is the record.
 Touches `close-feature`, the `tasks-template.md` header in `en` and `es`, and the glossary if
 `Closed` becomes a keyword. The exact form is decided with the maintainer.
+
+**Applied** in a smaller form, chosen by the maintainer: no new line, the status header gains
+`· closed (YYYY-MM-DD)` the same way an amendment adds `· amended (…)`
+(`> Status: approved (…) · closed (…)`). "Hygiene green" was dropped: a closing only happens green.
+`close-feature` always commits, and the mark is what makes that commit non-empty. `closed` /
+`cerrado` entered the glossary. It shows on the next feature after a closing with nothing else to
+commit.
 
 ---
 

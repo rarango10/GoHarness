@@ -203,9 +203,11 @@ configuration adjustments that came out of this step. **It doesn't replace or sq
 commits** — each one has its id and its diff, and that staggering is what makes `git log` work as a
 record. This one's message names the feature, not a task.
 
-**If nothing was left uncommitted, say so and finish.** Don't fabricate an empty commit to have one:
-the value of this step is the run, not the commit. A legitimate closing may consist of "hygiene came
-out green and there was nothing pending to commit".
+**It always carries the mark of the closing**: the status header of `tasks.md` gains
+`· closed (YYYY-MM-DD)` —`> Status: approved (2026-10-02) · closed (2026-10-02)`—, the same way an
+amendment adds `· amended (…)`. So the commit is never empty even when nothing else was left: the
+mark is its content. The next step reads the repo, not this chat; a closing that only lives in the
+chat looks, to whoever comes after, like a feature still open.
 
 ## What this step doesn't do
 
@@ -227,7 +229,7 @@ out green and there was nothing pending to commit".
 
 ## When finished
 
-With the commit made —or with the record that it wasn't needed— the feature is closed. Say so, name
+With the closing commit made, the feature is closed. Say so, name
 what was left in the `Follow-ups` of `tasks.md` and the `P<n>` entries added to the backlog, if
 anything, and stop. The next feature starts at step 1, with `brainstorming`.
 
@@ -239,5 +241,5 @@ The templates come twice, in `assets/en/` and `assets/es/`: `<lang>` is the proj
   rules. It is copied to `docs/pendientes.md` the first time a feature leaves something for another.
 
 Keywords go in the project's language (see the glossary in `task-format`): in a Spanish project,
-`hecho`, `en curso`, `cumple`, `**Verificación previa (superada):**`, `## Pendientes` and the
-backlog's `resuelto`.
+`hecho`, `en curso`, `cumple`, `**Verificación previa (superada):**`, `## Pendientes`, the
+header's `cerrado` and the backlog's `resuelto`.
