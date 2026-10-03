@@ -47,7 +47,7 @@ and for the same reason. The resolved L1–L57 are in the
 | [L64](#l64--dod-checker-can-read-the-previous-features-commit--resolved) | `dod-checker` can read the previous feature's commit | `resolved` | phase 6 fixes · the search is narrowed to the feature's `tasks.md` |
 | [L65](#l65--a-triagers-json-value-escaped-into-an-english-report--resolved) | A triager's JSON value escaped into an English report | `resolved` | phase 6 fixes · mapping in the triager and the glossary; checked on the next English feature |
 | [L66](#l66--a-closing-with-nothing-to-commit-leaves-no-trace--resolved) | A closing with nothing to commit leaves no trace | `resolved` | phase 6 fixes · `· closed (date)` in the status header; checked on a second feature |
-| [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--ready-to-apply) | `harness-init` installs a dependency nobody was asked about | **`ready to apply`** | `harness-init`: extends the rule of L47 |
+| [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--resolved) | `harness-init` installs a dependency nobody was asked about | `resolved` | phase 6 fixes · extends the rule of L47; checked on the next project seeded from scratch |
 | [L68](#l68--the-workflow-discovers-the-agent-prefix-by-failing-every-run--ready-to-apply) | The workflow discovers the agent prefix by failing, every run | **`ready to apply`** | `planning-tasks`, `tasks-fanout.js` |
 | [L69](#l69--a-feature-that-needs-to-change-the-contract-has-no-route--open) | A feature that needs to change the contract has no route | `open` | 1 of 1 · candidate: a ninth class of change in the router |
 | [L70](#l70--the-plan-creates-guard-tasks--open) | The plan creates guard tasks | `open` | 2 of 2 features · merge them, or accept it |
@@ -605,7 +605,7 @@ commit.
 
 ---
 
-## L67 · `harness-init` installs a dependency nobody was asked about · `ready to apply`
+## L67 · `harness-init` installs a dependency nobody was asked about · `resolved`
 
 **What happened.** Step 0 installed five dev dependencies. Four came from an answer; `@types/node`
 was never mentioned: it came with a `tsconfig.json` (`"types": ["node"]`) that `harness-init` wrote on
@@ -624,6 +624,8 @@ its dependency, or it isn't seeded"): **every dependency you install is named in
 installs it and listed in the Stack.** That covers the closing and the verifier without touching
 them. In the same file, a translation slip: the example slot `<stack: preguntá antes de completar>`
 should read `<stack: ask before filling in>`, like the template.
+
+**Applied** as written: one sentence after the rule of L47, and the example slot in English.
 
 ---
 
@@ -650,7 +652,7 @@ it", so the plan gave `implement-task` an edit of `CLAUDE.md` — whose producer
 (`db66d1a`, `d95db42`). The router's eight classes of change don't include "the feature changes the
 contract". `close-feature` would catch it only at step 8, while step 7 already runs the contract's
 e2e command — and it passed by luck, with a build left on disk ([L33]). In the same spirit, the
-implementer offered to fix the Stack of [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--ready-to-apply)
+implementer offered to fix the Stack of [L67](#l67--harness-init-installs-a-dependency-nobody-was-asked-about--resolved)
 itself.
 
 **Why it matters.** The contract is the one document every feature trusts. Edited from inside a task,

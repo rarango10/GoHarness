@@ -29,7 +29,7 @@ isn't.
   no longer available either.
 
 **The interview fills the slots.** And here is the mechanism that matters: **an unfilled slot is a
-visible question.** A `<stack: preguntá antes de completar>` left untouched shows in the file, and
+visible question.** A `<stack: ask before filling in>` left untouched shows in the file, and
 anyone who opens it knows something is missing. A free generation that decided alone leaves no mark
 — and it has happened: a whole stack was written without asking, with the question explicitly
 requested in the prompt, and the resulting file had no way to give it away.
@@ -160,7 +160,9 @@ has used yet.
 `playwright.config.ts` without `@playwright/test` installed is the same problem as a file without an
 owner, only disguised: the config has a producer (this skill), the dependency has nobody in charge,
 and nothing notices it until step 7 — at the end of a whole feature, not at the start of the
-project.
+project. The same goes the other way: **every dependency you install is named in the question that
+installs it and listed in the Stack.** One that comes along with a file you wrote leaves the
+contract saying something false from step 0.
 
 | File | What it encodes | Dependency |
 |---|---|---|
